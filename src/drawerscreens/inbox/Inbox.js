@@ -127,10 +127,10 @@ export default class Inbox extends Component<Props> {
 
   _onRefresh = async () => {
     await this.setState({ swipeUp: true });
+      this.getAllInboxData();
 
     setTimeout(async () => {
       this.setState({ showSpinner: true });
-      this.getAllInboxData();
     }, 1000);
   }
 
@@ -205,18 +205,18 @@ export default class Inbox extends Component<Props> {
                     />
                   </View>
                   <View style={[styles.listTextContainer]}>
-                    <Text style={styles.listTitleText}>
+                    <Text style={styles.listTitleText} numberOfLines={1}>
                       {item.message_ad_title}
                     </Text>
-                    <Text style={styles.listNameText}>
+                    <Text style={styles.listNameText} numberOfLines={1}>
                       {item.message_author_name}
                     </Text>
-                    <Text style={styles.listNameText}>
+                    <Text style={styles.listNameText} numberOfLines={1}>
                       {item.chat_latest ? item.chat_latest[item.chat_latest.length - 1].text : ''}
                     </Text>
                   </View>
 
-                  <View style={styles.timeView}>
+                  <View style={styles.timeView} numberOfLines={1}>
                     {!_.isUndefined(item.chat_latest[item.chat_latest.length - 1].date) && !_.isEmpty(item.chat_latest[item.chat_latest.length - 1].date) ?
                       <Text style={styles.listNameText}>
                         {item.chat_latest[item.chat_latest.length - 1].date}

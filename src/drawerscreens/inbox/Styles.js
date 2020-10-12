@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
         timeView: {
             flexDirection: 'row',
             flex: 0.7,
+            minWidth:25,
             height:70,
         }
 
