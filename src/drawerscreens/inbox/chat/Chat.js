@@ -72,7 +72,6 @@ export default class Chat extends Component<Props> {
 
   async componentDidMount() {
     this.createNotificationListeners(); //add this line
-
   }
   async createNotificationListeners() {
 
@@ -83,12 +82,8 @@ export default class Chat extends Component<Props> {
   }
 
 
-
-
-
   constructor(props) {
     super(props);
-
 
     this.state = {
       messages: [],
@@ -98,7 +93,6 @@ export default class Chat extends Component<Props> {
       isComment: true,
       message: '',
       hideArrowButton: false,
-
     }
   }
   componentWillMount = async () => {
@@ -111,11 +105,8 @@ export default class Chat extends Component<Props> {
     if (orderStore.innerResponse.success === true) {
       this.setState({ messages: orderStore.innerResponse.data.chat.reverse() });
     }
-    else {
-      if (this.state.messages.length === 0) {
+    else if(this.state.messages.length === 0) {
         this.setState({ visibilityHidden: false });
-      }
-
     }
     if (orderStore.innerResponse.message.length != 0)
       Toast.show(orderStore.innerResponse.message);
