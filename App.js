@@ -81,7 +81,7 @@ export default class App extends Component<Props> {
         if (enabled) {
           firebase.messaging().getToken().then(token => {
             orderStore.DEVICE_TOKEN = token
-            // console.warn("LOG: ", token);
+            console.warn("LOG: ", token);
           })
 
           if (Platform.OS === 'ios') {

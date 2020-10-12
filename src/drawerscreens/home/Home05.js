@@ -1107,7 +1107,7 @@ export default class Home extends Component<Props> {
   }
 
   onStarRatingPress(rating) {
-    console.log("Rating is: " + rating)
+    //console.log("Rating is: " + rating)
   }
 }
 

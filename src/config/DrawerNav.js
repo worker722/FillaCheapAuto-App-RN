@@ -45,7 +45,7 @@ let { orderStore } = Store;
 console.log('orderStore orderStore orderStore',orderStore.drawerMenu)
 // orderStore.drawerMenu.map((item, key) => { console.log('=>>>>>>>>>>>>>>>>>>>>>>>> Item',item)});
 var result = _.find(orderStore.drawerMenu, { "key": "inbox_list" });
-console.log('loadsh result of drawer menu inbox',result);
+//console.log('loadsh result of drawer menu inbox',result);
 const commonOptions = {
   headerStyle: {
     backgroundColor: 'green',
