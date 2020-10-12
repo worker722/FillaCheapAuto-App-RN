@@ -1,2 +1,1 @@
-# FillaCheapAuto-App-RN
-CarSpotApp
+# FillaCheapAuto-react-native
