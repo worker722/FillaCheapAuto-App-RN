@@ -53,8 +53,8 @@ class Inventory extends Component<Props> {
 
   componentWillMount = async () => {
     let { orderStore } = Store;
-    console.log('orderStore')
-    console.log(orderStore)
+    //console.log('orderStore')
+    //console.log(orderStore)
     this.defaultData = [...orderStore.publicProfile.inventory.lists.ads];
     this.paginationDefault = orderStore.publicProfile.inventory.lists.pagination;
     this.setState({ listData: orderStore.publicProfile.inventory.lists.ads });

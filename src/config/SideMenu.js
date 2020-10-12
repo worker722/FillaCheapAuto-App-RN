@@ -256,7 +256,7 @@ UNSAFE_componentWillUpdate = ()=>{
   render() {
     let { orderStore } = Store;
     if(orderStore.onBlogsViewAllClicked)
-      console.log('blog view all clicked')
+      //console.log('blog view all clicked')
     return (
       <View>
         <ScrollView

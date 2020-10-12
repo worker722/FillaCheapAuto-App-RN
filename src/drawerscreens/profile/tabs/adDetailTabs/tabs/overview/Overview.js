@@ -279,12 +279,12 @@ import { log } from 'react-native-reanimated';
   getdata = async() => {
     console.log('getdata')
     let { orderStore } = Store;
-    console.log(orderStore)
+    //console.log(orderStore)
     let params = { user_id: orderStore.adDetail.data.profile_detail.id, page_number: '' };
-    console.log(params)
+    //console.log(params)
     let response = await Api.post('profile/public/inventory', params);
-    console.log(response)
-    console.log('resposes')
+    //console.log(response)
+    //console.log('resposes')
     if (response.success === true) {
       this.setState({dealer_ads : response.data.ads})
     }

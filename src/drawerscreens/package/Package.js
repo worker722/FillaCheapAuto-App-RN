@@ -304,7 +304,7 @@ class Package extends Component<Props> {
         this.checkoutStripe(pkgId, pkgType, response.tokenId);
       })
       .catch(error => {
-        console.log(JSON.stringify(error));
+        //console.log(JSON.stringify(error));
         this.setState({ loading: false })
         // Handle error
       });
@@ -359,7 +359,7 @@ class Package extends Component<Props> {
   }
 
   openModal = (item) => {
-    console.log('modal open')
+    //console.log('modal open')
     this.setState({currentItem:item})
     this.refs.modal3.open()
   }

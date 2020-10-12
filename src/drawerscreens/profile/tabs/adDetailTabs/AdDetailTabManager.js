@@ -55,7 +55,7 @@ constructor(props) {
 getdata(){
   let { orderStore } = Store;
   if(orderStore.detailToolbarModel.repeat == true){
-    console.log('j')
+    //console.log('j')
     if(orderStore.detailToolbarModel.status == 'Edit'){
       this.props.navigation.navigate('SellEdit', { adId: orderStore.detailToolbarModel.data.ad_id, isUpdate: true });
     }
@@ -175,7 +175,7 @@ componentDidMount(){
       ad_id: item,
       ad_status: option,
     };
-    console.log(params)
+    //console.log(params)
     let response = await Api.post('ad/update/status', params);
     if (response.success === true) {
       this.props.navigation.goBack();
@@ -314,7 +314,7 @@ componentDidMount(){
         <MenuConfirmDialogue
           visible={this.state.showMenuConfirmDialogue}
           onConfirm={() => { 
-            console.log(this.item)
+            //console.log(this.item)
             this.onOptionSelected(this.item, this.option) }}
           onCancel={() => { this.setState({ showMenuConfirmDialogue: false }) }}
         />

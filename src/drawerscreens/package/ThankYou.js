@@ -37,7 +37,7 @@ export default class ThankYou extends Component<Props> {
 
 
   render() {
-    console.log('url', this.state.url);
+    //console.log('url', this.state.url);
     if (this.state.showSpinner)
       return (
         <Loader />
