@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "706105301496",
+    "firebase_url": "https://fillacheapautogh.firebaseio.com",
+    "project_id": "fillacheapautogh",
+    "storage_bucket": "fillacheapautogh.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706105301496:android:4de4b6a38340ce70281e0d",
+        "android_client_info": {
+          "package_name": "com.fillacheapauto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706105301496-6nvmr6jq4k5nc6760lsml69didsn1in2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fillacheapauto",
+            "certificate_hash": "cc303be7bcf41ccb4cc18119ac9445ac41aa1853"
+          }
+        },
+        {
+          "client_id": "706105301496-ogohunrlnsgdh3hkkm6f9dd9f8jak8ol.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDM8ckLGJRYa-2ydQPB58kfPpRjJgpgHAM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706105301496-a5r953jhm0cqnnmean8t0c11v1tf3teo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
