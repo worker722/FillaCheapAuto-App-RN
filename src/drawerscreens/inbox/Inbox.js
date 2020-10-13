@@ -97,7 +97,7 @@ export default class Inbox extends Component<Props> {
   async createNotificationListeners() {
 
     firebase.messaging().onMessage((message) => {
-      this.onMessageRecieve(message);
+      // this.onMessageRecieve(message);
       this.getAllInboxData();
     });
   }
