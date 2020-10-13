@@ -55,7 +55,7 @@ export default class Chat extends Component<Props> {
   });
 
   onMessageRecieve = async (remoteMessage) => {
-    //  console.warn("Message")
+    console.warn(remoteMessage)
     const data = remoteMessage.data;
     const chat = JSON.parse(data.chat);
     const message = {
@@ -70,9 +70,9 @@ export default class Chat extends Component<Props> {
     this.setState({ messages: this.state.messages.concat(message) });
   }
 
-  async componentDidMount() {
-    this.createNotificationListeners(); //add this line
-  }
+  // async componentDidMount() {
+  //    //add this line
+  // }
   async createNotificationListeners() {
 
     firebase.messaging().onMessage((message) => {
@@ -97,6 +97,7 @@ export default class Chat extends Component<Props> {
   }
   componentWillMount = async () => {
 
+    this.createNotificationListeners();
     const data = this.props.navigation.state.params.data;
     let { orderStore } = Store;
 
