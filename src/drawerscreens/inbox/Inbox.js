@@ -57,6 +57,8 @@ export default class Inbox extends Component<Props> {
   getAllInboxData = async () => {
     const param = { 'platform': 'mobile' };
     let res_data = await Api.post('message/inbox/', param);
+    console.log(res_data.api_firebase_id);
+    console.log(res_data.f_reg_id);
     allOffers = res_data.data;
 
     allOffers.sort((a, b) => {

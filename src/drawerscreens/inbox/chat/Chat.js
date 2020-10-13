@@ -105,8 +105,8 @@ export default class Chat extends Component<Props> {
     if (orderStore.innerResponse.success === true) {
       this.setState({ messages: orderStore.innerResponse.data.chat.reverse() });
     }
-    else if(this.state.messages.length === 0) {
-        this.setState({ visibilityHidden: false });
+    else if (this.state.messages.length === 0) {
+      this.setState({ visibilityHidden: false });
     }
     if (orderStore.innerResponse.message.length != 0)
       Toast.show(orderStore.innerResponse.message);
@@ -329,35 +329,22 @@ export default class Chat extends Component<Props> {
     this.setState({ refreshing: false });
   }
 
-
-
-
   postMessage = async () => {
     this.setState({ hideArrowButton: true });
     const data = this.props.navigation.state.params.data;
     let { orderStore } = Store;
     const params = { ad_id: data.adId, sender_id: data.senderId, receiver_id: data.receiverId, type: data.type, message: this.state.message };
-    // console.warn('Token',JSON.stringify(params));
     orderStore.innerResponse = await Api.post('message/chat/post', params);
     if (orderStore.innerResponse.success === true)
-    // {console.warn(orderStore.innerResponse);
-    {
       this.setState({ messages: orderStore.innerResponse.data.chat.reverse(), message: "" });
-
-
-    }
-    else {
-      if (this.state.messages.length === 0) {
-        this.setState({ visibilityHidden: false });
-      }
-
+    else if (this.state.messages.length === 0) {
+      this.setState({ visibilityHidden: false });
     }
     if (orderStore.innerResponse.message.length != 0)
       Toast.show(orderStore.innerResponse.message);
     this.setState({ hideArrowButton: false });
-
-
   }
+
   _keyExtractor = (item, index) => index + '';
 
 
