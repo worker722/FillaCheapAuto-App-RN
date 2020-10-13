@@ -68,9 +68,10 @@ export default class Chat extends Component<Props> {
     this.setState({ messages: this.state.messages.concat(message) });
   }
 
-  // async componentDidMount() {
-  //    //add this line
-  // }
+  async componentDidMount() {
+    //add this line
+    this.createNotificationListeners();
+  }
   async createNotificationListeners() {
 
     firebase.messaging().onMessage((message) => {
@@ -95,7 +96,6 @@ export default class Chat extends Component<Props> {
   }
   componentWillMount = async () => {
 
-    this.createNotificationListeners();
     const data = this.props.navigation.state.params.data;
     let { orderStore } = Store;
 

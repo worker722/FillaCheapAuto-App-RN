@@ -101,7 +101,8 @@ export default class App extends Component<Props> {
                 .displayNotification(localNotification)
                 .catch(err => console.error(err));
             })
-          } else {
+          } 
+          else {
             this.notificationListenerANDROID = firebase.notifications().onNotification(notification => {
               //Showing local notification Android
               const localNotification = new firebase.notifications.Notification({

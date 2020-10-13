@@ -47,13 +47,57 @@ export default class Inbox extends Component<Props> {
       fontFamily: Appearences.Fonts.paragaphFont,
       fontSize: 13,
       fontWeight: "200",
-
     },
   });
+
+  onMessageRecieve = async (remoteMessage) => {
+    const data = remoteMessage.data;
+    const chat = JSON.parse(data.chat);
+    const notification = {
+      type: chat.type,
+      date: chat.date,
+      img: chat.img,
+      text: chat.text,
+      ad_id: chat.ad_id,
+    };
+
+    if (Platform.OS === 'ios') {
+      this.notificationListenerIOS = firebase.messaging().onMessage(notification => {
+        const localNotification = new firebase.notifications.Notification()
+          .setNotificationId(notification.ad_id)
+          .setTitle("testr")
+          .setBody(notification.text)
+
+        firebase.notifications()
+          .displayNotification(localNotification)
+          .catch(err => console.error(err));
+      })
+    }
+    else {
+      this.notificationListenerANDROID = firebase.notifications().onNotification(notification => {
+        const localNotification = new firebase.notifications.Notification({
+          sound: 'default',
+          show_in_foreground: true,
+        })
+          .setNotificationId("1")
+          .setTitle("test")
+          .setBody(notification.text)
+          .android.setChannelId('channelId') // e.g. the id you chose above
+          // .android.setSmallIcon('ic_stat_notification') // create this icon in Android Studio
+          .android.setColor('#000000') // you can set a color here
+          .android.setPriority(firebase.notifications.Android.Priority.High);
+
+        firebase.notifications()
+          .displayNotification(localNotification)
+          .catch(err => console.error(err));
+      })
+    }
+  }
 
   async createNotificationListeners() {
 
     firebase.messaging().onMessage((message) => {
+      this.onMessageRecieve(message);
       this.getAllInboxData();
     });
   }
@@ -211,7 +255,6 @@ export default class Inbox extends Component<Props> {
                   }}
                   style={[styles.listItemContainer]}>
                   <View style={[styles.listImageContainer, { flex: 0.7 }]}>
-
                     <Avatar
                       size='large'
                       rounded
@@ -227,14 +270,14 @@ export default class Inbox extends Component<Props> {
                     <Text style={styles.listNameText} numberOfLines={1}>
                       {item.message_ad_title}
                     </Text>
-                    <Text style={styles.listNameText} numberOfLines={1}>
+                    <Text style={styles.listMessageText} numberOfLines={1}>
                       {item.chat_latest ? item.chat_latest[item.chat_latest.length - 1].text : ''}
                     </Text>
                   </View>
 
                   <View style={styles.timeView} numberOfLines={1}>
                     {!_.isUndefined(item.chat_latest[item.chat_latest.length - 1].date) && !_.isEmpty(item.chat_latest[item.chat_latest.length - 1].date) ?
-                      <Text style={styles.listNameText}>
+                      <Text style={styles.listTimeText}>
                         {item.chat_latest[item.chat_latest.length - 1].date}
                       </Text> : null}
                   </View>
