@@ -45,7 +45,6 @@ export default class Chat extends Component<Props> {
       fontFamily: Appearences.Fonts.paragaphFont,
       fontSize: 13,
       fontWeight: "200",
-
     },
     headerRight: <View style={{ flex: 1 }} />,
     headerLeft: <HeaderBackButton
@@ -55,7 +54,6 @@ export default class Chat extends Component<Props> {
   });
 
   onMessageRecieve = async (remoteMessage) => {
-    console.warn(remoteMessage)
     const data = remoteMessage.data;
     const chat = JSON.parse(data.chat);
     const message = {
