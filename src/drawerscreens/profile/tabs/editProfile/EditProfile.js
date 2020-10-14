@@ -44,7 +44,7 @@ export default class EditProfile extends Component<Props> {
           await this.setState({ predictions: responseJson.predictions, focus: true })
         }
       }).catch((error) => {
-        console.log('error', error);
+        //console.log('error', error);
         //  console.warn(error+"error");
       });
 

@@ -159,7 +159,7 @@ class Inventory extends Component<Props> {
 
   sendChatMessage = async () => {
     this.setState({ showMessageProgress: true });
-    console.log(this.state.similar_ad_id);
+    //console.log(this.state.similar_ad_id);
     const params = {ad_id: this.state.similar_ad_id, message: this.state.popupMessage};
     
     const response = await Api.post('message/popup', params);

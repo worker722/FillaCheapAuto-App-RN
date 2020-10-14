@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import {
   Platform,
-  StyleSheet,
   Text,
   View,
   Image,
   TextInput,
-  Button,
   TouchableOpacity,
   ScrollView,
-  TouchableHighlight,
   FlatList,
-  Alert,
   RefreshControl,
   Linking,
 } from 'react-native';
@@ -57,7 +53,6 @@ export default class Chat extends Component<Props> {
     const data = remoteMessage.data;
     const chat = JSON.parse(data.chat);
     const message = {
-
       type: chat.type,
       date: chat.date,
       img: chat.img,
@@ -66,6 +61,26 @@ export default class Chat extends Component<Props> {
     };
 
     this.setState({ messages: this.state.messages.concat(message) });
+
+    //this.showNotification(data.title, data.message);
+  }
+
+  showNotification = (title, body) => {
+    const localNotification = new firebase.notifications.Notification({
+      sound: 'default',
+      show_in_foreground: true,
+    })
+      .setNotificationId(new Date().toLocaleString())
+      .setTitle(title)
+      .setBody(body)
+      .android.setChannelId('Carspot-ID') // e.g. the id you chose above
+      //.android.setSmallIcon('ic_launcher') // create this icon in Android Studio
+      .android.setColor('#000000') // you can set a color here
+      .android.setPriority(firebase.notifications.Android.Priority.High);
+
+    firebase.notifications()
+      .displayNotification(localNotification)
+      .catch(err => console.error(err));
   }
 
   async componentDidMount() {
@@ -94,6 +109,7 @@ export default class Chat extends Component<Props> {
       hideArrowButton: false,
     }
   }
+
   componentWillMount = async () => {
 
     const data = this.props.navigation.state.params.data;
@@ -132,25 +148,19 @@ export default class Chat extends Component<Props> {
 
     Linking.openURL(phoneNumber);
   };
+
   onChatAvtarClick = () => {
     const data = this.props.navigation.state.params.data;
     const { navigate } = this.props.navigation;
     navigate('AdDetailTabManager', { adId: data.adId });
   };
 
-
-
-
-
-
   render() {
 
-
-    if (this.state.showSpinner) {
+    if (this.state.showSpinner)
       return (<Loader />);
-    }
-    let { orderStore } = Store;
 
+    let { orderStore } = Store;
 
     return (
       <View >
@@ -159,17 +169,13 @@ export default class Chat extends Component<Props> {
           backgroundColor: Appearences.Colors.appBackgroundColor,
         }}>
 
-
           <Visibility
             hide={this.state.visibilityHidden}
             style={{ width: '100%', height: '100%', backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
             <Text>{orderStore.innerResponse.message}</Text>
           </Visibility>
 
-
           <View style={styles.listItemContainer}>
-
-
             <Avatar
               size='medium'
               rounded
@@ -178,8 +184,6 @@ export default class Chat extends Component<Props> {
               activeOpacity={0.7}
               containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
             />
-
-
 
             <TouchableOpacity style={[styles.listTextContainer, { flex: 2 }]} onPress={this.onChatAvtarClick}>
               <Text style={styles.listTitleText}>
@@ -201,9 +205,6 @@ export default class Chat extends Component<Props> {
             </TouchableOpacity>
           </View>
 
-
-
-
           <ScrollView
             ref={ref => this.scrollView = ref}
             onContentSizeChange={(contentWidth, contentHeight) => {
@@ -215,15 +216,8 @@ export default class Chat extends Component<Props> {
                 onRefresh={this._onRefresh}
               />
             }
-
-
           >
             <View style={[styles.container]}>
-
-
-
-
-
               <FlatList
                 data={this.state.messages}
                 horizontal={false}
@@ -231,10 +225,6 @@ export default class Chat extends Component<Props> {
                 renderItem={this.renderComment}
                 keyExtractor={this._keyExtractor}>
               </FlatList>
-
-
-
-
             </View>
           </ScrollView>
           <View style={styles.lastRowContainer}>
@@ -249,7 +239,6 @@ export default class Chat extends Component<Props> {
                 placeholderTextColor={Appearences.Colors.headingGrey}
                 textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
                 multiline={true}
-
               />
               <Visibility
                 hide={this.state.hideArrowButton}
@@ -275,19 +264,12 @@ export default class Chat extends Component<Props> {
                   />
                 </TouchableOpacity>
               </Visibility>
-
             </View>
           </View>
-
         </View>
-
       </View>
     );
-
-
-
   }
-
 
   _onRefresh = () => {
 
@@ -314,14 +296,10 @@ export default class Chat extends Component<Props> {
     response = await Api.post('message/chat/', params);
 
     if (response.success === true) {
-
-
       orderStore.innerResponse.data.pagination = response.data.pagination;
       //orderStore.innerResponse.data.chat = [...response.data.chat.reverse(),...orderStore.innerResponse.data.chat.reverse()];
       orderStore.innerResponse.data.chat = [...orderStore.innerResponse.data.chat, ...response.data.chat];
       this.setState({ messages: orderStore.innerResponse.data.chat.reverse() });
-
-
     }
     if (response.message.length != 0)
       Toast.show(response.message);
@@ -365,8 +343,6 @@ export default class Chat extends Component<Props> {
                 containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
               />
 
-
-
             </View>
             <Text style={[styles.timeText, { color: stores.color }]}>
               {item.date}
@@ -380,18 +356,13 @@ export default class Chat extends Component<Props> {
             </View>
           </View>
 
-
-
         </View>);
-
     }
 
     else {
       return (
         <View
           style={styles.replyRowContainer}>
-
-
 
           <View style={styles.talkBubble}>
             <View style={styles.replyTalkBubbleSquare}>
@@ -416,18 +387,8 @@ export default class Chat extends Component<Props> {
               {item.date}
             </Text>
           </View>
-
-
         </View>
       );
     }
-
   }
 }
-
-
-
-
-
-
-

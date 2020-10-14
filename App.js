@@ -28,16 +28,14 @@ export default class App extends Component<Props> {
       showBannerTop: false,
       showBannerBottom: false,
     };
-
   }
+
   handleAppStateChange = (nextAppState) => {
     if (nextAppState === 'inactive') {
     }
   }
 
-
   componentDidUpdate() {
-
 
     let { orderStore } = Store;
     if (orderStore.banner.isShow == 'true') {
@@ -51,16 +49,13 @@ export default class App extends Component<Props> {
     if (orderStore.inter.isShow == 'true') {
       orderStore.inter.isShow = false;
       getIntertial();
-
     }
-
-
-
-
   }
+
   componentWillUnmount() {
     AdMobInterstitial.removeAllListeners();
   }
+
   async componentDidMount() {
     await this.subToTopic();
     await this.createNotificationListeners(); //add this line
@@ -68,10 +63,9 @@ export default class App extends Component<Props> {
 
     let { orderStore } = Store;
 
-
     const channel = new firebase.notifications.Android.Channel(
-      'channelId',
-      'Channel Name',
+      'Carspot-ID',
+      'Carspot-NAME',
       firebase.notifications.Android.Importance.Max
     ).setDescription('A natural description of the channel');
     firebase.notifications().android.createChannel(channel);
@@ -101,8 +95,7 @@ export default class App extends Component<Props> {
                 .displayNotification(localNotification)
                 .catch(err => console.error(err));
             })
-          } 
-          else {
+          } else {
             this.notificationListenerANDROID = firebase.notifications().onNotification(notification => {
               //Showing local notification Android
               const localNotification = new firebase.notifications.Notification({
@@ -114,8 +107,8 @@ export default class App extends Component<Props> {
                 .setSubtitle(notification.subtitle)
                 .setBody(notification.body)
                 .setData(notification.data)
-                .android.setChannelId('channelId') // e.g. the id you chose above
-                // .android.setSmallIcon('ic_stat_notification') // create this icon in Android Studio
+                .android.setChannelId('Carspot-ID') // e.g. the id you chose above
+                //.android.setSmallIcon('ic_launcher') // create this icon in Android Studio
                 .android.setColor('#000000') // you can set a color here
                 .android.setPriority(firebase.notifications.Android.Priority.High);
 
@@ -138,9 +131,8 @@ export default class App extends Component<Props> {
 
       });
 
-
     const notificationOpen = await firebase.notifications().getInitialNotification();
-    
+
     if (notificationOpen) {
       // App was opened by a notification
       // Get the action triggered by the notification being opened
@@ -191,7 +183,7 @@ export default class App extends Component<Props> {
     firebase.notifications().onNotificationDisplayed((notification: Notification) => {
       // Process your notification as required
       // ANDROID: Remote notifications do not contain the channel ID. You will have to specify this manually if you'd like to re-display the notification.
-     
+
     });
 
 
@@ -200,7 +192,7 @@ export default class App extends Component<Props> {
     * */
     firebase.notifications().onNotification((notification) => {
       const { title, body } = notification;
-      this.showAlert(title, body);
+      // this.showAlert(title, body);
     });
 
     /*
@@ -209,7 +201,7 @@ export default class App extends Component<Props> {
     firebase.notifications().onNotificationOpened((notificationOpen) => {
       const { title, body } = notificationOpen.notification;
 
-      this.showAlert(title, body);
+      // this.showAlert(title, body);
     });
 
     /*
@@ -218,7 +210,7 @@ export default class App extends Component<Props> {
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
       const { title, body } = notificationOpen.notification;
-      this.showAlert(title, body);
+      // this.showAlert(title, body);
     }
 
   }
@@ -239,10 +231,12 @@ export default class App extends Component<Props> {
       Alert.alert(
         'Please Update', 'You will have to update your app to the latest version to continue using. ',
         [
-          { text: 'OK', onPress: () => {
-            BackHandler.exitApp();
-            Linking.openURL(updateNeeded.storeUrl) 
-          } },
+          {
+            text: 'OK', onPress: () => {
+              BackHandler.exitApp();
+              Linking.openURL(updateNeeded.storeUrl)
+            }
+          },
         ],
         { cancelable: false },
       );
