@@ -1,20 +1,14 @@
 import React, { Component } from 'react';
 import {
   Platform,
-  StyleSheet,
   Text,
   View,
-  Image,
-  TextInput,
-  Button,
   TouchableOpacity,
   ScrollView,
-  Alert,
-  TouchableHighlight,
   FlatList,
   RefreshControl,
+  Dimensions
 } from 'react-native';
-import moment from 'moment';
 import _ from 'lodash';
 import styles from './Styles';
 import firebase from 'react-native-firebase';
@@ -27,11 +21,10 @@ import Loader from '../../components/Loader';
 import * as Progress from 'react-native-progress';
 import Appearences from '../../config/Appearences';
 import stores from '../../Stores/orderStore';
-import LocalDb from '../../storage/LocalDb';
 
 let currentOffers = new Array();
 let allOffers = new Array();
-let pagination = { current_page: 0, max_num_page: 0, per_page_num: 7, has_next_page: true };
+let pagination = { current_page: 0, max_num_page: 0, per_page_num: (Dimensions.get("screen").height / 100), has_next_page: true };
 
 export default class Inbox extends Component<Props> {
   static navigationOptions = ({ navigation }) => ({
@@ -50,54 +43,8 @@ export default class Inbox extends Component<Props> {
     },
   });
 
-  onMessageRecieve = async (remoteMessage) => {
-    const data = remoteMessage.data;
-    const chat = JSON.parse(data.chat);
-    const notification = {
-      type: chat.type,
-      date: chat.date,
-      img: chat.img,
-      text: chat.text,
-      ad_id: chat.ad_id,
-    };
-
-    if (Platform.OS === 'ios') {
-      this.notificationListenerIOS = firebase.messaging().onMessage(notification => {
-        const localNotification = new firebase.notifications.Notification()
-          .setNotificationId(notification.ad_id)
-          .setTitle("testr")
-          .setBody(notification.text)
-
-        firebase.notifications()
-          .displayNotification(localNotification)
-          .catch(err => console.error(err));
-      })
-    }
-    else {
-      this.notificationListenerANDROID = firebase.notifications().onNotification(notification => {
-        const localNotification = new firebase.notifications.Notification({
-          sound: 'default',
-          show_in_foreground: true,
-        })
-          .setNotificationId("1")
-          .setTitle("test")
-          .setBody(notification.text)
-          .android.setChannelId('channelId') // e.g. the id you chose above
-          // .android.setSmallIcon('ic_stat_notification') // create this icon in Android Studio
-          .android.setColor('#000000') // you can set a color here
-          .android.setPriority(firebase.notifications.Android.Priority.High);
-
-        firebase.notifications()
-          .displayNotification(localNotification)
-          .catch(err => console.error(err));
-      })
-    }
-  }
-
   async createNotificationListeners() {
-
-    firebase.messaging().onMessage((message) => {
-      // this.onMessageRecieve(message);
+    firebase.messaging().onMessage(async message => {
       this.getAllInboxData();
     });
   }
@@ -110,15 +57,10 @@ export default class Inbox extends Component<Props> {
   getAllInboxData = async () => {
     const param = { 'platform': 'mobile' };
     let res_data = await Api.post('message/inbox/', param);
-
     allOffers = res_data.data;
 
     if (allOffers.length > 0) {
       allOffers.sort((a, b) => {
-        if (!a.chat_latest)
-          return 1;
-        if (!b.chat_latest)
-          return -1;
         if (b.chat_latest[b.chat_latest.length - 1].realdate > a.chat_latest[a.chat_latest.length - 1].realdate)
           return 1;
         else if (b.chat_latest[b.chat_latest.length - 1].realdate < a.chat_latest[a.chat_latest.length - 1].realdate)
@@ -141,7 +83,6 @@ export default class Inbox extends Component<Props> {
     else {
       this.setState({ noDataVisivility: true, noDataMessage: "Empty Inbox Message" });
     }
-
     this.setState({ showSpinner: false, swipeUp: false });
   }
 
@@ -205,11 +146,13 @@ export default class Inbox extends Component<Props> {
     return layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom;
   };
+
   render() {
-    if (this.state.showSpinner) {
+    if (this.state.showSpinner)
       return (<Loader />);
-    }
+
     let { orderStore } = Store;
+
     return (
       <View style={{
         height: '100%',
@@ -217,8 +160,6 @@ export default class Inbox extends Component<Props> {
       }}>
 
         <ScrollView
-
-
           refreshControl={
             <RefreshControl
               refreshing={this.state.swipeUp}
@@ -238,9 +179,6 @@ export default class Inbox extends Component<Props> {
           scrollEventThrottle={400}>
 
           <View style={styles.container}>
-
-
-
             <FlatList
               data={this.state.offers}
               horizontal={false}
@@ -284,9 +222,7 @@ export default class Inbox extends Component<Props> {
                 </TouchableOpacity>
               }
               keyExtractor={item => item.ad_id + ''}
-            >
-
-            </FlatList>
+            />
 
             <NoDataFound
               noData={true}
@@ -303,13 +239,4 @@ export default class Inbox extends Component<Props> {
         </ScrollView>
       </View>);
   }
-
 }
-
-
-
-
-
-
-
-
