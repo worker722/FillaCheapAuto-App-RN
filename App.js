@@ -19,7 +19,6 @@ import {
 @observer
 export default class App extends Component<Props> {
 
-
   constructor(props) {
     super(props);
     this.state = {
@@ -84,12 +83,10 @@ export default class App extends Component<Props> {
 
               //Showing Local notification IOS
               const localNotification = new firebase.notifications.Notification()
-                .setNotificationId(notification._messageId)
+                .setNotificationId(new Date().toLocaleString())
                 .setTitle(notification._data.title)
                 .setSubtitle(notification._data.subtitle)
-                .setBody(notification._data.text)
-                .setData(notification._data)
-                .ios.setBadge(1);
+                .setBody(notification._data.body)
 
               firebase.notifications()
                 .displayNotification(localNotification)
@@ -98,16 +95,15 @@ export default class App extends Component<Props> {
           } else {
             this.notificationListenerANDROID = firebase.notifications().onNotification(notification => {
               //Showing local notification Android
-      console.log("app push");
-      const localNotification = new firebase.notifications.Notification({
+              console.log("app push");
+              const localNotification = new firebase.notifications.Notification({
                 sound: 'default',
                 show_in_foreground: true,
               })
-                .setNotificationId(notification.notificationId)
+                .setNotificationId(new Date().toLocaleString())
                 .setTitle(notification.title)
                 .setSubtitle(notification.subtitle)
                 .setBody(notification.body)
-                .setData(notification.data)
                 .android.setChannelId('Carspot-ID') // e.g. the id you chose above
                 //.android.setSmallIcon('ic_launcher') // create this icon in Android Studio
                 .android.setColor('#000000') // you can set a color here

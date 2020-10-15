@@ -183,9 +183,9 @@ class MyAds extends Component<Props> {
     if (orderStore.profile.success == true) {
       this.defaultData = [...orderStore.profile.data.active_add.ads];
       this.paginationDefault = orderStore.profile.data.active_add.pagination;
-      this.setState({ listData: orderStore.profile.data.active_add.ads,refreshing:false });
+      this.setState({ listData: orderStore.profile.data.active_add.ads, refreshing: false });
       if (orderStore.profile.data.active_add.ads.length === 0)
-        this.setState({ noDataVisivility: true, noDataMessage: orderStore.profile.data.active_add.msg,refreshing:false });
+        this.setState({ noDataVisivility: true, noDataMessage: orderStore.profile.data.active_add.msg, refreshing: false });
     }
   }
   render() {

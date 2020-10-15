@@ -86,7 +86,7 @@ class Api {
     const url = `${host}/${route}`;
     const formData = new FormData();
     let options = {};
-    
+
     const extension = image.mime.substring(image.mime.indexOf("/") + 1, image.mime.length);
 
     const photo = {
@@ -354,10 +354,10 @@ class Api {
 
       }
     return fetch(url, options).then(async resp => {
-      
+
       let json = resp.json();
-      
-    
+
+
       if (resp.ok) {
         return json
       }
@@ -365,7 +365,7 @@ class Api {
     }).catch(json => {
       // console.log('Api response is ------------->>>>>>', json);
       Api.showAlert();
-      return ;
+      return;
     });
   }
   static showAlert() {

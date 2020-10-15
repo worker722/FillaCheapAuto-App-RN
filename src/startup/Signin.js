@@ -132,7 +132,7 @@ export default class Signin extends Component<Props> {
     if (error) {
     } else {
       this.postSocail(result.email, result.name);
-    
+
     }
   }
 

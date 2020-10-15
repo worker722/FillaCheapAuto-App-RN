@@ -137,7 +137,7 @@ class Profile extends Component<Props> {
     if (orderStore.profile.success === true) {
       let tabsText = orderStore.profile.data.tabs_text;
 
-      this.tabsText = { profile: tabsText.profile, editProfile: tabsText.edit_profile, featuredAds: tabsText.featured_ads, inactiveAds: tabsText.inactive_ads, myAds: tabsText.my_ads, favouriteAds: tabsText.favorite_ads,expireAds:tabsText.expired_ads,soldAds:tabsText.sold_ads };
+      this.tabsText = { profile: tabsText.profile, editProfile: tabsText.edit_profile, featuredAds: tabsText.featured_ads, inactiveAds: tabsText.inactive_ads, myAds: tabsText.my_ads, favouriteAds: tabsText.favorite_ads, expireAds: tabsText.expired_ads, soldAds: tabsText.sold_ads };
       this.setState({ showSpinner: false });
       // this.props.navigation.navigate('Profile');   
 
