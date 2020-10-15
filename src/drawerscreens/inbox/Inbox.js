@@ -24,7 +24,9 @@ import stores from '../../Stores/orderStore';
 
 let currentOffers = new Array();
 let allOffers = new Array();
-let pagination = { current_page: 0, max_num_page: 0, per_page_num: 7, has_next_page: true };
+const screen_height = Dimensions.get("screen").height;
+
+let pagination = { current_page: 0, max_num_page: 0, per_page_num: (Math.floor(screen_height / 100) + 1), has_next_page: true };
 
 export default class Inbox extends Component<Props> {
   static navigationOptions = ({ navigation }) => ({
@@ -45,6 +47,7 @@ export default class Inbox extends Component<Props> {
 
   async createNotificationListeners() {
     firebase.messaging().onMessage(async message => {
+      this.setState({ showSpinner: true });
       this.getAllInboxData();
     });
   }
@@ -55,6 +58,13 @@ export default class Inbox extends Component<Props> {
   }
 
   getAllInboxData = async () => {
+    let { orderStore } = Store;
+    if (orderStore.name == "Guest") {
+      this.setState({ noDataVisivility: true, noDataMessage: "Empty Inbox Message" });
+      this.setState({ showSpinner: false, swipeUp: false });
+      return;
+    }
+
     const param = { 'platform': 'mobile' };
     let res_data = await Api.post('message/inbox/', param);
     allOffers = res_data.data;
@@ -127,12 +137,8 @@ export default class Inbox extends Component<Props> {
   }
 
   _onRefresh = async () => {
-    await this.setState({ swipeUp: true });
+    this.setState({ showSpinner: true });
     this.getAllInboxData();
-
-    setTimeout(async () => {
-      this.setState({ showSpinner: true });
-    }, 1000);
   }
 
   _loadMore = () => {

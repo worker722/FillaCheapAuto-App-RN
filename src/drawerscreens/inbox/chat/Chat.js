@@ -62,16 +62,18 @@ export default class Chat extends Component<Props> {
 
     this.setState({ messages: this.state.messages.concat(message) });
 
-    this.showNotification(data.title, data.message);
+    if (data.push_type == 'yes')
+      this.showNotification(data.title, data.subtitle, data.body);
   }
 
-  showNotification = (title, body) => {
+  showNotification = (title, subtitle, body) => {
     const localNotification = new firebase.notifications.Notification({
       sound: 'default',
       show_in_foreground: true,
     })
       .setNotificationId(new Date().toLocaleString())
       .setTitle(title)
+      .setSubtitle(subtitle)
       .setBody(body)
       .android.setChannelId('Carspot-ID') // e.g. the id you chose above
       //.android.setSmallIcon('ic_launcher') // create this icon in Android Studio
