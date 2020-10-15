@@ -120,13 +120,13 @@ export default class Splash extends Component<Props> {
         email: email,
         password: '1122',
         name: name,
-        dp:orderStore.innerResponse.data.profile_img
+        dp: orderStore.innerResponse.data.profile_img
 
       };
       orderStore.email = email;
       orderStore.name = name;
-      if(orderStore.innerResponse.data.profile_img!=null)
-      orderStore.dp = orderStore.innerResponse.data.profile_img;
+      if (orderStore.innerResponse.data.profile_img != null)
+        orderStore.dp = orderStore.innerResponse.data.profile_img;
       // console.log('from point 1')
 
       await LocalDb.saveProfile(userData);
@@ -164,7 +164,7 @@ export default class Splash extends Component<Props> {
       Toast.show(orderStore.innerResponse.message + "");
 
     if (orderStore.innerResponse.success === true) {
-    orderStore.email = orderStore.innerResponse.data.user_email;
+      orderStore.email = orderStore.innerResponse.data.user_email;
       orderStore.dp = orderStore.innerResponse.data.profile_img;
       orderStore.name = orderStore.innerResponse.data.display_name;
 
@@ -270,12 +270,9 @@ export default class Splash extends Component<Props> {
 
 
 
-  async  componentDidMount() {
+  async componentDidMount() {
     await this.settings();
-    // console.warn(isPublic);
-    // if(!isPublic)
-    // { console.warn("Inside If");
-    //    await this.manageFcmToken();}
+
     const rememberMe = await LocalDb.getRememberMe();
     if (!rememberMe) {
       let { orderStore } = Store;
@@ -324,7 +321,7 @@ export default class Splash extends Component<Props> {
     let { orderStore } = Store;
     // console.log('api call s')
     const response = await Api.get("settings");
-   
+
     if (response.success) {
       const data = response.data;
       I18nManager.forceRTL(data.is_rtl);

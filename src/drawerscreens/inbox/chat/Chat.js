@@ -62,7 +62,7 @@ export default class Chat extends Component<Props> {
 
     this.setState({ messages: this.state.messages.concat(message) });
 
-    //this.showNotification(data.title, data.message);
+    this.showNotification(data.title, data.message);
   }
 
   showNotification = (title, body) => {
