@@ -28,6 +28,7 @@ import ExploreCountryStyle from './ExploreCountryStyle';
 import TopCars from './TopCars';
 import Carousel from 'react-native-snap-carousel';
 import Store from '../../Stores';
+import LocalDb from '../../storage/LocalDb';
 import store from '../../Stores/orderStore';
 import Toast from 'react-native-simple-toast';
 import Api from '../../network/Api';
@@ -35,6 +36,7 @@ import Loader from '../../components/Loader';
 import * as Animatable from 'react-native-animatable';
 let { height } = Dimensions.get('window');
 import { I18nManager } from 'react-native'
+import firebase from 'react-native-firebase';
 import { observer } from 'mobx-react';
 import Banner from '../../components/adMob/Banner';
 import DrawerButton from '../../config/DrawerButton';
@@ -47,25 +49,25 @@ export default class Home extends Component<Props> {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('otherParam', store.screenTitles.home),
     headerStyle: {
-        backgroundColor: store.color,
-      },
+      backgroundColor: store.color,
+    },
 
-      headerTitleStyle: {
-        flex: 1,
-        color: 'white',
-        textAlign: "center",
-        fontFamily: Appearences.Fonts.paragaphFont,
-        fontSize: 13,
-        fontWeight: "200",
+    headerTitleStyle: {
+      flex: 1,
+      color: 'white',
+      textAlign: "center",
+      fontFamily: Appearences.Fonts.paragaphFont,
+      fontSize: 13,
+      fontWeight: "200",
 
-      },
-      headerLeft: <DrawerButton navigation={navigation} />,
-      headerRight: <DrawerRightIcons />
+    },
+    headerLeft: <DrawerButton navigation={navigation} />,
+    headerRight: <DrawerRightIcons />
   });
 
   componentDidMount = () => {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    
+
     // console.log('this props',this.props.getParam('callbackss'))
   }
 
@@ -172,7 +174,7 @@ export default class Home extends Component<Props> {
     }
   }
 
-  start = async() => {
+  start = async () => {
     let { orderStore } = Store;
     const response = await Api.get('home');
     if (response.success === true) {
@@ -183,9 +185,27 @@ export default class Home extends Component<Props> {
     if (response.message.length != 0)
       Toast.show(response.message);
     this.setState({ showSpinner: false });
-   }
+  }
   componentWillMount = async () => {
-    this.start()
+    this.start();
+    this.manageFcmToken();
+  }
+
+  manageFcmToken = async () => {
+
+    let { orderStore } = Store;
+    const fcmToken = await firebase.messaging().getToken();
+
+    if (fcmToken) {
+      const userData = await LocalDb.getUserProfile();
+      const params = { firebase_id: fcmToken, user_id: userData.id };
+
+      const response = await Api.post('home', params);
+      if (response.success === true)
+        orderStore.fcmToken = fcmToken;
+      else if (response.message.length != 0)
+        Toast.show(response.message);
+    }
   }
 
   onPressViewAll = async () => {
@@ -306,8 +326,8 @@ export default class Home extends Component<Props> {
 
   sendChatMessage = async () => {
     this.setState({ showMessageProgress: true });
-    const params = {ad_id: this.state.similar_ad_id, message: this.state.popupMessage};
-    
+    const params = { ad_id: this.state.similar_ad_id, message: this.state.popupMessage };
+
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
     Toast.show(response.message);
@@ -315,11 +335,11 @@ export default class Home extends Component<Props> {
   }
 
   onCallClick = async (id) => {
-    this.setState({showSpinner: true});
+    this.setState({ showSpinner: true });
     const params = { ad_id: id };
 
     const adDetail = await Api.post('ad_post', params);
-    this.setState({showSpinner: false});
+    this.setState({ showSpinner: false });
 
     // const data = adDetail.data;
     // const contactInfo = data.static_text.contact_info;
@@ -382,9 +402,9 @@ export default class Home extends Component<Props> {
 
               <TouchableOpacity
                 activeOpacity={2}
-                style={[FeaturedGridStyle.container,{  
+                style={[FeaturedGridStyle.container, {
                   elevation: 5,
-                  shadowColor:'rgb(24, 81, 70)',
+                  shadowColor: 'rgb(24, 81, 70)',
                   shadowOffset: { width: 3, height: 3 },
                   shadowOpacity: 0.9,
                   shadowRadius: 3,
@@ -449,92 +469,92 @@ export default class Home extends Component<Props> {
                 </View>
 
                 <View style={FeaturedGridStyle.textContainer}>
-                <Text
-                        style={FeaturedGridStyle.petrolTextStyle}>
-                        {item.ad_cats_name}
-                      </Text>
-
-                       <View style={[PopularCarsStyle.textContainer,{flexDirection:'row',}]}>
-                       <Text style={FeaturedGridStyle.brandTextStyle}>
-                    {item.ad_title}
+                  <Text
+                    style={FeaturedGridStyle.petrolTextStyle}>
+                    {item.ad_cats_name}
                   </Text>
-                   
+
+                  <View style={[PopularCarsStyle.textContainer, { flexDirection: 'row', }]}>
+                    <Text style={FeaturedGridStyle.brandTextStyle}>
+                      {item.ad_title}
+                    </Text>
+
                     {
                       item.added_fav &&
                       <TouchableOpacity onPress={() => this.deleteItem(item)}>
-                      <Image
+                        <Image
                           source={require('../../../res/images/heart_filled.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
+                          style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
                         />
-                        </TouchableOpacity>
+                      </TouchableOpacity>
                     }
                     {
                       !item.added_fav &&
                       <TouchableOpacity onPress={() => this.addFav()}>
                         <Image
-                            source={require('../../../res/images/heart.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
-                          />
-                          </TouchableOpacity>
+                          source={require('../../../res/images/heart.png')}
+                          style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                        />
+                      </TouchableOpacity>
                     }
-                    </View>
-                  
+                  </View>
+
                   <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_desc}
-                    </Text>
-                    <Text
-                      style={PopularCarsStyle.brandTextStyle}>
-                      {item.ad_engine + ' | ' + item.ad_milage}
-                    </Text>
-                    {/* <Text
+                    style={PopularCarsStyle.modelTextStyle}>
+                    {item.ad_desc}
+                  </Text>
+                  <Text
+                    style={PopularCarsStyle.brandTextStyle}>
+                    {item.ad_engine + ' | ' + item.ad_milage}
+                  </Text>
+                  {/* <Text
                       style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
                       {item.ad_price.price}
                       {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
                     </Text> */}
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',flexWrap:'wrap'}]}>
+                  <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', flexWrap: 'wrap' }]}>
                     <Image
-                          source={require('../../../res/images/calender_grey.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                        />
+                      source={require('../../../res/images/calender_grey.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                    />
                     <Text
                       style={PopularCarsStyle.modelTextStyle}>
                       {item.ad_date}
                     </Text>
-                    </View>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',}]}>
+                  </View>
+                  <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', }]}>
                     <Image
-                            source={require('../../../res/images/location.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                          />
+                      source={require('../../../res/images/location.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                    />
                     <Text
                       style={PopularCarsStyle.modelTextStyle}>
                       {item.ad_location.address}
                     </Text>
-                   
-                      
-                    </View>
+
+
+                  </View>
                 </View>
-                <View style={[FeaturedGridStyle.featureAdsBottom,{
-                  marginBottom:-2
+                <View style={[FeaturedGridStyle.featureAdsBottom, {
+                  marginBottom: -2
                 }]}>
                   <TouchableOpacity
-                    style={[FeaturedGridStyle.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:'blue'}]}
+                    style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
                     onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
                     <Image
-                        source={require('../../../res/images/message_grey.png')}
-                        style={[FeaturedGridStyle.bottomImgStyl]}
-                      />
+                      source={require('../../../res/images/message_grey.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl]}
+                    />
                     <Text style={FeaturedGridStyle.featureAdsBtntxt}>Chat</Text>
-                    
+
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[FeaturedGridStyle.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:orderStore.appColor}]} 
+                    style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
                     onPress={() => this.onCallClick(item.ad_id)}>
-                  <Image
-                        source={require('../../../res/images/contact.png')}
-                        style={[FeaturedGridStyle.bottomImgStyl]}
-                      />
+                    <Image
+                      source={require('../../../res/images/contact.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl]}
+                    />
                     <Text style={FeaturedGridStyle.featureAdsBtntxt}>Call</Text>
                   </TouchableOpacity>
                 </View>
@@ -563,27 +583,27 @@ export default class Home extends Component<Props> {
 
 
   }
-  addFav(){
+  addFav() {
     let { orderStore } = Store
-    if(orderStore.profile.data){
+    if (orderStore.profile.data) {
 
     }
-    else{
+    else {
       alert('Please login into account')
     }
-    
-  }
-  deleteItem = async (item)=>{
-    this.setState({showSpinner:true});
 
-    const params = {ad_id:item.ad_id,}
-    let response = await Api.post('ad/favourite/remove',params);
-    if(response.success === true){
+  }
+  deleteItem = async (item) => {
+    this.setState({ showSpinner: true });
+
+    const params = { ad_id: item.ad_id, }
+    let response = await Api.post('ad/favourite/remove', params);
+    if (response.success === true) {
       this.start()
     }
-    
-    if(response.message.length!=0)
-    Toast.show(response.message);
+
+    if (response.message.length != 0)
+      Toast.show(response.message);
   }
   handleScroll = (event) => {
     if (event.nativeEvent.contentOffset.y > 290)
@@ -678,22 +698,21 @@ export default class Home extends Component<Props> {
 
   renderLatestAds = () => {
     let { orderStore } = Store;
-    let data =  []
-    let favouriteAds =[]
+    let data = []
+    let favouriteAds = []
     data = orderStore.home.latest_ads;
-    
-    if(orderStore.profile.data){
+
+    if (orderStore.profile.data) {
       favouriteAds = orderStore.profile.data.favourite_add.ads;
-    for(let i in favouriteAds){
-      for(let j in data.ads)
-      {
-        if(data.ads[j].ad_id === favouriteAds[i].ad_id){
-          data.ads[j].added_fav = true
+      for (let i in favouriteAds) {
+        for (let j in data.ads) {
+          if (data.ads[j].ad_id === favouriteAds[i].ad_id) {
+            data.ads[j].added_fav = true
+          }
         }
       }
     }
-    }
-   
+
     if (!orderStore.home.is_show_latest)
       return null;
     return (
@@ -729,7 +748,7 @@ export default class Home extends Component<Props> {
         </View>
 
 
-        <View style={[styles.popularCars,{}]}>
+        <View style={[styles.popularCars, {}]}>
 
 
 
@@ -748,16 +767,16 @@ export default class Home extends Component<Props> {
                   await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton)
                   navigate('AdDetailTabManager', { adId: item.ad_id });
                 }}
-                style={[PopularCarsStyle.container,{
+                style={[PopularCarsStyle.container, {
                   elevation: 5,
-                  shadowColor:'rgb(24, 81, 70)',
+                  shadowColor: 'rgb(24, 81, 70)',
                   shadowOffset: { width: 3, height: 3 },
                   shadowOpacity: 0.9,
                   shadowRadius: 3,
-                  marginBottom:10,
-                 
+                  marginBottom: 10,
+
                 }]}>
-                <View style={{flexDirection: 'row'}}>
+                <View style={{ flexDirection: 'row' }}>
                   <View style={PopularCarsStyle.imageContainer}>
                     <Image
                       style={PopularCarsStyle.image}
@@ -772,36 +791,36 @@ export default class Home extends Component<Props> {
                     </View>
                   </View>
                   <View style={PopularCarsStyle.textContainer}>
-                  <Text
+                    <Text
                       style={PopularCarsStyle.modelTextStyle}>
                       {item.ad_cats_name}
                     </Text>
-                    <View style={[PopularCarsStyle.textContainer,{flexDirection:'row'}]}>
-                    <Text
-                      adjustsFontSizeToFit
-                      numberOfLines={1}
-                      style={PopularCarsStyle.brandTitleStyle}>
-                      {item.ad_title}
-                    </Text>
-                   
-                    {
-                      item.added_fav &&
-                      <TouchableOpacity onPress={() => this.deleteItem(item)}>
-                      <Image
-                          source={require('../../../res/images/heart_filled.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
-                        />
-                        </TouchableOpacity>
-                    }
-                    {
-                      !item.added_fav &&
-                      <TouchableOpacity onPress={() => this.addFav()}>
-                        <Image
-                            source={require('../../../res/images/heart.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
+                    <View style={[PopularCarsStyle.textContainer, { flexDirection: 'row' }]}>
+                      <Text
+                        adjustsFontSizeToFit
+                        numberOfLines={1}
+                        style={PopularCarsStyle.brandTitleStyle}>
+                        {item.ad_title}
+                      </Text>
+
+                      {
+                        item.added_fav &&
+                        <TouchableOpacity onPress={() => this.deleteItem(item)}>
+                          <Image
+                            source={require('../../../res/images/heart_filled.png')}
+                            style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
                           />
-                          </TouchableOpacity>
-                    }
+                        </TouchableOpacity>
+                      }
+                      {
+                        !item.added_fav &&
+                        <TouchableOpacity onPress={() => this.addFav()}>
+                          <Image
+                            source={require('../../../res/images/heart.png')}
+                            style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                          />
+                        </TouchableOpacity>
+                      }
                     </View>
                     <Text
                       style={PopularCarsStyle.modelTextStyle}>
@@ -816,50 +835,50 @@ export default class Home extends Component<Props> {
                       {item.ad_price.price}
                       {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
                     </Text>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',flexWrap:'wrap'}]}>
-                    <Image
-                          source={require('../../../res/images/calender_grey.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                        />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_date}
-                    </Text>
+                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', flexWrap: 'wrap' }]}>
+                      <Image
+                        source={require('../../../res/images/calender_grey.png')}
+                        style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                      />
+                      <Text
+                        style={PopularCarsStyle.modelTextStyle}>
+                        {item.ad_date}
+                      </Text>
                     </View>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',}]}>
-                    <Image
-                            source={require('../../../res/images/location.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                          />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_location.address}
-                    </Text>
-                   
-                      
+                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', }]}>
+                      <Image
+                        source={require('../../../res/images/location.png')}
+                        style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                      />
+                      <Text
+                        style={PopularCarsStyle.modelTextStyle}>
+                        {item.ad_location.address}
+                      </Text>
+
+
                     </View>
                   </View>
                 </View>
-                <View style={{flexDirection: 'row', width: '100%', height: 30, alignItems: 'center',}}>
+                <View style={{ flexDirection: 'row', width: '100%', height: 30, alignItems: 'center', }}>
                   <TouchableOpacity
-                    style={[FeaturedGridStyle.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:'blue'}]}
+                    style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
                     onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
                     <Image
-                        source={require('../../../res/images/message_grey.png')}
-                        style={[FeaturedGridStyle.bottomImgStyl]}
-                      />
+                      source={require('../../../res/images/message_grey.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl]}
+                    />
                     <Text style={FeaturedGridStyle.featureAdsBtntxt}>Chat</Text>
-                    
+
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[FeaturedGridStyle.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:orderStore.appColor}]}
+                    style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
                     onPress={() => this.onCallClick(item.ad_id)}>
                     <Image
-                        source={require('../../../res/images/contact.png')}
-                        style={[FeaturedGridStyle.bottomImgStyl]}
-                      />
+                      source={require('../../../res/images/contact.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl]}
+                    />
                     <Text style={FeaturedGridStyle.featureAdsBtntxt}>Call</Text>
-                    
+
                   </TouchableOpacity>
                 </View>
               </TouchableOpacity>
@@ -1252,120 +1271,120 @@ export default class Home extends Component<Props> {
 
 
     return (
-      <View style={{width:'100%',height:'100%'}}>
-      <ScrollView contentContainerStyle={{
-        backgroundColor: Appearences.Colors.appBackgroundColor,
-        paddingBottom: 15,
-      }}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh}
-          />
-        }
-        onScroll={this.handleScroll}
-      >
-        <View>
-          {/* Header Start */}
-          <View style={styles.header}>
+      <View style={{ width: '100%', height: '100%' }}>
+        <ScrollView contentContainerStyle={{
+          backgroundColor: Appearences.Colors.appBackgroundColor,
+          paddingBottom: 15,
+        }}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
+          onScroll={this.handleScroll}
+        >
+          <View>
+            {/* Header Start */}
+            <View style={styles.header}>
 
-            <Image source={{ uri: data.img }}
-              style={styles.headerImage}>
-            </Image>
+              <Image source={{ uri: data.img }}
+                style={styles.headerImage}>
+              </Image>
 
-            <View style={[styles.headerImageOverlay, { paddingStart: 0, paddingEnd: 0 }]}>
+              <View style={[styles.headerImageOverlay, { paddingStart: 0, paddingEnd: 0 }]}>
 
-              <View style={styles.headerInnerContainer}>
+                <View style={styles.headerInnerContainer}>
 
-                <Text style={styles.headerTitleText}>
-                  {data.tagline}
-                </Text>
+                  <Text style={styles.headerTitleText}>
+                    {data.tagline}
+                  </Text>
 
-                <View style={[styles.headerUnderline, { backgroundColor: orderStore.color }]} />
+                  <View style={[styles.headerUnderline, { backgroundColor: orderStore.color }]} />
 
-                <Text style={styles.headerSubtitleText}>
-                  {data.heading}
-                </Text>
+                  <Text style={styles.headerSubtitleText}>
+                    {data.heading}
+                  </Text>
 
-                <View style={[styles.headerSearchbarContainer, { marginTop: 8 }]}>
+                  <View style={[styles.headerSearchbarContainer, { marginTop: 8 }]}>
 
-                  <TextInput
-                    style={[styles.TextInput, { borderTopLeftRadius: Appearences.Radius.radius, borderBottomLeftRadius: Appearences.Radius.radius }]}
-                    underlineColorAndroid='transparent'
-                    placeholderTextColor={Appearences.Colors.placeholderTextColor}
-                    placeholder={data.placehldr}
-                    onChangeText={(text) => {
-                      this.setState({ searchText: text });
-                    }}
-                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-                  />
+                    <TextInput
+                      style={[styles.TextInput, { borderTopLeftRadius: Appearences.Radius.radius, borderBottomLeftRadius: Appearences.Radius.radius }]}
+                      underlineColorAndroid='transparent'
+                      placeholderTextColor={Appearences.Colors.placeholderTextColor}
+                      placeholder={data.placehldr}
+                      onChangeText={(text) => {
+                        this.setState({ searchText: text });
+                      }}
+                      textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                    />
+
+                    <TouchableOpacity
+                      activeOpacity={1}
+                      onPress={async () => {
+                        let param = { ad_title: this.state.searchText }
+                        const { navigate } = this.props.navigation;
+                        await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
+                        let { orderStore } = Store;
+                        orderStore.setIsCallAdvance(false);
+                        navigate('SearchDetail', { params: param });
+
+                      }}
+                    >
+                      <View style={[styles.searchButton, { backgroundColor: orderStore.color, borderTopEndRadius: Appearences.Radius.radius, borderBottomEndRadius: Appearences.Radius.radius }]}>
+                        <Image source={require('../../../res/images/search_white.png')}
+                          style={styles.searchImage}
+                        />
+                      </View >
+                    </TouchableOpacity>
+
+                  </View>
 
                   <TouchableOpacity
                     activeOpacity={1}
                     onPress={async () => {
-                      let param = { ad_title: this.state.searchText }
-                      const { navigate } = this.props.navigation;
                       await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
-                      let { orderStore } = Store;
-                      orderStore.setIsCallAdvance(false);
-                      navigate('SearchDetail', { params: param });
 
+                      this.props.navigation.navigate("AdvancedSearch")
                     }}
                   >
-                    <View style={[styles.searchButton, { backgroundColor: orderStore.color, borderTopEndRadius: Appearences.Radius.radius, borderBottomEndRadius: Appearences.Radius.radius }]}>
-                      <Image source={require('../../../res/images/search_white.png')}
-                        style={styles.searchImage}
-                      />
-                    </View >
+                    <Text style={styles.advencedSearcTextStyle}>{data.advance_search}
+                    </Text>
                   </TouchableOpacity>
-
                 </View>
 
-                <TouchableOpacity
-                  activeOpacity={1}
-                  onPress={async () => {
-                    await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
-
-                    this.props.navigation.navigate("AdvancedSearch")
-                  }}
-                >
-                  <Text style={styles.advencedSearcTextStyle}>{data.advance_search}
-                  </Text>
-                </TouchableOpacity>
               </View>
 
             </View>
-
+            {/*Header End*/}
           </View>
-          {/*Header End*/}
-        </View>
 
-        <View style={styles.container}>
+          <View style={styles.container}>
 
 
 
-          {/*Body Start*/}
-          <View style={styles.body}>
+            {/*Body Start*/}
+            <View style={styles.body}>
 
 
-            {
-              data.ads_position != undefined ?
-                data.ads_position.map((item, key) => (
-                  <View
-                    style={{
-                      marginTop: 5,
-                      backgroundColor: Appearences.Colors.lightGrey,
-                      paddingStart: 15,
-                      paddingEnd: 15,
-                    }}
-                    key={key}>
-                    {this.managePostions(item)}
-                  </View>
+              {
+                data.ads_position != undefined ?
+                  data.ads_position.map((item, key) => (
+                    <View
+                      style={{
+                        marginTop: 5,
+                        backgroundColor: Appearences.Colors.lightGrey,
+                        paddingStart: 15,
+                        paddingEnd: 15,
+                      }}
+                      key={key}>
+                      {this.managePostions(item)}
+                    </View>
 
-                )
-                )
-                : null
-            }
+                  )
+                  )
+                  : null
+              }
 
 
 
@@ -1391,102 +1410,102 @@ export default class Home extends Component<Props> {
 
 
 
-          </View>
-          {/*Body End*/}
-
-          <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.showChatModel}
-          onRequestClose={() => {
-          }}>
-
-          <View style={styles.modalContainer}>
-
-            <View style={styles.modalContentContainer}>
-              <ScrollView
-                keyboardShouldPersistTaps='always'
-              >
-
-                <View style={styles.modalFormContainer}>
-
-
-                  <TextInput
-                    placeholder="You message here"
-                    multiline={true}
-                    underlineColorAndroid="transparent"
-                    placeholderTextColor={Appearences.Colors.grey}
-                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-                    style={styles.modalTextInputMultiLine}
-                    onChangeText={(text) => {
-                      this.setState({ popupMessage: text });
-
-                    }}
-                  >
-                  </TextInput>
-                  {
-
-                    this.state.showMessageProgress ?
-                      <View style={styles.messageModalProgressRow}>
-                        <Progress.Circle
-                          size={Appearences.Fonts.headingFontSize}
-                          indeterminate={true}
-                          color={orderStore.color}
-                        />
-                      </View>
-                      :
-                      <TouchableOpacity style={styles.messageModalButtonRow}>
-
-                        <TouchableOpacity
-                          onPress={() => {
-                            this.setState({ showChatModel: false });
-                          }}
-                          style={[styles.messageMoalButton, { borderColor: Appearences.Colors.grey, borderWidth: 1 }]}>
-                          <Text style={styles.buttonTextBlack}>Cancel</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          onPress={() => {
-                            this.sendChatMessage();
-                          }}
-                          style={[styles.messageMoalButton, { backgroundColor: orderStore.color }]}>
-                          <Text style={styles.buttonTextWhite}>Send</Text>
-                        </TouchableOpacity>
-
-                      </TouchableOpacity>
-
-                  }
-
-
-                </View>
-
-
-
-              </ScrollView>
             </View>
+            {/*Body End*/}
+
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={this.state.showChatModel}
+              onRequestClose={() => {
+              }}>
+
+              <View style={styles.modalContainer}>
+
+                <View style={styles.modalContentContainer}>
+                  <ScrollView
+                    keyboardShouldPersistTaps='always'
+                  >
+
+                    <View style={styles.modalFormContainer}>
+
+
+                      <TextInput
+                        placeholder="You message here"
+                        multiline={true}
+                        underlineColorAndroid="transparent"
+                        placeholderTextColor={Appearences.Colors.grey}
+                        textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                        style={styles.modalTextInputMultiLine}
+                        onChangeText={(text) => {
+                          this.setState({ popupMessage: text });
+
+                        }}
+                      >
+                      </TextInput>
+                      {
+
+                        this.state.showMessageProgress ?
+                          <View style={styles.messageModalProgressRow}>
+                            <Progress.Circle
+                              size={Appearences.Fonts.headingFontSize}
+                              indeterminate={true}
+                              color={orderStore.color}
+                            />
+                          </View>
+                          :
+                          <TouchableOpacity style={styles.messageModalButtonRow}>
+
+                            <TouchableOpacity
+                              onPress={() => {
+                                this.setState({ showChatModel: false });
+                              }}
+                              style={[styles.messageMoalButton, { borderColor: Appearences.Colors.grey, borderWidth: 1 }]}>
+                              <Text style={styles.buttonTextBlack}>Cancel</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                              onPress={() => {
+                                this.sendChatMessage();
+                              }}
+                              style={[styles.messageMoalButton, { backgroundColor: orderStore.color }]}>
+                              <Text style={styles.buttonTextWhite}>Send</Text>
+                            </TouchableOpacity>
+
+                          </TouchableOpacity>
+
+                      }
+
+
+                    </View>
+
+
+
+                  </ScrollView>
+                </View>
+              </View>
+
+            </Modal>
+
           </View>
-
-        </Modal>
-
-        </View>
-      </ScrollView>
+        </ScrollView>
         {/* Absolute view start */}
         {this.state.isAboslute ?
 
-<Animatable.View
-  animation={this.state.isAboslute ? "fadeInDown" : "fadeOut"} iterationCount={1} direction="normal"
-  style={{
-    position: 'absolute',
-    backgroundColor: orderStore.color,
-    flex: 1,
-    paddingStart: 10,
-    paddingEnd: 10,
-    width: '100%',
-    paddingBottom:3,
-    // elevation: 5,
-    // shadowOpacity: 0.5,
-  }}>
-  {/* <View
+          <Animatable.View
+            animation={this.state.isAboslute ? "fadeInDown" : "fadeOut"} iterationCount={1} direction="normal"
+            style={{
+              position: 'absolute',
+              backgroundColor: orderStore.color,
+              flex: 1,
+              paddingStart: 10,
+              paddingEnd: 10,
+              width: '100%',
+              paddingBottom: 3,
+              // elevation: 5,
+              // shadowOpacity: 0.5,
+            }}>
+            {/* <View
   style={ {  paddingStart:15,
     paddingEnd:15,
     justifyContent:'center',
@@ -1501,66 +1520,66 @@ export default class Home extends Component<Props> {
 > */}
 
 
-<View style={[styles.headerSearchbarContainer, {}]}>
+            <View style={[styles.headerSearchbarContainer, {}]}>
 
-<TextInput
-  style={[styles.TextInput, { borderTopLeftRadius: Appearences.Radius.radius, borderBottomLeftRadius: Appearences.Radius.radius }]}
-  underlineColorAndroid='transparent'
-  placeholderTextColor={Appearences.Colors.placeholderTextColor}
-  placeholder={data.placehldr}
-  onChangeText={(text) => {
-    this.setState({ searchText: text });
-  }}
-  textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-/>
+              <TextInput
+                style={[styles.TextInput, { borderTopLeftRadius: Appearences.Radius.radius, borderBottomLeftRadius: Appearences.Radius.radius }]}
+                underlineColorAndroid='transparent'
+                placeholderTextColor={Appearences.Colors.placeholderTextColor}
+                placeholder={data.placehldr}
+                onChangeText={(text) => {
+                  this.setState({ searchText: text });
+                }}
+                textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+              />
 
-<TouchableOpacity
-  activeOpacity={1}
-  onPress={async () => {
-    let param = { ad_title: this.state.searchText }
-    const { navigate } = this.props.navigation;
-    await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
-    let { orderStore } = Store;
-    orderStore.setIsCallAdvance(false);
-    navigate('SearchDetail', { params: param });
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={async () => {
+                  let param = { ad_title: this.state.searchText }
+                  const { navigate } = this.props.navigation;
+                  await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
+                  let { orderStore } = Store;
+                  orderStore.setIsCallAdvance(false);
+                  navigate('SearchDetail', { params: param });
 
-  }}
->
-  <View style={[styles.searchButton, { backgroundColor: orderStore.color}]}>
-    <Image source={require('../../../res/images/search_white.png')}
-      style={styles.searchImage}
-    />
-  </View >
-</TouchableOpacity>
-<TouchableOpacity
-  activeOpacity={1}
-  onPress={async () => {
-    const { navigate } = this.props.navigation;
-    navigate('AdvancedSearch');
+                }}
+              >
+                <View style={[styles.searchButton, { backgroundColor: orderStore.color }]}>
+                  <Image source={require('../../../res/images/search_white.png')}
+                    style={styles.searchImage}
+                  />
+                </View >
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={async () => {
+                  const { navigate } = this.props.navigation;
+                  navigate('AdvancedSearch');
 
-  }}
->
-  <View style={[styles.searchButton, { backgroundColor: orderStore.color, }]}>
-    <Image source={require('../../../res/images/filters.png')}
-      style={styles.searchImage}
-    />
-  </View >
-</TouchableOpacity>
+                }}
+              >
+                <View style={[styles.searchButton, { backgroundColor: orderStore.color, }]}>
+                  <Image source={require('../../../res/images/filters.png')}
+                    style={styles.searchImage}
+                  />
+                </View >
+              </TouchableOpacity>
 
-</View>
+            </View>
 
-{/* </View> */}
-
-
-</Animatable.View>
-
-: null
+            {/* </View> */}
 
 
-}
+          </Animatable.View>
+
+          : null
 
 
-{/* Absolute view end */}
+        }
+
+
+        {/* Absolute view end */}
       </View>
     );
 
