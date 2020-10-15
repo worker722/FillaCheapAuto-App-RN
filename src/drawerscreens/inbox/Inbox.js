@@ -24,7 +24,7 @@ import stores from '../../Stores/orderStore';
 
 let currentOffers = new Array();
 let allOffers = new Array();
-let pagination = { current_page: 0, max_num_page: 0, per_page_num: (Dimensions.get("screen").height / 100), has_next_page: true };
+let pagination = { current_page: 0, max_num_page: 0, per_page_num: 7, has_next_page: true };
 
 export default class Inbox extends Component<Props> {
   static navigationOptions = ({ navigation }) => ({
