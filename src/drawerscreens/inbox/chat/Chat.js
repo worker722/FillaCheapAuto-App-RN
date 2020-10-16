@@ -65,27 +65,14 @@ export default class Chat extends Component<Props> {
     };
     console.log("chat message")
     if (data.push_type == 'yes') {
-      this.setState({ messages: this.state.messages.concat(message) });
-      this.showNotification(data.title, data.body);
+      const paramdata = this.props.navigation.state.params.data;
+      let otherid = (paramdata.type == "sent") ? paramdata.receiverId : paramdata.senderId;
+      console.log(paramdata);
+      console.log(otherid);
+      console.log(data.otherId);
+      if (otherid == data.otherId)
+        this.setState({ messages: this.state.messages.concat(message) });
     }
-  }
-
-  showNotification = (title, body) => {
-    const localNotification = new firebase.notifications.Notification({
-      sound: 'default',
-      show_in_foreground: true,
-    })
-      .setNotificationId(new Date().toLocaleString())
-      .setTitle(title)
-      .setBody(body)
-      .android.setChannelId('Carspot-ID') // e.g. the id you chose above
-      //.android.setSmallIcon('ic_launcher') // create this icon in Android Studio
-      .android.setColor('#000000') // you can set a color here
-      .android.setPriority(firebase.notifications.Android.Priority.High);
-
-    firebase.notifications()
-      .displayNotification(localNotification)
-      .catch(err => console.error(err));
   }
 
   async componentDidMount() {
@@ -105,6 +92,7 @@ export default class Chat extends Component<Props> {
   handleAppStateChange = (nextAppState) => { }
 
   componentWillUnmount() {
+    console.log("remove chat")
     this.messageListener && this.messageListener();
     AppState.removeEventListener('change', this.handleAppStateChange);
   }

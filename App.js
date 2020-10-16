@@ -51,10 +51,6 @@ export default class App extends Component<Props> {
     }
   }
 
-  componentWillUnmount() {
-    AdMobInterstitial.removeAllListeners();
-  }
-
   async componentDidMount() {
     await this.subToTopic();
     await this.createNotificationListeners(); //add this line
@@ -102,9 +98,8 @@ export default class App extends Component<Props> {
                 .setNotificationId(new Date().toLocaleString())
                 .setTitle(notification.title)
                 .setBody(notification.body)
-                .android.setChannelId('Carspot-ID') // e.g. the id you chose above
-                //.android.setSmallIcon('ic_launcher') // create this icon in Android Studio
-                .android.setColor('#000000') // you can set a color here
+                .android.setChannelId('Carspot-ID')
+                .android.setColor('#000000')
                 .android.setPriority(firebase.notifications.Android.Priority.High);
 
               firebase.notifications()
@@ -119,8 +114,7 @@ export default class App extends Component<Props> {
               alert("User Now Has Permission")
             })
             .catch(error => {
-              //  alert("Error", error)
-              // User has rejected permissions  
+              console.log(error);
             });
         }
 
@@ -142,11 +136,14 @@ export default class App extends Component<Props> {
 
 
   componentWillUnmount = async () => {
+    console.log("remove app listneer");
     AppState.removeEventListener('change', this.handleAppStateChange);
     if (Platform.OS === 'ios')
-      this.notificationListenerIOS();
+      this.notificationListenerIOS && this.notificationListenerIOS();
     else
-      this.notificationListenerANDROID();
+      this.notificationListenerANDROID && this.notificationListenerANDROID();
+
+    AdMobInterstitial.removeAllListeners();
     //this.getInitialNotification()
     // let {orderStore} = Store;
     // await LocalDb.saveProfile(null);
@@ -171,14 +168,12 @@ export default class App extends Component<Props> {
   }
 
   async createNotificationListeners() {
-    // console.warn('called');
-
-
-
     firebase.notifications().onNotificationDisplayed((notification: Notification) => {
       // Process your notification as required
       // ANDROID: Remote notifications do not contain the channel ID. You will have to specify this manually if you'd like to re-display the notification.
+      // const { title, body } = notification;
 
+      // this.showNotification(title, body);
     });
 
 
@@ -187,7 +182,7 @@ export default class App extends Component<Props> {
     * */
     firebase.notifications().onNotification((notification) => {
       const { title, body } = notification;
-      // this.showAlert(title, body);
+      this.showNotification(title, body);
     });
 
     /*
@@ -196,7 +191,7 @@ export default class App extends Component<Props> {
     firebase.notifications().onNotificationOpened((notificationOpen) => {
       const { title, body } = notificationOpen.notification;
 
-      // this.showAlert(title, body);
+      // this.showNotification(title, body);
     });
 
     /*
@@ -205,23 +200,32 @@ export default class App extends Component<Props> {
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
       const { title, body } = notificationOpen.notification;
-      // this.showAlert(title, body);
+      this.showNotification(title, body);
     }
 
-    // firebase.messaging().onMessage(async message => {
-    //   console.log("app push")
-    // });
-
+    firebase.messaging().onMessage(async message => {
+      if (message.data.push_type == 'yes')
+        this.showNotification(message.data.title, message.data.body);
+    });
   }
 
-  showAlert(title, body) {
-    Alert.alert(
-      title, body,
-      [
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ],
-      { cancelable: false },
-    );
+
+  showNotification(title, body) {
+
+    const localNotification = new firebase.notifications.Notification({
+      sound: 'default',
+      show_in_foreground: true,
+    })
+      .setNotificationId(new Date().toLocaleString())
+      .setTitle(title)
+      .setBody(body)
+      .android.setChannelId('Carspot-ID')
+      .android.setColor('#000000')
+      .android.setPriority(firebase.notifications.Android.Priority.High);
+
+    firebase.notifications()
+      .displayNotification(localNotification)
+      .catch(err => console.error(err));
   }
 
   checkUpdateNeeded = async () => {
