@@ -84,9 +84,8 @@ export default class App extends Component<Props> {
               //Showing Local notification IOS
               const localNotification = new firebase.notifications.Notification()
                 .setNotificationId(new Date().toLocaleString())
-                .setTitle(notification._data.title)
-                .setSubtitle(notification._data.subtitle)
-                .setBody(notification._data.body)
+                .setTitle(notification.title)
+                .setBody(notification.body)
 
               firebase.notifications()
                 .displayNotification(localNotification)
@@ -102,7 +101,6 @@ export default class App extends Component<Props> {
               })
                 .setNotificationId(new Date().toLocaleString())
                 .setTitle(notification.title)
-                .setSubtitle(notification.subtitle)
                 .setBody(notification.body)
                 .android.setChannelId('Carspot-ID') // e.g. the id you chose above
                 //.android.setSmallIcon('ic_launcher') // create this icon in Android Studio

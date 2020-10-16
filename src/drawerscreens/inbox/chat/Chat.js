@@ -50,6 +50,7 @@ export default class Chat extends Component<Props> {
   });
 
   onMessageRecieve = async (remoteMessage) => {
+    console.log(remoteMessage);
     const data = remoteMessage.data;
     const chat = JSON.parse(data.chat);
     const message = {
@@ -63,17 +64,16 @@ export default class Chat extends Component<Props> {
     this.setState({ messages: this.state.messages.concat(message) });
 
     if (data.push_type == 'yes')
-      this.showNotification(data.title, data.subtitle, data.body);
+      this.showNotification(data.title, data.body);
   }
 
-  showNotification = (title, subtitle, body) => {
+  showNotification = (title, body) => {
     const localNotification = new firebase.notifications.Notification({
       sound: 'default',
       show_in_foreground: true,
     })
       .setNotificationId(new Date().toLocaleString())
       .setTitle(title)
-      .setSubtitle(subtitle)
       .setBody(body)
       .android.setChannelId('Carspot-ID') // e.g. the id you chose above
       //.android.setSmallIcon('ic_launcher') // create this icon in Android Studio
@@ -91,10 +91,14 @@ export default class Chat extends Component<Props> {
   }
   async createNotificationListeners() {
 
-    firebase.messaging().onMessage((message) => {
+    this.messageListener = firebase.messaging().onMessage((message) => {
       //process data message
       this.onMessageRecieve(message);
     });
+  }
+
+  componentWillUnmount() {
+    this.messageListener;
   }
 
 
