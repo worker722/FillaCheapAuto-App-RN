@@ -139,7 +139,7 @@ export default class Home extends Component<Props> {
     const response = await Api.get('home');
     if (response.success === true) {
       orderStore.home = response.data;
-      orderStore.drawerMenu=response.data.menu.home_menu
+      orderStore.drawerMenu = response.data.menu.home_menu
       this.jobsPositions = response.data.ads_position;
     }
     if (response.message.length != 0)
@@ -994,7 +994,7 @@ export default class Home extends Component<Props> {
       let { orderStore } = Store;
       const response = await Api.get('home');
       if (response.success === true) {
-        orderStore.drawerMenu=response.data.menu.home_menu
+        orderStore.drawerMenu = response.data.menu.home_menu
 
         orderStore.home = response.data;
         this.jobsPositions = response.data.ads_position;
@@ -1038,8 +1038,8 @@ export default class Home extends Component<Props> {
             {/* <Image source={{ uri: data.img }}
               style={styles.headerImage}>
             </Image> */}
-          
-           
+
+
           </View>
           {/*Header End*/}
         </View>
@@ -1053,22 +1053,22 @@ export default class Home extends Component<Props> {
 
 
             {
-              data.ads_position!=undefined?
-              data.ads_position.map((item, key) => (
-                <View
-                  style={{
-                    marginTop: 5,
-                    backgroundColor: Appearences.Colors.lightGrey,
-                    paddingStart: 15,
-                    paddingEnd: 15,
-                  }}
-                  key={key}>
-                  {this.managePostions(item)}
-                </View>
+              data.ads_position != undefined ?
+                data.ads_position.map((item, key) => (
+                  <View
+                    style={{
+                      marginTop: 5,
+                      backgroundColor: Appearences.Colors.lightGrey,
+                      paddingStart: 15,
+                      paddingEnd: 15,
+                    }}
+                    key={key}>
+                    {this.managePostions(item)}
+                  </View>
 
-              )
-              )
-                  :null
+                )
+                )
+                : null
             }
 
 

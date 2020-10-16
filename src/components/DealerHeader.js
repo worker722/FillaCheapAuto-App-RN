@@ -64,7 +64,7 @@ export default class Profile extends Component<Props> {
 
 
   }
-  componentWillMount(){
+  componentWillMount() {
     let { orderStore } = Store;
     const profile = orderStore.publicProfile;
   }
