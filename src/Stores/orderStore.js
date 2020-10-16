@@ -150,6 +150,9 @@ class orderStore {
     setOnEditAdClickListener(onEditClick) {
         this.onEditClick = onEditClick;
     }
+    setNotificationCount(count) {
+        this.notificationCount = count;
+    }
 
     setOnDynamicOptionSeleted(optionSelected) {
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   Platform,
+  AppState,
   Text,
   View,
   TouchableOpacity,
@@ -21,6 +22,7 @@ import Loader from '../../components/Loader';
 import * as Progress from 'react-native-progress';
 import Appearences from '../../config/Appearences';
 import stores from '../../Stores/orderStore';
+import { debug } from 'react-native-reanimated';
 
 let currentOffers = new Array();
 let allOffers = new Array();
@@ -47,19 +49,30 @@ export default class Inbox extends Component<Props> {
 
   async createNotificationListeners() {
     this.messageListener = firebase.messaging().onMessage(async message => {
-      console.log("inbox push")
-      this.setState({ showSpinner: true });
-      this.getAllInboxData();
+      console.log("inbox message")
+      this.setState({ reCaller: true, offers: [] }, () => {
+        this.getAllInboxData();
+      });
     });
   }
 
   componentWillUnmount() {
-    this.messageListener;
+    this.messageListener && this.messageListener();
+    console.log("remove inbox")
+    AppState.removeEventListener('change', this.handleAppStateChange);
   }
 
+  componentDidMount = async () => {
+    await this.createNotificationListeners();
+    console.log("add inbox")
+    AppState.addEventListener('change', this.handleAppStateChange);
+  }
+
+  handleAppStateChange = (nextAppState) => { }
+
   componentWillMount = () => {
+    // orderStore.setNotificationCount(0);
     this.getAllInboxData();
-    this.createNotificationListeners();
   }
 
   getAllInboxData = async () => {
@@ -93,7 +106,7 @@ export default class Inbox extends Component<Props> {
       else
         pagination.has_next_page = false;
 
-      this._loadMore(++pagination.current_page);
+      await this._loadMore(++pagination.current_page);
     }
     else {
       this.setState({ noDataVisivility: true, noDataMessage: "Empty Inbox Message" });
@@ -101,14 +114,14 @@ export default class Inbox extends Component<Props> {
     this.setState({ showSpinner: false, swipeUp: false });
   }
 
-  _loadNewPage() {
+  _loadNewPage = async () => {
     if (pagination.has_next_page) {
       pagination.current_page++;
       if ((pagination.current_page + 1) <= pagination.max_num_page)
         pagination.has_next_page = true;
       else
         pagination.has_next_page = false;
-      this._loadMore(pagination.current_page);
+      await this._loadMore(pagination.current_page);
     }
     else
       this.setState({ reCaller: false });
@@ -146,7 +159,7 @@ export default class Inbox extends Component<Props> {
     this.getAllInboxData();
   }
 
-  _loadMore = () => {
+  _loadMore = async () => {
     currentOffers = allOffers.slice(0, (pagination.per_page_num - 1) * (++pagination.current_page));
     this.setState({ offers: currentOffers });
     this.setState({ reCaller: false });
@@ -194,7 +207,6 @@ export default class Inbox extends Component<Props> {
               data={this.state.offers}
               horizontal={false}
               showsVerticalScrollIndicator={false}
-              extraData={this.state.offers}
               renderItem={({ item, index }) =>
                 <TouchableOpacity
                   onPress={() => {

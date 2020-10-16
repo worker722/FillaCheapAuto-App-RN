@@ -208,6 +208,10 @@ export default class App extends Component<Props> {
       // this.showAlert(title, body);
     }
 
+    // firebase.messaging().onMessage(async message => {
+    //   console.log("app push")
+    // });
+
   }
 
   showAlert(title, body) {

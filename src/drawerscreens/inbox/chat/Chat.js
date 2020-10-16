@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   Platform,
+  AppState,
   Text,
   View,
   Image,
@@ -45,12 +46,14 @@ export default class Chat extends Component<Props> {
     headerRight: <View style={{ flex: 1 }} />,
     headerLeft: <HeaderBackButton
       onPress={() => {
-        navigation.goBack(null)
+        navigation.goBack(null);
+        console.log("remove chat")
+        this.messageListener && this.messageListener();
+        AppState.removeEventListener('change', this.handleAppStateChange);
       }} tintColor={'#fff'} />
   });
 
   onMessageRecieve = async (remoteMessage) => {
-    console.log(remoteMessage);
     const data = remoteMessage.data;
     const chat = JSON.parse(data.chat);
     const message = {
@@ -60,11 +63,11 @@ export default class Chat extends Component<Props> {
       text: chat.text,
       ad_id: chat.ad_id,
     };
-
-    this.setState({ messages: this.state.messages.concat(message) });
-
-    if (data.push_type == 'yes')
+    console.log("chat message")
+    if (data.push_type == 'yes') {
+      this.setState({ messages: this.state.messages.concat(message) });
       this.showNotification(data.title, data.body);
+    }
   }
 
   showNotification = (title, body) => {
@@ -86,19 +89,24 @@ export default class Chat extends Component<Props> {
   }
 
   async componentDidMount() {
-    //add this line
-    this.createNotificationListeners();
+    // add this line
+    await this.createNotificationListeners();
+    console.log("add chat")
+    AppState.addEventListener('change', this.handleAppStateChange);
   }
-  async createNotificationListeners() {
 
+  async createNotificationListeners() {
     this.messageListener = firebase.messaging().onMessage((message) => {
       //process data message
       this.onMessageRecieve(message);
     });
   }
 
+  handleAppStateChange = (nextAppState) => { }
+
   componentWillUnmount() {
-    this.messageListener;
+    this.messageListener && this.messageListener();
+    AppState.removeEventListener('change', this.handleAppStateChange);
   }
 
 
