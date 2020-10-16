@@ -50,7 +50,7 @@ export default class Inbox extends Component<Props> {
   async createNotificationListeners() {
     this.messageListener = firebase.messaging().onMessage(async message => {
       console.log("inbox message")
-      this.setState({ reCaller: true, offers: [] }, () => {
+      this.setState({ showSpinner: true, offers: [] }, () => {
         this.getAllInboxData();
       });
     });
@@ -85,6 +85,7 @@ export default class Inbox extends Component<Props> {
 
     const param = { 'platform': 'mobile' };
     let res_data = await Api.post('message/inbox/', param);
+    console.log(res_data.api_firebase_id);
     allOffers = res_data.data;
 
     if (allOffers.length > 0) {
