@@ -46,10 +46,15 @@ export default class Inbox extends Component<Props> {
   });
 
   async createNotificationListeners() {
-    firebase.messaging().onMessage(async message => {
+    this.messageListener = firebase.messaging().onMessage(async message => {
+      console.log("inbox push")
       this.setState({ showSpinner: true });
       this.getAllInboxData();
     });
+  }
+
+  componentWillUnmount() {
+    this.messageListener;
   }
 
   componentWillMount = () => {
