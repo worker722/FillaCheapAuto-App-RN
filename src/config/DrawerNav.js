@@ -1,12 +1,12 @@
 //import {createDrawerNavigator} from 'react-navigation';
 import React from 'react';
-import {View, Text} from 'react-native'
+import { View, Text } from 'react-native'
 import _ from 'lodash'
 import Home from '../drawerscreens/home/Home';
 import Profile from '../drawerscreens/profile/Profile';
 import AdvancedSearch from '../drawerscreens/search/AdvancedSearch';
 import Inbox from '../drawerscreens/inbox/Inbox';
-import {createDrawerNavigator} from 'react-navigation-drawer';
+import { createDrawerNavigator } from 'react-navigation-drawer';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import Comparison from '../drawerscreens/comparison/Comparison';
 import { Icon } from 'react-native-elements';
@@ -35,8 +35,8 @@ import Store from './../Stores';
 
 
 import {
-    I18nManager
-  } from 'react-native';
+  I18nManager
+} from 'react-native';
 import SideMenu from './SideMenu';
 import { createStackNavigator } from 'react-navigation-stack';
 import Chat from '../drawerscreens/inbox/chat/Chat';
@@ -99,28 +99,28 @@ const HomeStack = createStackNavigator({
       headerRight: <DrawerRightIcons />,
     }
   },
-  Comparison:{
+  Comparison: {
     screen: Comparison,
     header: null,
   },
   Package: {
-      screen: Package,
-      header: null,
-  },
-  ReviewGrid:{
-    screen:ReviewGrid,
+    screen: Package,
     header: null,
   },
-  About:{
-    screen:About,
+  ReviewGrid: {
+    screen: ReviewGrid,
     header: null,
   },
-  ContactUs:{
-    screen:ContactUs,
+  About: {
+    screen: About,
     header: null,
   },
-  Blog:{
-    screen:Blog,
+  ContactUs: {
+    screen: ContactUs,
+    header: null,
+  },
+  Blog: {
+    screen: Blog,
     header: null,
   },
 }, {
@@ -143,7 +143,7 @@ const AdvanceSearchStack = createStackNavigator({
     screen: AdvancedSearch,
     header: null
   },
-  
+
   Search: {
     screen: Search,
     header: null,
@@ -168,7 +168,7 @@ const AdvanceSearchStack = createStackNavigator({
 
     // }
   },
-  
+
 }, {
   initialRouteName: 'AdvancedSearch',
   navigationOptions: ({ navigation }) => {
@@ -189,7 +189,7 @@ const SellStack = createStackNavigator({
     screen: Sell,
     header: null
   },
-  
+
 }, {
   initialRouteName: 'Sell',
   navigationOptions: ({ navigation }) => {
@@ -210,7 +210,7 @@ const InboxStack = createStackNavigator({
     screen: Chat,
     header: null,
   },
-  
+
 }, {
   initialRouteName: 'Inbox',
   navigationOptions: ({ navigation }) => {
@@ -227,7 +227,7 @@ const ProfileStack = createStackNavigator({
     screen: Profile,
     header: null
   },
-  
+
 }, {
   initialRouteName: 'Profile',
   navigationOptions: ({ navigation }) => {
@@ -244,181 +244,181 @@ const tabStack = createBottomTabNavigator({
     screen: HomeStack,
     header: null,
     navigationOptions: {
-        tabBarOnPress: ({ navigation, defaultHandler }) => {
-          navigation.navigate('Home');
-          defaultHandler();
-        },
-        tabBarLabel: 'Home',
-        tabBarOptions: {
-          activeTintColor: '#197A36',
-        },
-        tabBarIcon: ({ focused, horizontal, tintColor }) => (
-          <Icon
-            name='home'
-            type='font-awesome'
-            color={tintColor}
-          />
-        ),
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        navigation.navigate('Home');
+        defaultHandler();
       },
+      tabBarLabel: 'Home',
+      tabBarOptions: {
+        activeTintColor: '#197A36',
+      },
+      tabBarIcon: ({ focused, horizontal, tintColor }) => (
+        <Icon
+          name='home'
+          type='font-awesome'
+          color={tintColor}
+        />
+      ),
     },
-    AdvancedSearch: {
-      screen: AdvanceSearchStack,
-      navigationOptions: {
-          tabBarOnPress: ({ navigation, defaultHandler }) => {
-            navigation.navigate('AdvancedSearch');
-            defaultHandler();
-          },
-          tabBarLabel: 'Search',
-          tabBarOptions: {
-          activeTintColor: '#197A36',
-        },
-          tabBarIcon: ({ focused, horizontal, tintColor }) => (
-            <Icon
-              name='search'
-              type='font-awesome'
-              color={tintColor}
-            />
-          ),
-        },
+  },
+  AdvancedSearch: {
+    screen: AdvanceSearchStack,
+    navigationOptions: {
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        navigation.navigate('AdvancedSearch');
+        defaultHandler();
       },
+      tabBarLabel: 'Search',
+      tabBarOptions: {
+        activeTintColor: '#197A36',
+      },
+      tabBarIcon: ({ focused, horizontal, tintColor }) => (
+        <Icon
+          name='search'
+          type='font-awesome'
+          color={tintColor}
+        />
+      ),
+    },
+  },
   Sell: {
     screen: SellStack,
     navigationOptions: {
-        tabBarOnPress: ({ navigation, defaultHandler }) => {
-          navigation.navigate('Sell');
-          defaultHandler();
-        },
-        tabBarOptions: {
-          activeTintColor: '#197A36',
-        },
-        tabBarIcon: ({ focused, horizontal, tintColor }) => (
-          <Icon
-            name='plus-square'
-            type='font-awesome'
-            color={tintColor}
-          />
-        ),
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        navigation.navigate('Sell');
+        defaultHandler();
       },
+      tabBarOptions: {
+        activeTintColor: '#197A36',
+      },
+      tabBarIcon: ({ focused, horizontal, tintColor }) => (
+        <Icon
+          name='plus-square'
+          type='font-awesome'
+          color={tintColor}
+        />
+      ),
+    },
   },
   Inbox: {
     screen: InboxStack,
     navigationOptions: {
-        tabBarOnPress: ({ navigation, defaultHandler }) => {
-          navigation.navigate('Inbox');
-          defaultHandler();
-        },
-        tabBarOptions: {
-          activeTintColor: '#197A36',
-        },
-        tabBarIcon: ({ focused, horizontal, tintColor }) => (
-          <View>
-            <Icon
-              name='comment'
-              type='font-awesome'
-              color={tintColor}
-            />
-            {orderStore.notificationCount !== '' && orderStore.notificationCount > 0 ?
-            <View style={{position: 'absolute', height: 20, width: 20, borderRadius:10 , backgroundColor: '#197A36', alignItems: 'center', justifyContent: 'center', bottom: 8, left: 15, borderColor: '#fff', borderWidth: 1}} ><Text style={{fontSize: 10, color: '#fff'}} >{orderStore.notificationCount}</Text></View> : null}
-          </View>
-        ),
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        navigation.navigate('Inbox');
+        defaultHandler();
       },
-    },
-  Profile: {
-    screen: ProfileStack,
-    navigationOptions: {
-        tabBarOnPress: ({ navigation, defaultHandler }) => {
-          navigation.navigate('Profile');
-          defaultHandler();
-        },
-        tabBarOptions: {
-          activeTintColor: '#197A36',
-        },
-        tabBarIcon: ({ focused, horizontal, tintColor }) => (
+      tabBarOptions: {
+        activeTintColor: '#197A36',
+      },
+      tabBarIcon: ({ focused, horizontal, tintColor }) => (
+        <View>
           <Icon
-            name='user'
+            name='comment'
             type='font-awesome'
             color={tintColor}
           />
-        ),
-      },
+          {orderStore.notificationCount !== '' && orderStore.notificationCount > 0 ?
+            <View style={{ position: 'absolute', height: 20, width: 20, borderRadius: 10, backgroundColor: '#197A36', alignItems: 'center', justifyContent: 'center', bottom: 8, left: 15, borderColor: '#fff', borderWidth: 1 }} ><Text style={{ fontSize: 10, color: '#fff' }} >{orderStore.notificationCount}</Text></View> : null}
+        </View>
+      ),
     },
-  }
+  },
+  Profile: {
+    screen: ProfileStack,
+    navigationOptions: {
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        navigation.navigate('Profile');
+        defaultHandler();
+      },
+      tabBarOptions: {
+        activeTintColor: '#197A36',
+      },
+      tabBarIcon: ({ focused, horizontal, tintColor }) => (
+        <Icon
+          name='user'
+          type='font-awesome'
+          color={tintColor}
+        />
+      ),
+    },
+  },
+}
 );
 
- DrawerNav = createDrawerNavigator({
-    HomeTabs: { screen: tabStack },
-    Home:{
-        screen:Home,  
-      },
-    Profile:{
-        screen:Profile,
-            
-    },
-    DetailOfAds:{
-        screen:DetailOfAds,
-            
-    },
+DrawerNav = createDrawerNavigator({
+  HomeTabs: { screen: tabStack },
+  Home: {
+    screen: Home,
+  },
+  Profile: {
+    screen: Profile,
 
-    // NewAdDetail:{
-    //     screen:AdDetailTabManager,
-    // },
- 
-    Sell:{
-        screen:Sell,
-            
-    },
+  },
+  DetailOfAds: {
+    screen: DetailOfAds,
 
-    AdvancedSearch:{
-        screen:AdvancedSearch
-    },
-   
-    Inbox:{
-        screen:Inbox
-    },
- 
-    Comparison:{
-        screen:Comparison,
-    },
-  
-    Package:{
-        screen:Package
-    },
-    Shop:{
-        screen:Shop
-    },
-    ShopFilters:{
-        screen:ShopFilters
-    },
-    Cart:{
-        screen:Cart
-    },
-    About:{
-        screen:About
-    },
-  
-    ContactUs:{
-        screen:ContactUs
-    },
-    Blog:{
-        screen:Blog
-    },
-   
+  },
 
-    ReviewGrid:{
-        screen:ReviewGrid
-    },
-   
-  
-    Support:{
-        screen:Support
-    },
+  // NewAdDetail:{
+  //     screen:AdDetailTabManager,
+  // },
+
+  Sell: {
+    screen: Sell,
+
+  },
+
+  AdvancedSearch: {
+    screen: AdvancedSearch
+  },
+
+  Inbox: {
+    screen: Inbox
+  },
+
+  Comparison: {
+    screen: Comparison,
+  },
+
+  Package: {
+    screen: Package
+  },
+  Shop: {
+    screen: Shop
+  },
+  ShopFilters: {
+    screen: ShopFilters
+  },
+  Cart: {
+    screen: Cart
+  },
+  About: {
+    screen: About
+  },
+
+  ContactUs: {
+    screen: ContactUs
+  },
+  Blog: {
+    screen: Blog
+  },
+
+
+  ReviewGrid: {
+    screen: ReviewGrid
+  },
+
+
+  Support: {
+    screen: Support
+  },
 }
 
 
-,{
+  , {
     contentComponent: SideMenu,
-drawerPosition: I18nManager.isRTL ?'right':'left',
-},
+    drawerPosition: I18nManager.isRTL ? 'right' : 'left',
+  },
 
 );
 
