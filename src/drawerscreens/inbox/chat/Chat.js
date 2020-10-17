@@ -48,6 +48,7 @@ export default class Chat extends Component<Props> {
       onPress={() => {
         navigation.goBack(null);
         console.log("remove chat")
+        clearInterval(this.allData);
         this.messageListener && this.messageListener();
         AppState.removeEventListener('change', this.handleAppStateChange);
       }} tintColor={'#fff'} />
@@ -66,12 +67,12 @@ export default class Chat extends Component<Props> {
     console.log("chat message")
     if (data.push_type == 'yes') {
       const paramdata = this.props.navigation.state.params.data;
-      let otherid = (paramdata.type == "sent") ? paramdata.receiverId : paramdata.senderId;
       console.log(paramdata);
-      console.log(otherid);
-      console.log(data.otherId);
-      if (otherid == data.otherId)
+      console.log(data);
+      if (paramdata.receiverId == data.receiverId && paramdata.senderId == data.senderId) {
+        console.log("add chat message")
         this.setState({ messages: this.state.messages.concat(message) });
+      }
     }
   }
 
@@ -93,6 +94,7 @@ export default class Chat extends Component<Props> {
 
   componentWillUnmount() {
     console.log("remove chat")
+    clearInterval(this.allData);
     this.messageListener && this.messageListener();
     AppState.removeEventListener('change', this.handleAppStateChange);
   }
@@ -112,8 +114,13 @@ export default class Chat extends Component<Props> {
     }
   }
 
-  componentWillMount = async () => {
+  componentWillMount = () => {
+    this.allData = setInterval(() => {
+      this.getAllChatData();
+    }, 10000);
+  }
 
+  getAllChatData = async () => {
     const data = this.props.navigation.state.params.data;
     let { orderStore } = Store;
 
