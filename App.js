@@ -30,6 +30,8 @@ export default class App extends Component<Props> {
   }
 
   handleAppStateChange = (nextAppState) => {
+    console.log("state");
+    console.log(nextAppState);
     if (nextAppState === 'inactive') {
     }
   }
