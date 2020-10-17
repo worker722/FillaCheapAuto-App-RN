@@ -114,7 +114,8 @@ export default class Chat extends Component<Props> {
     }
   }
 
-  componentWillMount = () => {
+  componentWillMount = async () => {
+    await this.getAllChatData();
     this.allData = setInterval(() => {
       this.getAllChatData();
     }, 10000);
