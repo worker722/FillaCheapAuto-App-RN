@@ -63,7 +63,7 @@ export default class App extends Component<Props> {
     const channel = new firebase.notifications.Android.Channel(
       'Carspot-ID',
       'Carspot-NAME',
-      firebase.notifications.Android.Importance.Max
+      firebase.notifications.Android.Importance.High
     ).setDescription('A natural description of the channel');
     firebase.notifications().android.createChannel(channel);
 
@@ -134,9 +134,6 @@ export default class App extends Component<Props> {
 
   }
 
-
-
-
   componentWillUnmount = async () => {
     console.log("remove app listneer");
     AppState.removeEventListener('change', this.handleAppStateChange);
@@ -151,11 +148,10 @@ export default class App extends Component<Props> {
     // await LocalDb.saveProfile(null);
     // await LocalDb.saveIsProfilePublic('1');
     // orderStore.isPublicProfile = true;
-
   }
 
   async subToTopic() {
-    let topic = 'global';
+    let topic = 'chat';
     firebase.messaging().subscribeToTopic(topic);
   }
 

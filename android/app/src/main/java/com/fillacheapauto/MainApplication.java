@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -52,7 +53,7 @@ import com.facebook.react.ReactActivityDelegate;
  import com.facebook.react.ReactRootView;
  import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
-public class MainApplication extends Application implements ReactApplication {
+public class MainApplication extends MultiDexApplication implements ReactApplication {
   private static CallbackManager mCallbackManager = CallbackManager.Factory.create();
 
   protected static CallbackManager getCallbackManager() {
