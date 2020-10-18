@@ -180,7 +180,7 @@ export default class App extends Component<Props> {
     * */
     firebase.notifications().onNotification((notification) => {
       const { title, body } = notification;
-      this.showNotification(title, body);
+      // this.showNotification(title, body);
     });
 
     /*
