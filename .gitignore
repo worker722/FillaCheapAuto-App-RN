@@ -60,3 +60,4 @@ buck-out/
 /package-lock.json
 /release
 /android/app/release/*.aab
+/android/app/release/*.aab

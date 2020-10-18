@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "706105301496-93av74m00vim15u917fdu0qagrkdur57.apps.googleusercontent.com",
+          "client_id": "706105301496-6nvmr6jq4k5nc6760lsml69didsn1in2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.fillacheapauto",
-            "certificate_hash": "06ffebbffd3676b91a0ca134a49fcc22f3a218aa"
+            "certificate_hash": "cc303be7bcf41ccb4cc18119ac9445ac41aa1853"
           }
         },
         {
