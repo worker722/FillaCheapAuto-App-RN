@@ -9,7 +9,6 @@ export default async (message: RemoteMessage) => {
   const localNotification = new firebase.notifications.Notification({
     sound: 'default',
     show_in_foreground: true,
-    show_in_background: true
   })
     .setNotificationId(new Date().toLocaleString())
     .setTitle(message.data.title)
