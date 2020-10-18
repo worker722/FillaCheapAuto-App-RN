@@ -48,7 +48,7 @@ export default class Chat extends Component<Props> {
       onPress={() => {
         navigation.goBack(null);
         console.log("remove chat")
-        clearInterval(this.allData);
+        clearInterval(this.getDataInterval);
         this.messageListener && this.messageListener();
         AppState.removeEventListener('change', this.handleAppStateChange);
       }} tintColor={'#fff'} />
@@ -94,7 +94,7 @@ export default class Chat extends Component<Props> {
 
   componentWillUnmount() {
     console.log("remove chat")
-    clearInterval(this.allData);
+    clearInterval(this.getDataInterval);
     this.messageListener && this.messageListener();
     AppState.removeEventListener('change', this.handleAppStateChange);
   }
@@ -116,7 +116,7 @@ export default class Chat extends Component<Props> {
 
   componentWillMount = async () => {
     await this.getAllChatData();
-    this.allData = setInterval(() => {
+    this.getDataInterval = setInterval(() => {
       this.getAllChatData();
     }, 10000);
   }
