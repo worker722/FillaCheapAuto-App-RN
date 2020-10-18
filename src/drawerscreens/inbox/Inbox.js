@@ -50,7 +50,7 @@ export default class Inbox extends Component<Props> {
   async createNotificationListeners() {
     this.messageListener = firebase.messaging().onMessage(async message => {
       console.log("inbox message")
-      this.setState({ showSpinner: true, offers: [] }, () => {
+      this.setState({ reCaller: true, offers: [] }, () => {
         this.getAllInboxData();
       });
     });

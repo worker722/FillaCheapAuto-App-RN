@@ -10,6 +10,8 @@
     "@babel/runtime": "^7.3.4",
     "@ptomasroos/react-native-multi-slider": "^1.0.0",
     "@react-native-community/toolbar-android": "0.1.0-rc.2",
+    "@react-native-firebase/app": "^8.4.6",
+    "@react-native-firebase/messaging": "^7.9.1",
     "@types/react": "^16.4.13",
     "buffer": "^5.2.1",
     "jetifier": "^1.6.6",

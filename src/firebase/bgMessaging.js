@@ -5,11 +5,10 @@ import type { RemoteMessage } from 'react-native-firebase';
 
 export default async (message: RemoteMessage) => {
   // handle your message
-  console.log("index psuh")
+  console.log("remote psuh")
   const localNotification = new firebase.notifications.Notification({
     sound: 'default',
-    show_in_foreground: true,
-    show_in_background: true
+    show_in_foreground: true
   })
     .setNotificationId(new Date().toLocaleString())
     .setTitle(message.data.title)
