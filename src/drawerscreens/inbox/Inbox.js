@@ -50,9 +50,7 @@ export default class Inbox extends Component<Props> {
   async createNotificationListeners() {
     this.messageListener = firebase.messaging().onMessage(async message => {
       console.log("inbox message")
-      this.setState({ reCaller: true, offers: [] }, () => {
-        this.getAllInboxData();
-      });
+      await this.getAllInboxData();
     });
   }
 
@@ -60,6 +58,7 @@ export default class Inbox extends Component<Props> {
     this.messageListener && this.messageListener();
     console.log("remove inbox")
     AppState.removeEventListener('change', this.handleAppStateChange);
+    clearInterval(this.getDataInterval);
   }
 
   componentDidMount = async () => {
@@ -72,7 +71,10 @@ export default class Inbox extends Component<Props> {
 
   componentWillMount = () => {
     // orderStore.setNotificationCount(0);
-    this.getAllInboxData();
+    await this.getAllInboxData();
+    this.getDataInterval = setInterval(() => {
+      this.getAllInboxData();
+    }, 10000);
   }
 
   getAllInboxData = async () => {
@@ -157,7 +159,7 @@ export default class Inbox extends Component<Props> {
 
   _onRefresh = async () => {
     this.setState({ showSpinner: true });
-    this.getAllInboxData();
+    await this.getAllInboxData();
   }
 
   _loadMore = async () => {

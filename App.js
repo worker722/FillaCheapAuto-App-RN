@@ -151,7 +151,7 @@ export default class App extends Component<Props> {
   }
 
   async subToTopic() {
-    let topic = 'chat';
+    let topic = 'global';
     firebase.messaging().subscribeToTopic(topic);
   }
 
@@ -198,7 +198,7 @@ export default class App extends Component<Props> {
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
       const { title, body } = notificationOpen.notification;
-      this.showNotification(title, body);
+      // this.showNotification(title, body);
     }
 
     firebase.messaging().onMessage(async message => {
