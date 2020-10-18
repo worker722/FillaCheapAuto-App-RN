@@ -14,7 +14,6 @@ import _ from 'lodash';
 import styles from './Styles';
 import firebase from 'react-native-firebase';
 import Store from '../../Stores';
-import Toast from 'react-native-simple-toast';
 import Api from '../../network/Api';
 import { Avatar } from 'react-native-elements';
 import NoDataFound from '../../components/NoDataFound';
@@ -22,7 +21,6 @@ import Loader from '../../components/Loader';
 import * as Progress from 'react-native-progress';
 import Appearences from '../../config/Appearences';
 import stores from '../../Stores/orderStore';
-import { debug } from 'react-native-reanimated';
 
 let currentOffers = new Array();
 let allOffers = new Array();
@@ -70,7 +68,6 @@ export default class Inbox extends Component<Props> {
   handleAppStateChange = (nextAppState) => { }
 
   componentWillMount = () => {
-    // orderStore.setNotificationCount(0);
     await this.getAllInboxData();
     this.getDataInterval = setInterval(() => {
       this.getAllInboxData();
@@ -85,35 +82,38 @@ export default class Inbox extends Component<Props> {
       return;
     }
 
-    const param = { 'platform': 'mobile' };
-    let res_data = await Api.post('message/inbox/', param);
-    console.log(res_data.api_firebase_id);
-    allOffers = res_data.data;
+    this.setState({ offers: [] }, async () => {
+      const param = { 'platform': 'mobile' };
+      let res_data = await Api.post('message/inbox/', param);
+      console.log(res_data.api_firebase_id);
+      allOffers = res_data.data;
 
-    if (allOffers.length > 0) {
-      allOffers.sort((a, b) => {
-        if (b.chat_latest[b.chat_latest.length - 1].realdate > a.chat_latest[a.chat_latest.length - 1].realdate)
-          return 1;
-        else if (b.chat_latest[b.chat_latest.length - 1].realdate < a.chat_latest[a.chat_latest.length - 1].realdate)
-          return -1;
-        return 0;
-      });
+      if (allOffers.length > 0) {
+        allOffers.sort((a, b) => {
+          if (b.chat_latest[b.chat_latest.length - 1].realdate > a.chat_latest[a.chat_latest.length - 1].realdate)
+            return 1;
+          else if (b.chat_latest[b.chat_latest.length - 1].realdate < a.chat_latest[a.chat_latest.length - 1].realdate)
+            return -1;
+          return 0;
+        });
 
-      let max_num_offers = allOffers.length;
-      pagination.current_page = -1;
-      pagination.max_num_page = max_num_offers / pagination.per_page_num;
-      if (max_num_offers % pagination.per_page_num != 0)
-        pagination.max_num_page++;
-      if (max_num_offers > pagination.per_page_num)
-        pagination.has_next_page = true;
-      else
-        pagination.has_next_page = false;
+        let max_num_offers = allOffers.length;
+        pagination.current_page = -1;
+        pagination.max_num_page = max_num_offers / pagination.per_page_num;
+        if (max_num_offers % pagination.per_page_num != 0)
+          pagination.max_num_page++;
+        if (max_num_offers > pagination.per_page_num)
+          pagination.has_next_page = true;
+        else
+          pagination.has_next_page = false;
 
-      await this._loadMore(++pagination.current_page);
-    }
-    else {
-      this.setState({ noDataVisivility: true, noDataMessage: "Empty Inbox Message" });
-    }
+        await this._loadMore(++pagination.current_page);
+      }
+      else {
+        this.setState({ noDataVisivility: true, noDataMessage: "Empty Inbox Message" });
+      }
+    })
+
     this.setState({ showSpinner: false, swipeUp: false });
   }
 
