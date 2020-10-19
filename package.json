@@ -12,6 +12,7 @@
     "@react-native-community/toolbar-android": "0.1.0-rc.2",
     "@types/react": "^16.4.13",
     "buffer": "^5.2.1",
+    "jetifier": "^1.6.6",
     "js-base64": "^2.5.1",
     "lodash": "^4.17.20",
     "mobx": "^5.14.0",
