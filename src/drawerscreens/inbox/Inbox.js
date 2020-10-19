@@ -67,7 +67,7 @@ export default class Inbox extends Component<Props> {
 
   handleAppStateChange = (nextAppState) => { }
 
-  componentWillMount = () => {
+  componentWillMount = async () => {
     await this.getAllInboxData();
     this.getDataInterval = setInterval(() => {
       this.getAllInboxData();
