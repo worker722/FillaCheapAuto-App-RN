@@ -182,16 +182,17 @@ class PageFour extends Component<Props> {
     }
 
     // console.log('location',orderStore.sell.data.profile.location.values)
-    this.setState({ nameText:orderStore.sell.data.profile.name.values,
-       phoneText:orderStore.sell.data.profile.phone.values
-       ,latitude: map.location_lat.field_val,
-       longitude: map.location_long.field_val,
-       location: orderStore.sell.data.profile.location.values
-      })
+    this.setState({
+      nameText: orderStore.sell.data.profile.name.values,
+      phoneText: orderStore.sell.data.profile.phone.values
+      , latitude: map.location_lat.field_val,
+      longitude: map.location_long.field_val,
+      location: orderStore.sell.data.profile.location.values
+    })
 
   }
   renderCountry = (item) => {
-    
+
     return (
       <DismissKeyboard>
 
@@ -330,7 +331,7 @@ class PageFour extends Component<Props> {
       let params = {};
       params = { ad_country: data.id };
       const response = await Api.post("ad_post/sublocations", params);
-      if (response.success === true) {  
+      if (response.success === true) {
         if (this.state.subcategoryShownOnce == false) {
           this.setState({ locationsArray: response.data.values, showCountrySpinner: false, subcategoryShownOnce: true })
         }
@@ -447,7 +448,7 @@ class PageFour extends Component<Props> {
       const response = await Api.post('post_ad', orderStore.postAdObject);
       if (response.success === true) {
         await this.setState({ showProgress: false });
-        orderStore.postAdObject={}
+        orderStore.postAdObject = {}
         // if(orderStore.cart.isRedirect)
         // {
         //   this.props.navigation.navigate("DynamicLinksView",{id:orderStore.cart.redirectUrl});

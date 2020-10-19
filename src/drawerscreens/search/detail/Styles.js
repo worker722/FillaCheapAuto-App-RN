@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
     // marginTop: localProps.topMargin,
     // marginBottom: localProps.topMargin,
     paddingBottom: 0,
-    paddingHorizontal:10,
+    paddingHorizontal: 10,
     paddingTop: 0,
     // alignSelf:"flex-end",
     justifyContent: 'space-between',
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
   dorpDownStyle: {
     width: '42%',
     height: 150,
-    marginRight:-15
+    marginRight: -15
     // position:'absolute',
     // right:1
     // marginStart: 100,
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
     width: '10%',
     // backgroundColor: 'green',
     // paddingEnd: 15,
-    
+
   },
   radioButtonStyle: {
     alignSelf: 'flex-end',
@@ -531,115 +531,115 @@ const styles = StyleSheet.create({
     width: 20,
   },
   // Modal Styling Start
-  modalContainer:{
-    flex:1,
-    alignItems:'center',
-    justifyContent:'center',
-    backgroundColor:'rgba(0, 0, 0, 0.5)',
+  modalContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  modalContentContainer:{
-    width:'80%',
-    backgroundColor:'white',
-    borderRadius:Appearences.Radius.radius,
-    padding:25,
-    justifyContent:'center'
+  modalContentContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: Appearences.Radius.radius,
+    padding: 25,
+    justifyContent: 'center'
   },
-  modalHeaderContainer:{
-    width:'100%',
-    justifyContent:'space-between',
-    
-    flexDirection:'row',
-    alignItems:'center',
-    backgroundColor:'white',
+  modalHeaderContainer: {
+    width: '100%',
+    justifyContent: 'space-between',
+
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
   },
-  modalHeaderText:{
-    fontSize:Appearences.Fonts.subHeadingFontSize,
-    color:Appearences.Colors.black,
-    fontWeight:Appearences.Fonts.headingFontWieght,
+  modalHeaderText: {
+    fontSize: Appearences.Fonts.subHeadingFontSize,
+    color: Appearences.Colors.black,
+    fontWeight: Appearences.Fonts.headingFontWieght,
 
   },
-  modalHeadingImage:{
-    width:15,
-    height:15,
-    tintColor:Appearences.Colors.black,
+  modalHeadingImage: {
+    width: 15,
+    height: 15,
+    tintColor: Appearences.Colors.black,
   },
 
-  modalHeadingText:{
-    marginTop:localProps.topMargin+5,
-    fontSize:Appearences.Colors.headingFontSize,
-    fontWeight:Appearences.Fonts.headingFontWieght,
+  modalHeadingText: {
+    marginTop: localProps.topMargin + 5,
+    fontSize: Appearences.Colors.headingFontSize,
+    fontWeight: Appearences.Fonts.headingFontWieght,
   },
-  modalTextInput:{
-    width:'100%',
-    height:Appearences.Registration.itemHeight,
-    backgroundColor:Appearences.Registration.boxColor,
-    marginTop:localProps.topMargin+5,
-    fontSize:Appearences.Fonts.paragraphFontSize,
-    paddingStart:localProps.sidePadding,
-    borderRadius:5,
-    color:Appearences.Colors.black,
+  modalTextInput: {
+    width: '100%',
+    height: Appearences.Registration.itemHeight,
+    backgroundColor: Appearences.Registration.boxColor,
+    marginTop: localProps.topMargin + 5,
+    fontSize: Appearences.Fonts.paragraphFontSize,
+    paddingStart: localProps.sidePadding,
+    borderRadius: 5,
+    color: Appearences.Colors.black,
 
 
   },
 
 
 
-  modalTextInputMultiLine:{
-      minHeight:100,
-        width:"100%",
-        backgroundColor:Appearences.Registration.boxColor,
-        textAlignVertical: "top",
-        borderRadius:5,
-        color:Appearences.Colors.black,
-      
-        fontSize:Appearences.Fonts.headingFontSize,
-        padding:15,
-        marginTop:localProps.topMargin+5,
-      },
-  modalButtonRow:{
-    marginTop:localProps.topMargin+5,
-    height:Appearences.Registration.itemHeight-10,
-    width:'100%',
-    alignItems:'center',
-    justifyContent:'center',
-    borderRadius:Appearences.Radius.radius,
+  modalTextInputMultiLine: {
+    minHeight: 100,
+    width: "100%",
+    backgroundColor: Appearences.Registration.boxColor,
+    textAlignVertical: "top",
+    borderRadius: 5,
+    color: Appearences.Colors.black,
+
+    fontSize: Appearences.Fonts.headingFontSize,
+    padding: 15,
+    marginTop: localProps.topMargin + 5,
   },
-  messageModalButtonRow:{
-    width:'100%',
-    height:Appearences.Registration.itemHeight-10,
-    marginTop:localProps.topMargin,
-    flexDirection:'row',
-    justifyContent:'space-between',
+  modalButtonRow: {
+    marginTop: localProps.topMargin + 5,
+    height: Appearences.Registration.itemHeight - 10,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Appearences.Radius.radius,
   },
-  messageModalProgressRow:{
-    width:'100%',
-    height:Appearences.Registration.itemHeight,
-    marginTop:localProps.topMargin,
-    justifyContent:'center',
-    alignItems:'center',
+  messageModalButtonRow: {
+    width: '100%',
+    height: Appearences.Registration.itemHeight - 10,
+    marginTop: localProps.topMargin,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  paragraphTextWhite:{
-    fontSize:Appearences.Fonts.paragraphFontSize,
-    color:'white',
-    fontWeight:Appearences.Fonts.headingFontWieght,
+  messageModalProgressRow: {
+    width: '100%',
+    height: Appearences.Registration.itemHeight,
+    marginTop: localProps.topMargin,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  messageMoalButton:{
-    width:'49%',
-    height:'100%',
-    alignItems:'center',
-    justifyContent:'center',
-    borderRadius:Appearences.Radius.radius,
-    backgroundColor:'white',
+  paragraphTextWhite: {
+    fontSize: Appearences.Fonts.paragraphFontSize,
+    color: 'white',
+    fontWeight: Appearences.Fonts.headingFontWieght,
   },
-  buttonTextWhite:{
-    fontSize:Appearences.Fonts.headingFontSize,
-    color:'white',
-    fontWeight:Appearences.Fonts.headingFontWieght,
+  messageMoalButton: {
+    width: '49%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Appearences.Radius.radius,
+    backgroundColor: 'white',
   },
-  buttonTextBlack:{
-    fontSize:Appearences.Fonts.headingFontSize,
-    color:Appearences.Colors.black,
-    fontWeight:Appearences.Fonts.headingFontWieght,
+  buttonTextWhite: {
+    fontSize: Appearences.Fonts.headingFontSize,
+    color: 'white',
+    fontWeight: Appearences.Fonts.headingFontWieght,
+  },
+  buttonTextBlack: {
+    fontSize: Appearences.Fonts.headingFontSize,
+    color: Appearences.Colors.black,
+    fontWeight: Appearences.Fonts.headingFontWieght,
   },
 
 });

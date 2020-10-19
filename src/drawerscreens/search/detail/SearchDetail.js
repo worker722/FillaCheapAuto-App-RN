@@ -53,8 +53,9 @@ export default class SearchDetail extends Component<Props> {
     },
     headerRight: <SearchDetailRightIcon />,
     headerLeft: <HeaderBackButton
-        onPress={() => {
-        navigation.goBack(null) }} tintColor={'#fff'} />
+      onPress={() => {
+        navigation.goBack(null)
+      }} tintColor={'#fff'} />
   });
   adsDefaulValue = [];
   adsPaginationDefaultValue;
@@ -226,13 +227,13 @@ export default class SearchDetail extends Component<Props> {
               showsHorizontalScrollIndicator={false}
               renderItem={({ item, index }) =>
                 <TouchableOpacity
-                  style={[styles.containerFeatured,{
+                  style={[styles.containerFeatured, {
                     elevation: 5,
-                    shadowColor:'rgb(24, 81, 70)',
+                    shadowColor: 'rgb(24, 81, 70)',
                     shadowOffset: { width: 3, height: 3 },
                     shadowOpacity: 0.9,
                     shadowRadius: 3,
-                    marginBottom:10,
+                    marginBottom: 10,
                   }]}
                   onPress={() => {
                     const { navigate } = this.props.navigation;
@@ -437,8 +438,8 @@ export default class SearchDetail extends Component<Props> {
 
   sendChatMessage = async () => {
     this.setState({ showMessageProgress: true });
-    const params = {ad_id: this.state.similar_ad_id, message: this.state.popupMessage};
-    
+    const params = { ad_id: this.state.similar_ad_id, message: this.state.popupMessage };
+
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
     Toast.show(response.message);
@@ -446,11 +447,11 @@ export default class SearchDetail extends Component<Props> {
   }
 
   onCallClick = async (id) => {
-    this.setState({showSpinner: true});
+    this.setState({ showSpinner: true });
     const params = { ad_id: id };
 
     const adDetail = await Api.post('ad_post', params);
-    this.setState({showSpinner: false});
+    this.setState({ showSpinner: false });
     const data = adDetail.data;
     const contactInfo = data.static_text.contact_info;
     let phoneNumber = '';
@@ -517,7 +518,7 @@ export default class SearchDetail extends Component<Props> {
             this.handleScroll(nativeEvent);
           }}
           scrollEventThrottle={400}>
-          {this.renderFeaturedAds }
+          {this.renderFeaturedAds}
 
           <View style={styles.container}>
 
@@ -589,15 +590,15 @@ export default class SearchDetail extends Component<Props> {
 
                   }}
 
-                  style={[styles.flastListItemContainer,{
+                  style={[styles.flastListItemContainer, {
                     elevation: 5,
-                  shadowColor:'rgb(24, 81, 70)',
-                  shadowOffset: { width: 3, height: 3 },
-                  shadowOpacity: 0.9,
-                  shadowRadius: 3,
-                  marginBottom:10
+                    shadowColor: 'rgb(24, 81, 70)',
+                    shadowOffset: { width: 3, height: 3 },
+                    shadowOpacity: 0.9,
+                    shadowRadius: 3,
+                    marginBottom: 10
                   }]}>
-                  <View style={{flexDirection: 'row'}}>
+                  <View style={{ flexDirection: 'row' }}>
                     <View style={styles.flatListBackgroundImageContainer}>
                       <Image
                         style={styles.flatListBackgroundImage}
@@ -605,99 +606,103 @@ export default class SearchDetail extends Component<Props> {
                     </View>
 
                     <View style={styles.flatListContentContainer}>
-                    <View style={{ padding: 15, }}>
-                      <View style={styles.flatListContentRow1}>
-                        <View>
-                      <Text style={styles.flatListContentRow1Text}>
-                      {item.ad_cats_name}
-                    </Text>
-                        <Text
-                          numberOfLines={1}
-                          style={styles.flatListItemHeadingText}>
-                          {item.ad_title}
-                        </Text>
+                      <View style={{ padding: 15, }}>
+                        <View style={styles.flatListContentRow1}>
+                          <View>
+                            <Text style={styles.flatListContentRow1Text}>
+                              {item.ad_cats_name}
+                            </Text>
+                            <Text
+                              numberOfLines={1}
+                              style={styles.flatListItemHeadingText}>
+                              {item.ad_title}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
 
-                      {item.ad_engine == undefined && item.ad_milage == undefined ? null
-                        : <Text style={styles.flatListItemMileageText}>
-                          {item.ad_engine + ' | ' + item.ad_milage}
-                        </Text> ||
-                          item.ad_engine == undefined && item.ad_milage != undefined ?
-                          <Text style={styles.flatListItemMileageText}>
-                            {item.ad_engine}
-                          </Text>
+                        {item.ad_engine == undefined && item.ad_milage == undefined ? null
                           : <Text style={styles.flatListItemMileageText}>
                             {item.ad_engine + ' | ' + item.ad_milage}
-                          </Text>
-                            ||
-                            item.ad_engine != undefined && item.ad_milage == undefined ?
+                          </Text> ||
+                            item.ad_engine == undefined && item.ad_milage != undefined ?
                             <Text style={styles.flatListItemMileageText}>
-                              {item.ad_milage}
+                              {item.ad_engine}
                             </Text>
                             : <Text style={styles.flatListItemMileageText}>
                               {item.ad_engine + ' | ' + item.ad_milage}
                             </Text>
-                      }
-                      <Text style={[styles.flatListItemPriceText, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
-                        {item.ad_price.price}
-                        <Text style={[styles.flatListItemPriceText, { color: orderStore.color }]}>
-                          {
-                            item.ad_price.price_type != '' ? [
-                              ' (' + item.ad_price.price_type + ')'
+                              ||
+                              item.ad_engine != undefined && item.ad_milage == undefined ?
+                              <Text style={styles.flatListItemMileageText}>
+                                {item.ad_milage}
+                              </Text>
+                              : <Text style={styles.flatListItemMileageText}>
+                                {item.ad_engine + ' | ' + item.ad_milage}
+                              </Text>
+                        }
+                        <Text style={[styles.flatListItemPriceText, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
+                          {item.ad_price.price}
+                          <Text style={[styles.flatListItemPriceText, { color: orderStore.color }]}>
+                            {
+                              item.ad_price.price_type != '' ? [
+                                ' (' + item.ad_price.price_type + ')'
 
-                            ] : []
-                          }
+                              ] : []
+                            }
+                          </Text>
                         </Text>
-                      </Text>
-                      <View numberOfLines={1} style={[styles.flatListContentContainer,{flexDirection:'row',flexWrap:'wrap',marginVertical:5}]}>
-                    <Image
-                          source={require('../../../../res/images/calender_grey.png')}
-                          style={{marginHorizontal:5, height: 15,
-                            width: 15,}}
-                        />
-                     <Text style={styles.flatListContentRow1Text}>
-                      {item.ad_date}
-                    </Text>
-                    </View>
-                    <View numberOfLines={1} style={[styles.flatListContentContainer,{flexDirection:'row',}]}>
-                    <Image
-                            source={require('../../../../res/images/location.png')}
-                            style={{marginHorizontal:5, height: 15,
-                              width: 15,}}
+                        <View numberOfLines={1} style={[styles.flatListContentContainer, { flexDirection: 'row', flexWrap: 'wrap', marginVertical: 5 }]}>
+                          <Image
+                            source={require('../../../../res/images/calender_grey.png')}
+                            style={{
+                              marginHorizontal: 5, height: 15,
+                              width: 15,
+                            }}
                           />
-                   <Text style={styles.flatListContentRow1Text}>
-                      {item.ad_location?item.ad_location.address:null}
-                    </Text>
-                   
-                      
-                    </View>
-                    </View>
+                          <Text style={styles.flatListContentRow1Text}>
+                            {item.ad_date}
+                          </Text>
+                        </View>
+                        <View numberOfLines={1} style={[styles.flatListContentContainer, { flexDirection: 'row', }]}>
+                          <Image
+                            source={require('../../../../res/images/location.png')}
+                            style={{
+                              marginHorizontal: 5, height: 15,
+                              width: 15,
+                            }}
+                          />
+                          <Text style={styles.flatListContentRow1Text}>
+                            {item.ad_location ? item.ad_location.address : null}
+                          </Text>
+
+
+                        </View>
+                      </View>
                       <View style={styles.menuItemSperator} />
+                    </View>
                   </View>
-                  </View>
-                  <View style={{flexDirection: 'row', width: '100%', height: 30, alignItems: 'center'}}>
-                  <TouchableOpacity
-                    style={[styles.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:'blue'}]}
-                    onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
-                    <Image
+                  <View style={{ flexDirection: 'row', width: '100%', height: 30, alignItems: 'center' }}>
+                    <TouchableOpacity
+                      style={[styles.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
+                      onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
+                      <Image
                         source={require('../../../../res/images/message_grey.png')}
                         style={[styles.bottomImgStyl]}
                       />
-                    <Text style={styles.featureAdsBtntxt}>Chat</Text>
-                    
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:orderStore.appColor}]}
-                    onPress={() => this.onCallClick(item.ad_id)}>
-                    <Image
+                      <Text style={styles.featureAdsBtntxt}>Chat</Text>
+
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
+                      onPress={() => this.onCallClick(item.ad_id)}>
+                      <Image
                         source={require('../../../../res/images/contact.png')}
                         style={[styles.bottomImgStyl]}
                       />
-                    <Text style={styles.featureAdsBtntxt}>Call</Text>
-                    
-                  </TouchableOpacity>
-                </View>
+                      <Text style={styles.featureAdsBtntxt}>Call</Text>
+
+                    </TouchableOpacity>
+                  </View>
                 </TouchableOpacity>
               }
               keyExtractor={item => item.ad_author_id + "" + item.ad_title}
@@ -721,8 +726,8 @@ export default class SearchDetail extends Component<Props> {
             </View> : null}
 
         </ScrollView>
-     
-     
+
+
         <ModalBox
           style={styles.modalBoxStyle}
           position={"bottom"}
@@ -740,7 +745,7 @@ export default class SearchDetail extends Component<Props> {
                 renderItem={({ item, index }) =>
 
                   <TouchableOpacity
-             
+
                     onPress={() => { this.onPressFirstModal(index); }}
                   >
                     <View style={styles.modalItemContainer}>
@@ -856,23 +861,23 @@ export default class SearchDetail extends Component<Props> {
           </View>
 
         </Modal>
-          {/* Absolute view start */}
-          {this.state.isAboslute ?
+        {/* Absolute view start */}
+        {this.state.isAboslute ?
 
-<Animatable.View
-  animation={this.state.isAboslute ? "fadeInDown" : "fadeOut"} iterationCount={1} direction="normal"
-  style={{
-    position: 'absolute',
-    backgroundColor: orderStore.color,
-    flex: 1,
-    paddingStart: 10,
-    paddingEnd: 10,
-    width: '100%',
-    paddingBottom:3,
-    // elevation: 5,
-    // shadowOpacity: 0.5,
-  }}>
-  {/* <View
+          <Animatable.View
+            animation={this.state.isAboslute ? "fadeInDown" : "fadeOut"} iterationCount={1} direction="normal"
+            style={{
+              position: 'absolute',
+              backgroundColor: orderStore.color,
+              flex: 1,
+              paddingStart: 10,
+              paddingEnd: 10,
+              width: '100%',
+              paddingBottom: 3,
+              // elevation: 5,
+              // shadowOpacity: 0.5,
+            }}>
+            {/* <View
   style={ {  paddingStart:15,
     paddingEnd:15,
     justifyContent:'center',
@@ -887,52 +892,52 @@ export default class SearchDetail extends Component<Props> {
 > */}
 
 
-<View style={[styles.headerSearchbarContainer, {}]}>
+            <View style={[styles.headerSearchbarContainer, {}]}>
 
-<TextInput
-  style={[styles.TextInput, { borderTopLeftRadius: Appearences.Radius.radius, borderBottomLeftRadius: Appearences.Radius.radius }]}
-  underlineColorAndroid='transparent'
-  placeholderTextColor={Appearences.Colors.placeholderTextColor}
-  placeholder={orderStore.home.placehldr}
-  onChangeText={(text) => {
-    this.setState({ searchText: text });
-  }}
-  textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-/>
+              <TextInput
+                style={[styles.TextInput, { borderTopLeftRadius: Appearences.Radius.radius, borderBottomLeftRadius: Appearences.Radius.radius }]}
+                underlineColorAndroid='transparent'
+                placeholderTextColor={Appearences.Colors.placeholderTextColor}
+                placeholder={orderStore.home.placehldr}
+                onChangeText={(text) => {
+                  this.setState({ searchText: text });
+                }}
+                textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+              />
 
-<TouchableOpacity
-  activeOpacity={1}
-  onPress={async () => {
-    let param = { ad_title: this.state.searchText }
-    const { navigate } = this.props.navigation;
-    await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
-    let { orderStore } = Store;
-    orderStore.setIsCallAdvance(false);
-    navigate('SearchDetail', { params: param });
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={async () => {
+                  let param = { ad_title: this.state.searchText }
+                  const { navigate } = this.props.navigation;
+                  await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
+                  let { orderStore } = Store;
+                  orderStore.setIsCallAdvance(false);
+                  navigate('SearchDetail', { params: param });
 
-  }}
->
-  <View style={[styles.searchButton, { backgroundColor: orderStore.color}]}>
-    <Image source={require('../../../../res/images/search_white.png')}
-      style={styles.searchImage}
-    />
-  </View >
-</TouchableOpacity>
+                }}
+              >
+                <View style={[styles.searchButton, { backgroundColor: orderStore.color }]}>
+                  <Image source={require('../../../../res/images/search_white.png')}
+                    style={styles.searchImage}
+                  />
+                </View >
+              </TouchableOpacity>
 
-</View>
+            </View>
 
-{/* </View> */}
-
-
-</Animatable.View>
-
-: null
+            {/* </View> */}
 
 
-}
+          </Animatable.View>
+
+          : null
 
 
-{/* Absolute view end */}
+        }
+
+
+        {/* Absolute view end */}
 
       </View>
     );

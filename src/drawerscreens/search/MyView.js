@@ -12,7 +12,7 @@ const MyView = (props) => {
   }
   return (
     <View {...this.props} style={style}>
-      { children }
+      { children}
     </View>
   );
 };
@@ -28,8 +28,8 @@ MyView.propTypes = {
       PropTypes.element,
     ])),
   ]).isRequired,
-  style:ViewPropTypes.style,
-//  style: View.propTypes.style,
+  style: ViewPropTypes.style,
+  //  style: View.propTypes.style,
   hide: PropTypes.bool,
 };
 

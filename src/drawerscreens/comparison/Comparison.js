@@ -24,7 +24,7 @@ import DrawerButton from '../../config/DrawerButton';
 import DrawerRightIcons from '../../config/DrawerRightIcons';
 export default class Comparison extends Component<Props> {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('otherParam', stores.screenTitles.camparison_search ),
+    title: navigation.getParam('otherParam', stores.screenTitles.camparison_search),
     headerStyle: {
       backgroundColor: stores.color,
     },
