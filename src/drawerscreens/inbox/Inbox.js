@@ -48,7 +48,13 @@ export default class Inbox extends Component<Props> {
   async createNotificationListeners() {
     this.messageListener = firebase.messaging().onMessage(async message => {
       console.log("inbox message")
-      await this.getAllInboxData();
+      clearInterval(this.getDataInterval);
+      this.setState({ offers: [] }, async () => {
+        await this.getAllInboxData();
+        this.getDataInterval = setInterval(() => {
+          this.getAllInboxData();
+        }, 10000);
+      })
     });
   }
 
@@ -82,38 +88,35 @@ export default class Inbox extends Component<Props> {
       return;
     }
 
-    this.setState({ offers: [] }, async () => {
-      const param = { 'platform': 'mobile' };
-      let res_data = await Api.post('message/inbox/', param);
-      console.log(res_data.api_firebase_id);
-      allOffers = res_data.data;
+    const param = { 'platform': 'mobile' };
+    let res_data = await Api.post('message/inbox/', param);
+    console.log(res_data.api_firebase_id);
+    allOffers = res_data.data;
 
-      if (allOffers.length > 0) {
-        allOffers.sort((a, b) => {
-          if (b.chat_latest[b.chat_latest.length - 1].realdate > a.chat_latest[a.chat_latest.length - 1].realdate)
-            return 1;
-          else if (b.chat_latest[b.chat_latest.length - 1].realdate < a.chat_latest[a.chat_latest.length - 1].realdate)
-            return -1;
-          return 0;
-        });
+    if (allOffers.length > 0) {
+      allOffers.sort((a, b) => {
+        if (b.chat_latest[b.chat_latest.length - 1].realdate > a.chat_latest[a.chat_latest.length - 1].realdate)
+          return 1;
+        else if (b.chat_latest[b.chat_latest.length - 1].realdate < a.chat_latest[a.chat_latest.length - 1].realdate)
+          return -1;
+        return 0;
+      });
 
-        let max_num_offers = allOffers.length;
-        pagination.current_page = -1;
-        pagination.max_num_page = max_num_offers / pagination.per_page_num;
-        if (max_num_offers % pagination.per_page_num != 0)
-          pagination.max_num_page++;
-        if (max_num_offers > pagination.per_page_num)
-          pagination.has_next_page = true;
-        else
-          pagination.has_next_page = false;
+      let max_num_offers = allOffers.length;
+      pagination.current_page = -1;
+      pagination.max_num_page = max_num_offers / pagination.per_page_num;
+      if (max_num_offers % pagination.per_page_num != 0)
+        pagination.max_num_page++;
+      if (max_num_offers > pagination.per_page_num)
+        pagination.has_next_page = true;
+      else
+        pagination.has_next_page = false;
 
-        await this._loadMore(++pagination.current_page);
-      }
-      else {
-        this.setState({ noDataVisivility: true, noDataMessage: "Empty Inbox Message" });
-      }
-    })
-
+      await this._loadMore(++pagination.current_page);
+    }
+    else {
+      this.setState({ noDataVisivility: true, noDataMessage: "Empty Inbox Message" });
+    }
     this.setState({ showSpinner: false, swipeUp: false });
   }
 
@@ -128,6 +131,12 @@ export default class Inbox extends Component<Props> {
     }
     else
       this.setState({ reCaller: false });
+  }
+
+  _loadMore = async () => {
+    currentOffers = allOffers.slice(0, (pagination.per_page_num - 1) * (++pagination.current_page));
+    this.setState({ offers: currentOffers });
+    this.setState({ reCaller: false });
   }
 
   writeUserData(email, fname, lname) {
@@ -160,12 +169,6 @@ export default class Inbox extends Component<Props> {
   _onRefresh = async () => {
     this.setState({ showSpinner: true });
     await this.getAllInboxData();
-  }
-
-  _loadMore = async () => {
-    currentOffers = allOffers.slice(0, (pagination.per_page_num - 1) * (++pagination.current_page));
-    this.setState({ offers: currentOffers });
-    this.setState({ reCaller: false });
   }
 
   isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
