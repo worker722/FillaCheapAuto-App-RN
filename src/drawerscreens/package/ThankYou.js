@@ -43,7 +43,7 @@ export default class ThankYou extends Component<Props> {
         <Loader />
 
       );
-    return (<View style={{ height: '100%', width: '90%',alignSelf:'center' }}>
+    return (<View style={{ height: '100%', width: '90%', alignSelf: 'center' }}>
 
       <HTML
         imagesMaxWidth={Dimensions.get('window').width}

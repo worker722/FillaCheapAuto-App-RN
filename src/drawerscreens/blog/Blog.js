@@ -3,7 +3,7 @@ import {
   Text,
   View,
   Image,
-   TouchableOpacity,
+  TouchableOpacity,
   ScrollView,
   RefreshControl,
 } from 'react-native';
@@ -22,7 +22,7 @@ import DrawerRightIcons from '../../config/DrawerRightIcons';
 export default class Blog extends Component<Props> {
 
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('otherParam', stores.screenTitles.blog ),
+    title: navigation.getParam('otherParam', stores.screenTitles.blog),
     headerStyle: {
       backgroundColor: stores.color,
     },
@@ -40,82 +40,82 @@ export default class Blog extends Component<Props> {
     headerRight: <DrawerRightIcons />
   });
   defaultData = [];
-  defaultPagination ;
+  defaultPagination;
 
-componentWillMount = async ()=>{
-  let {orderStore} = Store;
-  orderStore.blog = await Api.get('posts');
-   if(orderStore.blog.success ===  true){
-    
-    this.setState({listData: orderStore.blog.data.post});
-    this.defaultData = [...orderStore.blog.data.post];
-    this.defaultPagination = orderStore.blog.data.pagination;
+  componentWillMount = async () => {
+    let { orderStore } = Store;
+    orderStore.blog = await Api.get('posts');
+    if (orderStore.blog.success === true) {
+
+      this.setState({ listData: orderStore.blog.data.post });
+      this.defaultData = [...orderStore.blog.data.post];
+      this.defaultPagination = orderStore.blog.data.pagination;
+    }
+    if (orderStore.blog.message.length != 0)
+      Toast.show(orderStore.blog.message);
+    this.setState({ showSpinner: false });
+
+
   }
-  if(orderStore.blog.message.length!=0)
-  Toast.show(orderStore.blog.message);
-  this.setState({showSpinner:false});
 
-
-}
-
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-      showSpinner:true,
+      showSpinner: true,
       refreshing: false,
-      listData:[],
-      reCaller:false,
-      swipeUp:false,
-       };
+      listData: [],
+      reCaller: false,
+      swipeUp: false,
+    };
   }
-  _onSwipeUp = async()=>{
-    await this.setState({swipeUp: true});
-  
-    setTimeout(async ()=>{
-      this.setState({showSpinner:true});
- 
-      let {orderStore} = Store;
+  _onSwipeUp = async () => {
+    await this.setState({ swipeUp: true });
+
+    setTimeout(async () => {
+      this.setState({ showSpinner: true });
+
+      let { orderStore } = Store;
       const response = await Api.get('posts');
-      orderStore.blog = response;  
-  
-      if(response.success ===  true){
-        this.setState({listData: orderStore.blog.data.post});
-        orderStore.blog.data.post  = [...this.defaultData];
-        orderStore.blog.data.pagination = this.defaultPagination ;
+      orderStore.blog = response;
+
+      if (response.success === true) {
+        this.setState({ listData: orderStore.blog.data.post });
+        orderStore.blog.data.post = [...this.defaultData];
+        orderStore.blog.data.pagination = this.defaultPagination;
       }
-      if(response.message.length!=0)
-      Toast.show(response.message);
-      
-      this.setState({showSpinner:false,swipeUp:false,reCaller:false,});
-  
+      if (response.message.length != 0)
+        Toast.show(response.message);
+
+      this.setState({ showSpinner: false, swipeUp: false, reCaller: false, });
+
     }, 1000);
   }
   _onRefresh = () => {
-  
-    let {orderStore} = Store;
+
+    let { orderStore } = Store;
     let pagination = orderStore.blog.data.pagination;
-    if(pagination.has_next_page === true)
-    {this.setState({refreshing: true});
+    if (pagination.has_next_page === true) {
+      this.setState({ refreshing: true });
       this.loadMore(pagination.next_page);
+    }
   }
+  loadMore = async (nextPage) => {
+
+    let { orderStore } = Store;
+
+    let params = { page_number: nextPage };
+    let response = await Api.post('posts', params);
+    if (response.success === true) {
+      orderStore.blog.data.pagination = response.data.pagination;
+      orderStore.blog.data.post = [...orderStore.blog.data.post, ...response.data.post];
+      this.setState({ listData: orderStore.blog.data.post });
+
+    }
+    if (response.message.length != 0)
+      Toast.show(response.message);
+    this.setState({ refreshing: false, reCaller: false });
   }
-  loadMore = async (nextPage)=>{ 
-    
-    let {orderStore} = Store;
-   
-    let params = {page_number:nextPage};
-    let response = await Api.post('posts',params);
-    if(response.success === true){
-          orderStore.blog.data.pagination =  response.data.pagination;
-          orderStore.blog.data.post = [...orderStore.blog.data.post,...response.data.post];                
-          this.setState({listData: orderStore.blog.data.post});
-  
-        }
-    if(response.message.length!=0)    
-    Toast.show(response.message);
-    this.setState({refreshing: false,reCaller:false});
-  }
-    
+
   isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
     const paddingToBottom = 20;
     return layoutMeasurement.height + contentOffset.y >=
@@ -123,95 +123,96 @@ componentWillMount = async ()=>{
   };
   render() {
 
-  
-    if(this.state.showSpinner)
-      return(
-       <Loader/>
+
+    if (this.state.showSpinner)
+      return (
+        <Loader />
       );
 
-    let {orderStore} = Store;
+    let { orderStore } = Store;
     const data = orderStore.blog.data;
     const commentsTitle = orderStore.blog.extra.comment_title;
-        return (
+    return (
 
-        <View style = {{height:'100%',
-        backgroundColor:Appearences.Colors.appBackgroundColor,}}>
+      <View style={{
+        height: '100%',
+        backgroundColor: Appearences.Colors.appBackgroundColor,
+      }}>
 
-<ScrollView 
+        <ScrollView
 
-refreshControl={
-  <RefreshControl
-    refreshing={this.state.swipeUp}
-    onRefresh={this._onSwipeUp}
-  />
-}
-    showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.swipeUp}
+              onRefresh={this._onSwipeUp}
+            />
+          }
+          showsVerticalScrollIndicator={false}
           onScroll={({ nativeEvent }) => {
             if (this.isCloseToBottom(nativeEvent)) {
-              if (this.state.reCaller === false) {  
+              if (this.state.reCaller === false) {
                 this._onRefresh();
               }
               this.setState({ reCaller: true })
 
-              }
+            }
           }}
-          scrollEventThrottle={400}> 
-              <View style = {styles.container}>
+          scrollEventThrottle={400}>
+          <View style={styles.container}>
 
-                  <View style = {styles.listRowContainer}>
-                  {
-                  this.state.listData.map((item,key)=>( 
-                                
-                            <TouchableOpacity 
-                            onPress = {()=>{
-                              const { navigate } = this.props.navigation;
-                              navigate('BlogDetail', {id:item.post_id});
+            <View style={styles.listRowContainer}>
+              {
+                this.state.listData.map((item, key) => (
 
-                            }}
-                            style = {styles.listItemContainer}
-                            key={key}
-                            >
-                            <View style = {styles.imageContainer}>
-                                <Image
-                                  style = {styles.image}
-                                  source = {item.has_image ? {uri:item.image} : require('../../../res/images/no_image.jpg')}
-                                />
-                            </View>
-                            <View style = {styles.contentContainer}>
-                              {/* <Text style = {styles.paragraphText}>{item.date +" "+commentsTitle+" ("+item.comments+")"}</Text> */}
-                              <Text style = {styles.headingText}>{item.title}</Text>
-                              {/* <Text style = {styles.paragraphText}>{item.details}</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      const { navigate } = this.props.navigation;
+                      navigate('BlogDetail', { id: item.post_id });
+
+                    }}
+                    style={styles.listItemContainer}
+                    key={key}
+                  >
+                    <View style={styles.imageContainer}>
+                      <Image
+                        style={styles.image}
+                        source={item.has_image ? { uri: item.image } : require('../../../res/images/no_image.jpg')}
+                      />
+                    </View>
+                    <View style={styles.contentContainer}>
+                      {/* <Text style = {styles.paragraphText}>{item.date +" "+commentsTitle+" ("+item.comments+")"}</Text> */}
+                      <Text style={styles.headingText}>{item.title}</Text>
+                      {/* <Text style = {styles.paragraphText}>{item.details}</Text>
                               <View 
                             
                               style = {[styles.buttonContainer,{backgroundColor:orderStore.color}]}>
                                 <Text style = {styles.headingTextWhite}>{item.read_more}</Text>
                               </View> */}
-                            </View>
-                         </TouchableOpacity>   ))}
-                    </View>         
+                    </View>
+                  </TouchableOpacity>))}
+            </View>
 
-              </View>
-
-
-           {  this.state.refreshing ?                  
-              <Progress.Circle
-              size={20}
-                  style={{alignSelf:'center'}}
-                  color={orderStore.color}
-                  indeterminate = {true}/> : null   }
-              </ScrollView>
-                       
           </View>
-        );
-    }
-  
-    
+
+
+          {this.state.refreshing ?
+            <Progress.Circle
+              size={20}
+              style={{ alignSelf: 'center' }}
+              color={orderStore.color}
+              indeterminate={true} /> : null}
+        </ScrollView>
+
+      </View>
+    );
   }
-  
-
- 
 
 
-  
-  
-  
+}
+
+
+
+
+
+
+

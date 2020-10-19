@@ -25,125 +25,124 @@ import LocalDb from '../../storage/LocalDb';
 import stores from '../../Stores/orderStore';
 
 
-  
+
 export default class TabManager extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('otherParam', stores.screenTitles.profile),
     headerStyle: {
-        backgroundColor: stores.color,
-      },
-  
-      headerTitleStyle: {
-        flex: 1,
-        color: 'white',
-        textAlign: "center",
-        fontFamily: Appearences.Fonts.paragaphFont,
-        fontSize: 13,
-        fontWeight: "200",
-  
-      },
+      backgroundColor: stores.color,
+    },
+
+    headerTitleStyle: {
+      flex: 1,
+      color: 'white',
+      textAlign: "center",
+      fontFamily: Appearences.Fonts.paragaphFont,
+      fontSize: 13,
+      fontWeight: "200",
+
+    },
   });
-  tabsText = {profile:'',editProfile:'',featuredAds:'',inactiveAds:'',myAds:'',favouriteAds:'',expiredAds:'',soldAds:'',};
-  constructor(props){
+  tabsText = { profile: '', editProfile: '', featuredAds: '', inactiveAds: '', myAds: '', favouriteAds: '', expiredAds: '', soldAds: '', };
+  constructor(props) {
     super(props);
 
     this.state = {
-      showSpinner:true,     
-      refreshing:false,
-      index:0,
+      showSpinner: true,
+      refreshing: false,
+      index: 0,
 
     }
   }
-  componentWillMount=async()=>{
+  componentWillMount = async () => {
     let data = await LocalDb.getUserProfile();
     if (data === null) {
       this.nav('Signin', 'Sign In');
       return false;
     }
-    let {orderStore} = Store;
+    let { orderStore } = Store;
     orderStore.profile = await Api.get('profile');
     // console.log('profile is=>',JSON.stringify(orderStore.profile))
-    if(orderStore.profile.success === true)
-       {
-        let tabsText = orderStore.profile.data.tabs_text; 
-        
-        this.tabsText = {profile:tabsText.profile,editProfile:tabsText.edit_profile,featuredAds:tabsText.featured_ads,inactiveAds:tabsText.inactive_ads,myAds:tabsText.my_ads,favouriteAds:tabsText.favorite_ads,expiredAds:tabsText.expired_ads,soldAds:tabsText.sold_ads};
-        this.setState({showSpinner:false});
-      // this.props.navigation.navigate('Profile');   
-        
-       }
-       if(orderStore.profile.message.length!=0)
-       Toast.show(orderStore.profile.message);
-    }
-  
-    
-    _renderLabel = ({ route }) => (
-      <Text>{route.title}</Text>
-    );
-   
-    getNavigationStates = ()=>{
-      return routes = {
-        index: this.state.index,
-        routes: [
-          { key: 'Profile', title: this.tabsText.profile },
-          { key: 'EditProfile', title: this.tabsText.editProfile },
-          { key: 'MyAds', title: this.tabsText.myAds },
-          { key: 'FeaturedAds', title: this.tabsText.featuredAds },
-          { key: 'InActiveAds', title: this.tabsText.inactiveAds },
-          { key: 'FavouriteAds', title: this.tabsText.favouriteAds },
-          { key: 'ExpiredAds', title: this.tabsText.expiredAds },
-          { key: 'SoldAds', title: this.tabsText.soldAds },
-        ],
-      }
-    }
+    if (orderStore.profile.success === true) {
+      let tabsText = orderStore.profile.data.tabs_text;
 
-    _renderTabBar = props => (
-      <TabBar
-        {...props}
-        scrollEnabled
-        pressColor = {orderStore.appColor}
-        indicatorStyle={{backgroundColor:orderStore.appColor,top:0,}}
-        style={{backgroundColor:'white',height:45,justifyContent:'center'}}
-        labelStyle = {{color:'black'}}
-        renderLabel = {this._renderLabel}
-        
-       />
-    );
-    nav = (route, title) => {
-      firebase.analytics().setCurrentScreen(title);
-  
-      const navigateAction = NavigationActions.navigate({
-        routeName: route
-      });
-      // console.log('title is',title)
-      this.props.navigation.setParams({ otherParam: title });
-      this.props.navigation.dispatch(navigateAction);
+      this.tabsText = { profile: tabsText.profile, editProfile: tabsText.edit_profile, featuredAds: tabsText.featured_ads, inactiveAds: tabsText.inactive_ads, myAds: tabsText.my_ads, favouriteAds: tabsText.favorite_ads, expiredAds: tabsText.expired_ads, soldAds: tabsText.sold_ads };
+      this.setState({ showSpinner: false });
+      // this.props.navigation.navigate('Profile');   
+
     }
-  
-    render() {
-      if(this.state.showSpinner)
-      return(
-      <Loader/>
-  
-      );
-      return (
-        <TabView
-         navigationState={this.getNavigationStates()}
-          renderScene={SceneMap({
-            Profile: Profile,
-            EditProfile: EditProfile,
-            FeaturedAds: FeaturedAds,
-            InActiveAds: InActiveAds,
-            MyAds: MyAds,
-            FavouriteAds: FavouriteAds,
-            ExpiredAds: ExpiredAds,
-            SoldAds: SoldAds,
-          })}
-          tabBarPosition = "bottom"
-          renderTabBar={this._renderTabBar}
-          onIndexChange={index => this.setState({ index:index })}
-          initialLayout={{ height:0,width: Dimensions.get('window').width }}
-        />
-      );
+    if (orderStore.profile.message.length != 0)
+      Toast.show(orderStore.profile.message);
+  }
+
+
+  _renderLabel = ({ route }) => (
+    <Text>{route.title}</Text>
+  );
+
+  getNavigationStates = () => {
+    return routes = {
+      index: this.state.index,
+      routes: [
+        { key: 'Profile', title: this.tabsText.profile },
+        { key: 'EditProfile', title: this.tabsText.editProfile },
+        { key: 'MyAds', title: this.tabsText.myAds },
+        { key: 'FeaturedAds', title: this.tabsText.featuredAds },
+        { key: 'InActiveAds', title: this.tabsText.inactiveAds },
+        { key: 'FavouriteAds', title: this.tabsText.favouriteAds },
+        { key: 'ExpiredAds', title: this.tabsText.expiredAds },
+        { key: 'SoldAds', title: this.tabsText.soldAds },
+      ],
     }
   }
+
+  _renderTabBar = props => (
+    <TabBar
+      {...props}
+      scrollEnabled
+      pressColor={orderStore.appColor}
+      indicatorStyle={{ backgroundColor: orderStore.appColor, top: 0, }}
+      style={{ backgroundColor: 'white', height: 45, justifyContent: 'center' }}
+      labelStyle={{ color: 'black' }}
+      renderLabel={this._renderLabel}
+
+    />
+  );
+  nav = (route, title) => {
+    firebase.analytics().setCurrentScreen(title);
+
+    const navigateAction = NavigationActions.navigate({
+      routeName: route
+    });
+    // console.log('title is',title)
+    this.props.navigation.setParams({ otherParam: title });
+    this.props.navigation.dispatch(navigateAction);
+  }
+
+  render() {
+    if (this.state.showSpinner)
+      return (
+        <Loader />
+
+      );
+    return (
+      <TabView
+        navigationState={this.getNavigationStates()}
+        renderScene={SceneMap({
+          Profile: Profile,
+          EditProfile: EditProfile,
+          FeaturedAds: FeaturedAds,
+          InActiveAds: InActiveAds,
+          MyAds: MyAds,
+          FavouriteAds: FavouriteAds,
+          ExpiredAds: ExpiredAds,
+          SoldAds: SoldAds,
+        })}
+        tabBarPosition="bottom"
+        renderTabBar={this._renderTabBar}
+        onIndexChange={index => this.setState({ index: index })}
+        initialLayout={{ height: 0, width: Dimensions.get('window').width }}
+      />
+    );
+  }
+}

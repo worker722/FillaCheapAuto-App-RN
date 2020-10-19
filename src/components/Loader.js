@@ -16,7 +16,7 @@ import {
     SkypeIndicator,
     UIActivityIndicator,
     WaveIndicator,
-  } from 'react-native-indicators';
+} from 'react-native-indicators';
 import Appearences from '../config/Appearences'
 
 
@@ -25,22 +25,22 @@ export default class Loader extends Component<Props> {
 
     render() {
 
-       
-         return (
-            
-            <View style = {s.container}>
-              
+
+        return (
+
+            <View style={s.container}>
+
                 <SkypeIndicator
-                  //  size="large"
+                    //  size="large"
                     color={orderStore.color}
                 />
 
             </View>
 
 
-       );
+        );
 
-        
+
 
 
     }
@@ -48,18 +48,18 @@ export default class Loader extends Component<Props> {
 
 
 const s = StyleSheet.create({
-  
+
     container: {
         height: '100%',
         width: '100%',
         alignItems: 'center',
-        justifyContent:'center',   
-        backgroundColor:Appearences.Colors.loaderGrey,
-        
+        justifyContent: 'center',
+        backgroundColor: Appearences.Colors.loaderGrey,
+
     },
-  
 
 
-       
+
+
 });
 

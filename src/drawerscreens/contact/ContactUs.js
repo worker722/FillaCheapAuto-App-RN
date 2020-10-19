@@ -27,7 +27,7 @@ import DrawerButton from '../../config/DrawerButton';
 import DrawerRightIcons from '../../config/DrawerRightIcons';
 export default class ContactUs extends Component<Props> {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('otherParam', store.screenTitles.contact_us ),
+    title: navigation.getParam('otherParam', store.screenTitles.contact_us),
     headerStyle: {
       backgroundColor: store.color,
     },

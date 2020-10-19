@@ -25,8 +25,8 @@ import Api from '../../../network/Api';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { observer } from 'mobx-react';
 
-const DismissKeyboard=({children})=>(
-  <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()}>
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
     {children}
   </TouchableWithoutFeedback>
 );
@@ -92,62 +92,62 @@ export default class PageThree extends Component<Props> {
 
     return (
       <DismissKeyboard>
-      <View>
+        <View>
 
-        <View style={styles.headingTextContainer}>
-          <Text style={styles.subHeading}>{extra.price_type_title + " * "}</Text>
-        </View>
-        <TouchableOpacity onPress={() => {
-          this.priceTypeRef.show();
-        }}
-          style={styles.row}
-        >
-          <ModalDropdown
-            options={valuesArray}
-            ref={el => this.priceTypeRef = el}
-            style={this.state.showPriceTypeError ? styles.pickerContainerError : styles.pickerContainer}
-            dropdownStyle={{
-              width: '92%',
-              marginStart: -15,
-              height: ((valuesArray.length * 27) + 27),
-              elevation: 1,
-              shadowOpacity: 0.1,
-            }}
-
-            dropdownTextHighlightStyle={styles.dropDownTextStyle}
-            textStyle={styles.dorpdownContainerTextStyle}
-            defaultValue={valuesArray[0]}
-            onSelect={(index, value) => {
-              if (idsArray[index].length != 0) {
-                this.setState({ showPriceTypeError: false });
-              }
-              this.setState({ priceTypeId: idsArray[index], showPriceOnly: isShow[index] });
-            }}
-            renderSeparator={() => {
-              return (<View style={{
-                width: 0,
-                height: 0,
-              }} />);
-            }}
-
-            renderRow={(option, index, isSelected) => {
-
-              return (<View style={styles.dorpDownRow}>
-                <Text style={styles.dropDownTextStyle}>{option}</Text>
-              </View>);
-            }} />
-          <View style={styles.dropdownArrowContainer}>
-            <Image
-              style={styles.popupViewImage}
-              source={require('../../../../res/images/right_arrow.png')}
-            />
+          <View style={styles.headingTextContainer}>
+            <Text style={styles.subHeading}>{extra.price_type_title + " * "}</Text>
           </View>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            this.priceTypeRef.show();
+          }}
+            style={styles.row}
+          >
+            <ModalDropdown
+              options={valuesArray}
+              ref={el => this.priceTypeRef = el}
+              style={this.state.showPriceTypeError ? styles.pickerContainerError : styles.pickerContainer}
+              dropdownStyle={{
+                width: '92%',
+                marginStart: -15,
+                height: ((valuesArray.length * 27) + 27),
+                elevation: 1,
+                shadowOpacity: 0.1,
+              }}
 
-      </View>
+              dropdownTextHighlightStyle={styles.dropDownTextStyle}
+              textStyle={styles.dorpdownContainerTextStyle}
+              defaultValue={valuesArray[0]}
+              onSelect={(index, value) => {
+                if (idsArray[index].length != 0) {
+                  this.setState({ showPriceTypeError: false });
+                }
+                this.setState({ priceTypeId: idsArray[index], showPriceOnly: isShow[index] });
+              }}
+              renderSeparator={() => {
+                return (<View style={{
+                  width: 0,
+                  height: 0,
+                }} />);
+              }}
+
+              renderRow={(option, index, isSelected) => {
+
+                return (<View style={styles.dorpDownRow}>
+                  <Text style={styles.dropDownTextStyle}>{option}</Text>
+                </View>);
+              }} />
+            <View style={styles.dropdownArrowContainer}>
+              <Image
+                style={styles.popupViewImage}
+                source={require('../../../../res/images/right_arrow.png')}
+              />
+            </View>
+          </TouchableOpacity>
+
+        </View>
       </DismissKeyboard>
-  
-  );
+
+    );
 
   }
   getCategories = (item) => {
@@ -163,81 +163,81 @@ export default class PageThree extends Component<Props> {
     return (
       <DismissKeyboard>
 
-      <View>
-        <Spinner
-          visible={this.state.showCategorySpinner}
-          textContent={''}
-          animation='slide'
-        />
+        <View>
+          <Spinner
+            visible={this.state.showCategorySpinner}
+            textContent={''}
+            animation='slide'
+          />
 
 
-        {/* Make */}
-        <View style={styles.headingTextContainer}>
-          <Text style={styles.subHeading}>{this.isCategoryRequired ? item.title + " * " : item.title}</Text>
-        </View>
-        <TouchableOpacity onPress={() => {
-          this.makeDropdownRef.show();
-        }}
-          style={styles.row}
-        >
-          <ModalDropdown
-            options={valuesArray}
-            ref={el => this.makeDropdownRef = el}
-            style={this.state.showCategoryError ? styles.pickerContainerError : styles.pickerContainer}
-            dropdownStyle={styles.dorpDownStyle}
-            dropdownTextHighlightStyle={styles.dropDownTextStyle}
-            textStyle={styles.dorpdownContainerTextStyle}
-            defaultValue={valuesArray[0]}
-            onSelect={(index, value) => {
-              let { orderStore } = Store;
-
-              if (idsArray[index].length != 0)
-                this.setState({ categoryId: idsArray[index], showCategoryError: false });
-
-              if (item.values[index].has_sub) {
-
-                this.getSubCategories(idsArray[index]);
-              }
-              this.setState({ showSubCategories: false, showSubSubCategories: false, showSubSubSubCategories: false, });
-
-              if (item.values[index].has_template) {
-                orderStore.optionSelectedModel.hasTemp = true;
-                orderStore.optionSelectedModel.categoryId = idsArray[index];
-
-              }
-              else
-                orderStore.optionSelectedModel.hasTemp = false;
-              orderStore.setOnDynamicOptionSeleted(true);
-
-
-            }}
-            renderSeparator={() => {
-              return (<View style={{
-                width: 0,
-                height: 0,
-              }} />);
-            }}
-
-            renderRow={(option, index, isSelected) => {
-
-              return (<View style={styles.dorpDownRow}>
-                <Text style={styles.dropDownTextStyle}>{option}</Text>
-              </View>);
-            }} />
-          <View style={styles.dropdownArrowContainer}>
-            <Image
-              style={styles.popupViewImage}
-              source={require('../../../../res/images/right_arrow.png')}
-            />
+          {/* Make */}
+          <View style={styles.headingTextContainer}>
+            <Text style={styles.subHeading}>{this.isCategoryRequired ? item.title + " * " : item.title}</Text>
           </View>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => {
+            this.makeDropdownRef.show();
+          }}
+            style={styles.row}
+          >
+            <ModalDropdown
+              options={valuesArray}
+              ref={el => this.makeDropdownRef = el}
+              style={this.state.showCategoryError ? styles.pickerContainerError : styles.pickerContainer}
+              dropdownStyle={styles.dorpDownStyle}
+              dropdownTextHighlightStyle={styles.dropDownTextStyle}
+              textStyle={styles.dorpdownContainerTextStyle}
+              defaultValue={valuesArray[0]}
+              onSelect={(index, value) => {
+                let { orderStore } = Store;
+
+                if (idsArray[index].length != 0)
+                  this.setState({ categoryId: idsArray[index], showCategoryError: false });
+
+                if (item.values[index].has_sub) {
+
+                  this.getSubCategories(idsArray[index]);
+                }
+                this.setState({ showSubCategories: false, showSubSubCategories: false, showSubSubSubCategories: false, });
+
+                if (item.values[index].has_template) {
+                  orderStore.optionSelectedModel.hasTemp = true;
+                  orderStore.optionSelectedModel.categoryId = idsArray[index];
+
+                }
+                else
+                  orderStore.optionSelectedModel.hasTemp = false;
+                orderStore.setOnDynamicOptionSeleted(true);
+
+
+              }}
+              renderSeparator={() => {
+                return (<View style={{
+                  width: 0,
+                  height: 0,
+                }} />);
+              }}
+
+              renderRow={(option, index, isSelected) => {
+
+                return (<View style={styles.dorpDownRow}>
+                  <Text style={styles.dropDownTextStyle}>{option}</Text>
+                </View>);
+              }} />
+            <View style={styles.dropdownArrowContainer}>
+              <Image
+                style={styles.popupViewImage}
+                source={require('../../../../res/images/right_arrow.png')}
+              />
+            </View>
+          </TouchableOpacity>
 
 
 
-      </View>
+        </View>
       </DismissKeyboard>
-      
-      );
+
+    );
   }
 
 
@@ -339,71 +339,71 @@ export default class PageThree extends Component<Props> {
     return (
       <DismissKeyboard>
 
-      <View >
-        {/* Model */}
+        <View >
+          {/* Model */}
 
 
-        <TouchableOpacity onPress={() => {
-          this.subRef.show();
-        }}
-          style={styles.row}
-        >
-          <ModalDropdown
-            options={names}
-            ref={el => this.subRef = el}
-            style={styles.pickerContainer}
-            dropdownStyle={styles.dorpDownStyle}
-            dropdownTextHighlightStyle={styles.dropDownTextStyle}
-            textStyle={styles.dorpdownContainerTextStyle}
-            defaultValue={orderStore.sell.extra.select}
-            onSelect={(index, value) => {
-              let { orderStore } = Store;
+          <TouchableOpacity onPress={() => {
+            this.subRef.show();
+          }}
+            style={styles.row}
+          >
+            <ModalDropdown
+              options={names}
+              ref={el => this.subRef = el}
+              style={styles.pickerContainer}
+              dropdownStyle={styles.dorpDownStyle}
+              dropdownTextHighlightStyle={styles.dropDownTextStyle}
+              textStyle={styles.dorpdownContainerTextStyle}
+              defaultValue={orderStore.sell.extra.select}
+              onSelect={(index, value) => {
+                let { orderStore } = Store;
 
-              if (ids[index].length != 0)
-                this.setState({ categoryId: ids[index] });
-
-
-              if (hasSubs[index]) {
-                this.getSubSubCategories(ids[index]);
-              }
-
-              this.setState({ showSubSubCategories: false, showSubSubSubCategories: false });
-              if (hasTemplate[index]) {
-                orderStore.optionSelectedModel.hasTemp = true;
-                orderStore.optionSelectedModel.categoryId = ids[index];
-              }
-              else
-                orderStore.optionSelectedModel.hasTemp = false;
-              orderStore.setOnDynamicOptionSeleted(true);
+                if (ids[index].length != 0)
+                  this.setState({ categoryId: ids[index] });
 
 
-            }}
-            renderSeparator={() => {
-              return (<View style={{
-                width: 0,
-                height: 0,
-              }} />);
-            }}
+                if (hasSubs[index]) {
+                  this.getSubSubCategories(ids[index]);
+                }
 
-            renderRow={(option, index, isSelected) => {
-              return (<View style={styles.dorpDownRow}>
-                <Text style={styles.dropDownTextStyle}>{option}</Text>
-              </View>);
-            }} />
-          <View style={styles.dropdownArrowContainer}>
-            <Image
-              style={styles.popupViewImage}
-              source={require('../../../../res/images/right_arrow.png')}
-            />
-          </View>
-        </TouchableOpacity>
+                this.setState({ showSubSubCategories: false, showSubSubSubCategories: false });
+                if (hasTemplate[index]) {
+                  orderStore.optionSelectedModel.hasTemp = true;
+                  orderStore.optionSelectedModel.categoryId = ids[index];
+                }
+                else
+                  orderStore.optionSelectedModel.hasTemp = false;
+                orderStore.setOnDynamicOptionSeleted(true);
 
 
+              }}
+              renderSeparator={() => {
+                return (<View style={{
+                  width: 0,
+                  height: 0,
+                }} />);
+              }}
+
+              renderRow={(option, index, isSelected) => {
+                return (<View style={styles.dorpDownRow}>
+                  <Text style={styles.dropDownTextStyle}>{option}</Text>
+                </View>);
+              }} />
+            <View style={styles.dropdownArrowContainer}>
+              <Image
+                style={styles.popupViewImage}
+                source={require('../../../../res/images/right_arrow.png')}
+              />
+            </View>
+          </TouchableOpacity>
 
 
-      </View>
+
+
+        </View>
       </DismissKeyboard>
-  
+
     );
   }
 
@@ -425,69 +425,69 @@ export default class PageThree extends Component<Props> {
     return (
       <DismissKeyboard>
 
-      <View>
+        <View>
 
 
-        <TouchableOpacity onPress={() => {
-          this.subSubRef.show();
-        }}
-          style={styles.row}
-        >
-          <ModalDropdown
-            options={names}
-            ref={el => this.subSubRef = el}
-            style={styles.pickerContainer}
-            dropdownStyle={styles.dorpDownStyle}
-            dropdownTextHighlightStyle={styles.dropDownTextStyle}
-            textStyle={styles.dorpdownContainerTextStyle}
-            defaultValue={orderStore.sell.extra.select}
-            onSelect={(index, value) => {
-              let { orderStore } = Store;
+          <TouchableOpacity onPress={() => {
+            this.subSubRef.show();
+          }}
+            style={styles.row}
+          >
+            <ModalDropdown
+              options={names}
+              ref={el => this.subSubRef = el}
+              style={styles.pickerContainer}
+              dropdownStyle={styles.dorpDownStyle}
+              dropdownTextHighlightStyle={styles.dropDownTextStyle}
+              textStyle={styles.dorpdownContainerTextStyle}
+              defaultValue={orderStore.sell.extra.select}
+              onSelect={(index, value) => {
+                let { orderStore } = Store;
 
-              if (ids[index].length != 0)
-                this.setState({ categoryId: ids[index] });
+                if (ids[index].length != 0)
+                  this.setState({ categoryId: ids[index] });
 
-              if (hasSubs[index]) {
-                this.getSubSubSubCategories(ids[index]);
-              }
+                if (hasSubs[index]) {
+                  this.getSubSubSubCategories(ids[index]);
+                }
 
-              this.setState({ showSubSubSubCategories: false });
+                this.setState({ showSubSubSubCategories: false });
 
-              if (hasTemplate[index]) {
-                orderStore.optionSelectedModel.hasTemp = true;
-                orderStore.optionSelectedModel.categoryId = ids[index];
-              }
-              else
-                orderStore.optionSelectedModel.hasTemp = false;
-              orderStore.setOnDynamicOptionSeleted(true);
+                if (hasTemplate[index]) {
+                  orderStore.optionSelectedModel.hasTemp = true;
+                  orderStore.optionSelectedModel.categoryId = ids[index];
+                }
+                else
+                  orderStore.optionSelectedModel.hasTemp = false;
+                orderStore.setOnDynamicOptionSeleted(true);
 
-            }}
-            renderSeparator={() => {
-              return (<View style={{
-                width: 0,
-                height: 0,
-              }} />);
-            }}
+              }}
+              renderSeparator={() => {
+                return (<View style={{
+                  width: 0,
+                  height: 0,
+                }} />);
+              }}
 
-            renderRow={(option, index, isSelected) => {
-              return (<View style={styles.dorpDownRow}>
-                <Text style={styles.dropDownTextStyle}>{option}</Text>
-              </View>);
-            }} />
-          <View style={styles.dropdownArrowContainer}>
-            <Image
-              style={styles.popupViewImage}
-              source={require('../../../../res/images/right_arrow.png')}
-            />
-          </View>
-        </TouchableOpacity>
-
-
+              renderRow={(option, index, isSelected) => {
+                return (<View style={styles.dorpDownRow}>
+                  <Text style={styles.dropDownTextStyle}>{option}</Text>
+                </View>);
+              }} />
+            <View style={styles.dropdownArrowContainer}>
+              <Image
+                style={styles.popupViewImage}
+                source={require('../../../../res/images/right_arrow.png')}
+              />
+            </View>
+          </TouchableOpacity>
 
 
-      </View>
+
+
+        </View>
       </DismissKeyboard>
-    
+
     );
   }
   getSubSubSubCategoriesView = () => {
@@ -507,65 +507,65 @@ export default class PageThree extends Component<Props> {
     return (
       <DismissKeyboard>
 
-      <View>
+        <View>
 
 
 
-        <TouchableOpacity onPress={() => {
-          this.subSubSubRef.show();
-        }}
-          style={styles.row}
-        >
-          <ModalDropdown
-            options={names}
-            ref={el => this.subSubSubRef = el}
-            style={styles.pickerContainer}
-            dropdownStyle={styles.dorpDownStyle}
-            dropdownTextHighlightStyle={styles.dropDownTextStyle}
-            textStyle={styles.dorpdownContainerTextStyle}
-            defaultValue={orderStore.sell.extra.select}
-            onSelect={(index, value) => {
-              let { orderStore } = Store;
-              if (ids[index].length != 0)
-                this.setState({ categoryId: ids[index] });
+          <TouchableOpacity onPress={() => {
+            this.subSubSubRef.show();
+          }}
+            style={styles.row}
+          >
+            <ModalDropdown
+              options={names}
+              ref={el => this.subSubSubRef = el}
+              style={styles.pickerContainer}
+              dropdownStyle={styles.dorpDownStyle}
+              dropdownTextHighlightStyle={styles.dropDownTextStyle}
+              textStyle={styles.dorpdownContainerTextStyle}
+              defaultValue={orderStore.sell.extra.select}
+              onSelect={(index, value) => {
+                let { orderStore } = Store;
+                if (ids[index].length != 0)
+                  this.setState({ categoryId: ids[index] });
 
-              if (hasTemplate[index]) {
-                orderStore.optionSelectedModel.hasTemp = true;
-                orderStore.optionSelectedModel.categoryId = ids[index];
+                if (hasTemplate[index]) {
+                  orderStore.optionSelectedModel.hasTemp = true;
+                  orderStore.optionSelectedModel.categoryId = ids[index];
 
-              }
-              else
-                orderStore.optionSelectedModel.hasTemp = false;
-              orderStore.setOnDynamicOptionSeleted(true);
+                }
+                else
+                  orderStore.optionSelectedModel.hasTemp = false;
+                orderStore.setOnDynamicOptionSeleted(true);
 
-            }}
-            renderSeparator={() => {
-              return (<View style={{
-                width: 0,
-                height: 0,
-              }} />);
-            }}
+              }}
+              renderSeparator={() => {
+                return (<View style={{
+                  width: 0,
+                  height: 0,
+                }} />);
+              }}
 
-            renderRow={(option, index, isSelected) => {
-              return (<View style={styles.dorpDownRow}>
-                <Text style={styles.dropDownTextStyle}>{option}</Text>
-              </View>);
-            }} />
-          <View style={styles.dropdownArrowContainer}>
-            <Image
-              style={styles.popupViewImage}
-              source={require('../../../../res/images/right_arrow.png')}
-            />
-          </View>
-        </TouchableOpacity>
-
-
+              renderRow={(option, index, isSelected) => {
+                return (<View style={styles.dorpDownRow}>
+                  <Text style={styles.dropDownTextStyle}>{option}</Text>
+                </View>);
+              }} />
+            <View style={styles.dropdownArrowContainer}>
+              <Image
+                style={styles.popupViewImage}
+                source={require('../../../../res/images/right_arrow.png')}
+              />
+            </View>
+          </TouchableOpacity>
 
 
-      </View>
+
+
+        </View>
       </DismissKeyboard>
- 
- );
+
+    );
   }
 
 
@@ -590,94 +590,94 @@ export default class PageThree extends Component<Props> {
         if (item.fieldTypeName == 'ad_price') {
           if (this.state.showPriceOnly)
             return (
-      <DismissKeyboard>
-            
-            <View>
-                <View style={styles.headingTextContainer}>
-                  <Text style={styles.subHeading}>{item.isRequired ? item.title + " * " : item.title}</Text>
-                </View>
-                <TextInput style={item.showError ? styles.TextInputError : styles.TextInput}
-                  underlineColorAndroid='transparent'
-                  textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-                  keyboardType="numeric"
-                  returnKeyType="done"
+              <DismissKeyboard>
 
-                  placeholderTextColor={Appearences.Registration.textColor}
-                  onChangeText={(message) => {
-                    let stateClone = [...this.state.pageThree];
-                    if (message.length != 0) {
-                      stateClone[index].showError = false;
-                    }
-                    stateClone[index].value = message;
-                    this.setState({ pageThree: stateClone });
-                  }}></TextInput>
-              </View>
-      </DismissKeyboard>
-              
-              );
+                <View>
+                  <View style={styles.headingTextContainer}>
+                    <Text style={styles.subHeading}>{item.isRequired ? item.title + " * " : item.title}</Text>
+                  </View>
+                  <TextInput style={item.showError ? styles.TextInputError : styles.TextInput}
+                    underlineColorAndroid='transparent'
+                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                    keyboardType="numeric"
+                    returnKeyType="done"
+
+                    placeholderTextColor={Appearences.Registration.textColor}
+                    onChangeText={(message) => {
+                      let stateClone = [...this.state.pageThree];
+                      if (message.length != 0) {
+                        stateClone[index].showError = false;
+                      }
+                      stateClone[index].value = message;
+                      this.setState({ pageThree: stateClone });
+                    }}></TextInput>
+                </View>
+              </DismissKeyboard>
+
+            );
           else return null;
 
         }
         return (
           <DismissKeyboard>
 
-          <View>
-            <View style={styles.headingTextContainer}>
-              <Text style={styles.subHeading}>{item.isRequired ? item.title + " * " : item.title}</Text>
-            </View>
-            <TextInput style={item.showError ? styles.TextInputError : styles.TextInput}
-              underlineColorAndroid='transparent'
-              textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-              placeholderTextColor={Appearences.Registration.textColor}
-              onChangeText={(message) => {
-                let stateClone = [...this.state.pageThree];
-                if (message.length != 0) {
-                  stateClone[index].showError = false;
-                }
-                stateClone[index].value = message;
-                this.setState({ pageThree: stateClone });
-              }}
+            <View>
+              <View style={styles.headingTextContainer}>
+                <Text style={styles.subHeading}>{item.isRequired ? item.title + " * " : item.title}</Text>
+              </View>
+              <TextInput style={item.showError ? styles.TextInputError : styles.TextInput}
+                underlineColorAndroid='transparent'
+                textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                placeholderTextColor={Appearences.Registration.textColor}
+                onChangeText={(message) => {
+                  let stateClone = [...this.state.pageThree];
+                  if (message.length != 0) {
+                    stateClone[index].showError = false;
+                  }
+                  stateClone[index].value = message;
+                  this.setState({ pageThree: stateClone });
+                }}
 
-            >
-            </TextInput>
-          </View>
-      </DismissKeyboard>
-          
-          );
+              >
+              </TextInput>
+            </View>
+          </DismissKeyboard>
+
+        );
 
       // new code
       case "textarea":
         return (
           <DismissKeyboard>
 
-          <View>
-            <View style={styles.headingTextContainer}>
-              <Text style={styles.subHeading}>{item.isRequired ? item.title + " * " : item.title}</Text>
+            <View>
+              <View style={styles.headingTextContainer}>
+                <Text style={styles.subHeading}>{item.isRequired ? item.title + " * " : item.title}</Text>
+              </View>
+              <TextInput style={item.showError ? styles.TextInputMultilineError : styles.TextInputMultiline}
+                underlineColorAndroid='transparent'
+                multiline={true}
+                numberOfLines={10}
+
+                textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                placeholderTextColor={Appearences.Registration.textColor}
+                returnKeyType="done"
+                blurOnSubmit={true}
+                onChangeText={(message) => {
+                  let stateClone = [...this.state.pageThree];
+                  if (message.length != 0 && item.isRequired) {
+                    stateClone[index].showError = false;
+                  }
+                  stateClone[index].value = message;
+                  this.setState({ pageThree: stateClone })
+                }}
+
+              >
+              </TextInput>
             </View>
-            <TextInput style={item.showError ? styles.TextInputMultilineError : styles.TextInputMultiline}
-              underlineColorAndroid='transparent'
-              multiline={true}
-              numberOfLines={10}
+          </DismissKeyboard>
 
-              textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-              placeholderTextColor={Appearences.Registration.textColor}
-              returnKeyType="done"
-              blurOnSubmit={true}
-              onChangeText={(message) => {
-                let stateClone = [...this.state.pageThree];
-                if (message.length != 0 && item.isRequired) {
-                  stateClone[index].showError = false;
-                }
-                stateClone[index].value = message;
-                this.setState({ pageThree: stateClone })
-              }}
-
-            >
-            </TextInput>
-          </View>
-      </DismissKeyboard>
-          
-          );
+        );
       // new code
 
 
@@ -706,65 +706,65 @@ export default class PageThree extends Component<Props> {
           return (
             <DismissKeyboard>
 
-            <View key={index}>
+              <View key={index}>
 
-              <View style={styles.headingTextContainer}>
-                <Text style={styles.subHeading}>{item.isRequired ? data.title + " * " : data.title}</Text>
-              </View>
-              <TouchableOpacity onPress={() => {
-                reference.show();
-              }}
-                style={styles.row}
-              >
-                <ModalDropdown
-                  options={names}
-                  ref={el => reference = el}
-                  style={item.showError ? styles.pickerContainerError : styles.pickerContainer}
-                  dropdownStyle={{
-                    width: '92%',
-                    marginStart: -15,
-                    height: ((names.length * 27) + 27),
-                    elevation: 1,
-                    shadowOpacity: 0.1,
-                  }}
-                  dropdownTextHighlightStyle={styles.dropDownTextStyle}
-                  textStyle={styles.dorpdownContainerTextStyle}
-                  defaultValue={item.selectedValue}
-                  onSelect={(innerIndex, value) => {
-
-                    item.selectedValue = names[innerIndex];
-                    item.selectedId = ids[innerIndex];
-                    if (ids[innerIndex].length != 0) {
-                      var selecStateClone = [...this.state.pageThree];
-                      selecStateClone[index].showError = false;
-                      this.setState({ pageThree: selecStateClone });
-                    }
-
-                  }}
-                  renderSeparator={() => {
-                    return (<View style={{
-                      width: 0,
-                      height: 0,
-                    }} />);
-                  }}
-
-                  renderRow={(option, index, isSelected) => {
-                    return (<View style={styles.dorpDownRow}>
-                      <Text style={styles.dropDownTextStyle}>{option}</Text>
-                    </View>);
-                  }} />
-                <View style={styles.dropdownArrowContainer}>
-                  <Image
-                    style={styles.popupViewImage}
-                    source={require('../../../../res/images/right_arrow.png')}
-                  />
+                <View style={styles.headingTextContainer}>
+                  <Text style={styles.subHeading}>{item.isRequired ? data.title + " * " : data.title}</Text>
                 </View>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                  reference.show();
+                }}
+                  style={styles.row}
+                >
+                  <ModalDropdown
+                    options={names}
+                    ref={el => reference = el}
+                    style={item.showError ? styles.pickerContainerError : styles.pickerContainer}
+                    dropdownStyle={{
+                      width: '92%',
+                      marginStart: -15,
+                      height: ((names.length * 27) + 27),
+                      elevation: 1,
+                      shadowOpacity: 0.1,
+                    }}
+                    dropdownTextHighlightStyle={styles.dropDownTextStyle}
+                    textStyle={styles.dorpdownContainerTextStyle}
+                    defaultValue={item.selectedValue}
+                    onSelect={(innerIndex, value) => {
+
+                      item.selectedValue = names[innerIndex];
+                      item.selectedId = ids[innerIndex];
+                      if (ids[innerIndex].length != 0) {
+                        var selecStateClone = [...this.state.pageThree];
+                        selecStateClone[index].showError = false;
+                        this.setState({ pageThree: selecStateClone });
+                      }
+
+                    }}
+                    renderSeparator={() => {
+                      return (<View style={{
+                        width: 0,
+                        height: 0,
+                      }} />);
+                    }}
+
+                    renderRow={(option, index, isSelected) => {
+                      return (<View style={styles.dorpDownRow}>
+                        <Text style={styles.dropDownTextStyle}>{option}</Text>
+                      </View>);
+                    }} />
+                  <View style={styles.dropdownArrowContainer}>
+                    <Image
+                      style={styles.popupViewImage}
+                      source={require('../../../../res/images/right_arrow.png')}
+                    />
+                  </View>
+                </TouchableOpacity>
 
 
 
 
-            </View>
+              </View>
             </DismissKeyboard>
 
           );
@@ -774,47 +774,47 @@ export default class PageThree extends Component<Props> {
       case "checkbox":
         const data = item;
         return (
-      <DismissKeyboard>
-        
-        <View key={index}>
+          <DismissKeyboard>
 
-          <View style={styles.headingTextContainer}>
-            <Text style={styles.subHeading}>{item.isRequired ? data.title + " * " : data.title}</Text>
-          </View>
-          <View style={item.showError ? s.featuresContainerError : s.featuresContainer}>
-            {
-              data.values.map((item, key) => (
+            <View key={index}>
 
-                <CheckBox
-                  checkedColor={orderStore.color}
-                  uncheckedColor={Appearences.Colors.headingGrey}
-                  title={item.name}
-                  key={key}
-                  checked={item.is_checked
-                    //false
+              <View style={styles.headingTextContainer}>
+                <Text style={styles.subHeading}>{item.isRequired ? data.title + " * " : data.title}</Text>
+              </View>
+              <View style={item.showError ? s.featuresContainerError : s.featuresContainer}>
+                {
+                  data.values.map((item, key) => (
 
-                    //false
-                  }
-                  containerStyle={s.checkBox}
-                  size={Appearences.Fonts.headingFontSize + 1}
-                  textStyle={s.checkBoxText}
-                  key={key}
-                  onPress={() => {
-                    let checkBoxClone = [...this.state.pageThree];
-                    checkBoxClone[index].values[key].is_checked = !item.is_checked;
-                    checkBoxClone[index].showError = false;
-                    this.setState({ pageThree: checkBoxClone });
+                    <CheckBox
+                      checkedColor={orderStore.color}
+                      uncheckedColor={Appearences.Colors.headingGrey}
+                      title={item.name}
+                      key={key}
+                      checked={item.is_checked
+                        //false
 
-                  }}>
-                </CheckBox>
+                        //false
+                      }
+                      containerStyle={s.checkBox}
+                      size={Appearences.Fonts.headingFontSize + 1}
+                      textStyle={s.checkBoxText}
+                      key={key}
+                      onPress={() => {
+                        let checkBoxClone = [...this.state.pageThree];
+                        checkBoxClone[index].values[key].is_checked = !item.is_checked;
+                        checkBoxClone[index].showError = false;
+                        this.setState({ pageThree: checkBoxClone });
 
-              )
-              )}
-          </View>
+                      }}>
+                    </CheckBox>
 
-        </View>
-      </DismissKeyboard>
-        
+                  )
+                  )}
+              </View>
+
+            </View>
+          </DismissKeyboard>
+
         );
 
 
@@ -855,18 +855,18 @@ export default class PageThree extends Component<Props> {
     return (
       <DismissKeyboard>
 
-      <View style={{
-        height: '100%',
-        backgroundColor: 'white',
-      }}>
+        <View style={{
+          height: '100%',
+          backgroundColor: 'white',
+        }}>
 
-        <ScrollView
-          keyboardShouldPersistTaps='always'
-          contentContainerStyle={{
-            backgroundColor: 'white',
-            paddingBottom: 50,
-          }}>
-          {/* <TouchableWithoutFeedback
+          <ScrollView
+            keyboardShouldPersistTaps='always'
+            contentContainerStyle={{
+              backgroundColor: 'white',
+              paddingBottom: 50,
+            }}>
+            {/* <TouchableWithoutFeedback
             onPress={Keyboard.dismiss()}
             style={{
               height: '100%',width:'100%',
@@ -874,32 +874,32 @@ export default class PageThree extends Component<Props> {
             }}
           > */}
 
-          <View style={styles.container}>
+            <View style={styles.container}>
 
 
-            {
+              {
 
-              this.state.pageThree.map((item, key) => (
-                <View key={key}>
-                  {this.getPageThree(item, key)}
-                </View>
-              ))
+                this.state.pageThree.map((item, key) => (
+                  <View key={key}>
+                    {this.getPageThree(item, key)}
+                  </View>
+                ))
 
-            }
-            {this.state.showSubCategories ? this.getSubCategoriesView() : null}
-            {this.state.showSubSubCategories ? this.getSubSubCategoriesView() : null}
-            {this.state.showSubSubSubCategories ? this.getSubSubSubCategoriesView() : null}
-
-
-
-          </View>
-          {/* </TouchableWithoutFeedback> */}
+              }
+              {this.state.showSubCategories ? this.getSubCategoriesView() : null}
+              {this.state.showSubSubCategories ? this.getSubSubCategoriesView() : null}
+              {this.state.showSubSubSubCategories ? this.getSubSubSubCategoriesView() : null}
 
 
-        </ScrollView>
+
+            </View>
+            {/* </TouchableWithoutFeedback> */}
 
 
-      </View>
+          </ScrollView>
+
+
+        </View>
       </DismissKeyboard>
 
     );

@@ -394,7 +394,7 @@ export default class PageOne extends Component<Props> {
 
   }
   getCategories = (item) => {
-    const {showCategoryError, categoryId} = this.state;
+    const { showCategoryError, categoryId } = this.state;
     this.isCategoryRequired = item.is_required;
     // Keyboard.dismiss()
     var valuesArray = [];
@@ -487,69 +487,69 @@ export default class PageOne extends Component<Props> {
                   <Text style={styles.dropDownTextStyle}>{option}</Text>
                 </View>);
               }} /> */}
-              <SearchableDropdown
-                selectedItems={this.state.selectedItems}
-                onItemSelect={(item, index) => {
-                  const items = this.state.selectedItems;
-                  items.push(item)
-                  this.setState({ selectedItems: items });
-                  // const items = this.state.selectedItems;
-                  let { orderStore } = Store;
+          <SearchableDropdown
+            selectedItems={this.state.selectedItems}
+            onItemSelect={(item, index) => {
+              const items = this.state.selectedItems;
+              items.push(item)
+              this.setState({ selectedItems: items });
+              // const items = this.state.selectedItems;
+              let { orderStore } = Store;
 
 
-                // if (idsArray.length != 0)
-                  this.setState({ categoryId: item.id, showCategoryError: false });
+              // if (idsArray.length != 0)
+              this.setState({ categoryId: item.id, showCategoryError: false });
 
-                if (item.has_sub) {
-                  this.getSubCategories(item.id);
-                }
-                this.setState({ showSubCategories: false, showSubSubCategories: false, showSubSubSubCategories: false, });
-
-                if (item.has_template) {
-                  orderStore.optionSelectedModel.hasTemp = true;
-
-
-                }
-                else
-                  orderStore.optionSelectedModel.hasTemp = false;
-                orderStore.optionSelectedModel.categoryId = item.id;
-                orderStore.setOnDynamicOptionSeleted(true);
-                }}
-                containerStyle={{ paddingTop: 10 }}
-                onRemoveItem={(item, index) => {
-                  this.setState({ categoryId: '', showCategoryError: true });
-                  const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
-                  this.setState({ selectedItems: items });
-                }}
-                itemStyle={styles.searchableDropdown}
-                itemTextStyle={styles.dropDownTextStyle}
-                itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
-                items={categories}
-                resetValue={false}
-                textInputProps={
-                  {
-                    placeholder: "Search Categories",
-                    underlineColorAndroid: 'transparent',
-                    textAlign: Appearences.Rtl.enabled ? 'right' : 'left',
-                    placeholderTextColor: Appearences.Registration.textColor,
-                    style: showCategoryError && categoryId === '' ? styles.TextInputError : styles.TextInput,
-                    onTextChange: text => console.log(text)
-                  }
-                }
-                listProps={
-                  {
-                    nestedScrollEnabled: true,
-                  }
-                }
-            />
-            {
-                this.state.showCategorySpinner ?
-                  <ActivityIndicator
-                    size="small"
-                    style={{ position: 'absolute', zIndex: 10, alignSelf: 'center', right: '5%', bottom: '15%', }}
-                  /> : null
+              if (item.has_sub) {
+                this.getSubCategories(item.id);
               }
-            {/* <View style={styles.dropdownArrowContainer}>
+              this.setState({ showSubCategories: false, showSubSubCategories: false, showSubSubSubCategories: false, });
+
+              if (item.has_template) {
+                orderStore.optionSelectedModel.hasTemp = true;
+
+
+              }
+              else
+                orderStore.optionSelectedModel.hasTemp = false;
+              orderStore.optionSelectedModel.categoryId = item.id;
+              orderStore.setOnDynamicOptionSeleted(true);
+            }}
+            containerStyle={{ paddingTop: 10 }}
+            onRemoveItem={(item, index) => {
+              this.setState({ categoryId: '', showCategoryError: true });
+              const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
+              this.setState({ selectedItems: items });
+            }}
+            itemStyle={styles.searchableDropdown}
+            itemTextStyle={styles.dropDownTextStyle}
+            itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
+            items={categories}
+            resetValue={false}
+            textInputProps={
+              {
+                placeholder: "Search Categories",
+                underlineColorAndroid: 'transparent',
+                textAlign: Appearences.Rtl.enabled ? 'right' : 'left',
+                placeholderTextColor: Appearences.Registration.textColor,
+                style: showCategoryError && categoryId === '' ? styles.TextInputError : styles.TextInput,
+                onTextChange: text => console.log(text)
+              }
+            }
+            listProps={
+              {
+                nestedScrollEnabled: true,
+              }
+            }
+          />
+          {
+            this.state.showCategorySpinner ?
+              <ActivityIndicator
+                size="small"
+                style={{ position: 'absolute', zIndex: 10, alignSelf: 'center', right: '5%', bottom: '15%', }}
+              /> : null
+          }
+          {/* <View style={styles.dropdownArrowContainer}>
               
               <Image
                 style={styles.popupViewImage}
@@ -656,61 +656,61 @@ export default class PageOne extends Component<Props> {
           </TouchableOpacity> */}
 
           <SearchableDropdown
-                onItemSelect={(item, index) => {
-              
-                  // const items = this.state.selectedItems;
-                  let { orderStore } = Store;
-                  if (ids[index].length != 0)
-                    this.setState({ categoryId: ids[index] });
+            onItemSelect={(item, index) => {
 
-                  if (hasSubs[index]) {
-                    this.getSubSubCategories(ids[index]);
-                  }
+              // const items = this.state.selectedItems;
+              let { orderStore } = Store;
+              if (ids[index].length != 0)
+                this.setState({ categoryId: ids[index] });
 
-                  this.setState({ showSubSubCategories: false, showSubSubSubCategories: false });
-                  if (hasTemplate[index]) {
-                    orderStore.optionSelectedModel.hasTemp = true;
+              if (hasSubs[index]) {
+                this.getSubSubCategories(ids[index]);
+              }
 
-                  }
-                  else
-                    orderStore.optionSelectedModel.hasTemp = false;
-                  orderStore.optionSelectedModel.categoryId = ids[index];
-                  orderStore.setOnDynamicOptionSeleted(true);
-                }}
-                containerStyle={{ paddingTop: 5 }}
-                onRemoveItem={(item, index) => {
-                  const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
-                  this.setState({ selectedItems: items });
-                }}
-                itemStyle={styles.searchableDropdown}
-                itemTextStyle={styles.dropDownTextStyle}
-                itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
-                items={subCategories}
-                // defaultIndex={2}
-                resetValue={false}
-                textInputProps={
-                  {
-                    placeholder: "Search Car Make",
-                    underlineColorAndroid: 'transparent',
-                    textAlign: Appearences.Rtl.enabled ? 'right' : 'left',
-                    placeholderTextColor: Appearences.Registration.textColor,
-                    style: styles.TextInput,
-                    onTextChange: text => console.log(text)
-                  }
-                }
-                listProps={
-                  {
-                    nestedScrollEnabled: true,
-                  }
-                }
-            />
-            {
-              this.state.showCategorySpinner ?
-                <ActivityIndicator
-                  size="small"
-                  style={{ position: 'absolute', zIndex: 10, alignSelf: 'center', right: '10%', bottom: '25%', }}
-                /> : null
+              this.setState({ showSubSubCategories: false, showSubSubSubCategories: false });
+              if (hasTemplate[index]) {
+                orderStore.optionSelectedModel.hasTemp = true;
+
+              }
+              else
+                orderStore.optionSelectedModel.hasTemp = false;
+              orderStore.optionSelectedModel.categoryId = ids[index];
+              orderStore.setOnDynamicOptionSeleted(true);
+            }}
+            containerStyle={{ paddingTop: 5 }}
+            onRemoveItem={(item, index) => {
+              const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
+              this.setState({ selectedItems: items });
+            }}
+            itemStyle={styles.searchableDropdown}
+            itemTextStyle={styles.dropDownTextStyle}
+            itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
+            items={subCategories}
+            // defaultIndex={2}
+            resetValue={false}
+            textInputProps={
+              {
+                placeholder: "Search Car Make",
+                underlineColorAndroid: 'transparent',
+                textAlign: Appearences.Rtl.enabled ? 'right' : 'left',
+                placeholderTextColor: Appearences.Registration.textColor,
+                style: styles.TextInput,
+                onTextChange: text => console.log(text)
+              }
             }
+            listProps={
+              {
+                nestedScrollEnabled: true,
+              }
+            }
+          />
+          {
+            this.state.showCategorySpinner ?
+              <ActivityIndicator
+                size="small"
+                style={{ position: 'absolute', zIndex: 10, alignSelf: 'center', right: '10%', bottom: '25%', }}
+              /> : null
+          }
         </View>
       </DismissKeyboard>
     );
@@ -799,51 +799,51 @@ export default class PageOne extends Component<Props> {
             </View>
           </TouchableOpacity> */}
           <SearchableDropdown
-                onItemSelect={(item, index) => {
-                  let { orderStore } = Store;
-                  if (ids[index].length != 0)
-                    this.setState({ categoryId: ids[index] });
+            onItemSelect={(item, index) => {
+              let { orderStore } = Store;
+              if (ids[index].length != 0)
+                this.setState({ categoryId: ids[index] });
 
-                  if (hasSubs[index]) {
-                    this.getSubSubSubCategories(ids[index]);
-                  }
+              if (hasSubs[index]) {
+                this.getSubSubSubCategories(ids[index]);
+              }
 
-                  this.setState({ showSubSubSubCategories: false });
+              this.setState({ showSubSubSubCategories: false });
 
-                  if (hasTemplate[index]) {
-                    orderStore.optionSelectedModel.hasTemp = true;
+              if (hasTemplate[index]) {
+                orderStore.optionSelectedModel.hasTemp = true;
 
-                  }
-                  else
-                    orderStore.optionSelectedModel.hasTemp = false;
-                  orderStore.optionSelectedModel.categoryId = ids[index];
-                  orderStore.setOnDynamicOptionSeleted(true);
-                }}
-                containerStyle={{ padding: 5 }}
-                onRemoveItem={(item, index) => {
-                  const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
-                  this.setState({ selectedItems: items });
-                }}
-                itemStyle={styles.searchableDropdown}
-                itemTextStyle={styles.dropDownTextStyle}
-                itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
-                items={SubSubCategories}
-                defaultIndex={2}
-                resetValue={false}
-                textInputProps={
-                  {
-                    placeholder: "Search sub car make",
-                    underlineColorAndroid: "transparent",
-                    style: styles.TextInput,
-                    onTextChange: text => console.log(text)
-                  }
-                }
-                listProps={
-                  {
-                    nestedScrollEnabled: true,
-                  }
-                }
-            />
+              }
+              else
+                orderStore.optionSelectedModel.hasTemp = false;
+              orderStore.optionSelectedModel.categoryId = ids[index];
+              orderStore.setOnDynamicOptionSeleted(true);
+            }}
+            containerStyle={{ padding: 5 }}
+            onRemoveItem={(item, index) => {
+              const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
+              this.setState({ selectedItems: items });
+            }}
+            itemStyle={styles.searchableDropdown}
+            itemTextStyle={styles.dropDownTextStyle}
+            itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
+            items={SubSubCategories}
+            defaultIndex={2}
+            resetValue={false}
+            textInputProps={
+              {
+                placeholder: "Search sub car make",
+                underlineColorAndroid: "transparent",
+                style: styles.TextInput,
+                onTextChange: text => console.log(text)
+              }
+            }
+            listProps={
+              {
+                nestedScrollEnabled: true,
+              }
+            }
+          />
         </View>
       </DismissKeyboard>
     );
@@ -924,51 +924,51 @@ export default class PageOne extends Component<Props> {
           </TouchableOpacity> */}
 
           <SearchableDropdown
-                onItemSelect={(item, index) => {
-                  let { orderStore } = Store;
-                  if (ids[index].length != 0)
-                    this.setState({ categoryId: ids[index] });
+            onItemSelect={(item, index) => {
+              let { orderStore } = Store;
+              if (ids[index].length != 0)
+                this.setState({ categoryId: ids[index] });
 
-                  if (hasTemplate[index]) {
-                    orderStore.optionSelectedModel.hasTemp = true;
+              if (hasTemplate[index]) {
+                orderStore.optionSelectedModel.hasTemp = true;
 
 
-                  }
-                  else
-                    orderStore.optionSelectedModel.hasTemp = false;
-                  orderStore.optionSelectedModel.categoryId = ids[index];
-                  orderStore.setOnDynamicOptionSeleted(true);
-                }}
-                containerStyle={{ padding: 5 }}
-                onRemoveItem={(item, index) => {
-                  const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
-                  this.setState({ selectedItems: items });
-                }}
-                itemStyle={styles.searchableDropdown}
-                itemTextStyle={styles.dropDownTextStyle}
-                itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
-                items={SubSubSubCategories}
-                defaultIndex={2}
-                resetValue={false}
-                textInputProps={
-                  {
-                    placeholder: "Search",
-                    underlineColorAndroid: "transparent",
-                    style: {
-                        padding: 12,
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        borderRadius: 5,
-                    },
-                    onTextChange: text => console.log(text)
-                  }
-                }
-                listProps={
-                  {
-                    nestedScrollEnabled: true,
-                  }
-                }
-            />
+              }
+              else
+                orderStore.optionSelectedModel.hasTemp = false;
+              orderStore.optionSelectedModel.categoryId = ids[index];
+              orderStore.setOnDynamicOptionSeleted(true);
+            }}
+            containerStyle={{ padding: 5 }}
+            onRemoveItem={(item, index) => {
+              const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
+              this.setState({ selectedItems: items });
+            }}
+            itemStyle={styles.searchableDropdown}
+            itemTextStyle={styles.dropDownTextStyle}
+            itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
+            items={SubSubSubCategories}
+            defaultIndex={2}
+            resetValue={false}
+            textInputProps={
+              {
+                placeholder: "Search",
+                underlineColorAndroid: "transparent",
+                style: {
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: '#ccc',
+                  borderRadius: 5,
+                },
+                onTextChange: text => console.log(text)
+              }
+            }
+            listProps={
+              {
+                nestedScrollEnabled: true,
+              }
+            }
+          />
 
 
 
@@ -1315,12 +1315,12 @@ export default class PageOne extends Component<Props> {
                   this.showActionSheet
 
                   // () => {
-                   
-                    // ImagePicker.openPicker({
-                    //   multiple: true
-                    // }).then(images => {
-                    //   this.uploadMultipleImages(images);
-                    // });
+
+                  // ImagePicker.openPicker({
+                  //   multiple: true
+                  // }).then(images => {
+                  //   this.uploadMultipleImages(images);
+                  // });
                   // }
 
                 }
@@ -1376,26 +1376,26 @@ export default class PageOne extends Component<Props> {
               options={['Select from Camera', 'Select from Library', 'Cancel']}
               cancelButtonIndex={2}
               destructiveButtonIndex={2}
-              onPress={(index) => { 
-                if(index==0){
-                    ImagePicker.openCamera({
-                    mediaType:'photo',
+              onPress={(index) => {
+                if (index == 0) {
+                  ImagePicker.openCamera({
+                    mediaType: 'photo',
                     width: 500,
                     height: 500,
                     includeExif: true
-                    }).then(images => {
-                      this.uploadMultipleImages(images);
-                    });
+                  }).then(images => {
+                    this.uploadMultipleImages(images);
+                  });
                 }
-                if(index==1){
-                    ImagePicker.openPicker({
-                      multiple: true
-                    }).then(images => {
-                      this.uploadMultipleImages(images);
-                    });
+                if (index == 1) {
+                  ImagePicker.openPicker({
+                    multiple: true
+                  }).then(images => {
+                    this.uploadMultipleImages(images);
+                  });
                 }
                 // console.log('index',index)
-               }}
+              }}
             />
           </ScrollView>
 

@@ -51,7 +51,7 @@ const theme = {
 class Package extends Component<Props> {
 
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('otherParam', stores.screenTitles.packages ),
+    title: navigation.getParam('otherParam', stores.screenTitles.packages),
     headerStyle: {
       backgroundColor: stores.color,
     },
@@ -360,7 +360,7 @@ class Package extends Component<Props> {
 
   openModal = (item) => {
     //console.log('modal open')
-    this.setState({currentItem:item})
+    this.setState({ currentItem: item })
     this.refs.modal3.open()
   }
 

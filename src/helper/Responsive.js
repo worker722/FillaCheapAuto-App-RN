@@ -1,5 +1,5 @@
 import React from 'react'
-import {Dimensions,PixelRatio} from 'react-native'
+import { Dimensions, PixelRatio } from 'react-native'
 const widthPercentageToDP = widthPercent => {
     const screenWidth = Dimensions.get('window').width;
     // Convert string input to decimal number

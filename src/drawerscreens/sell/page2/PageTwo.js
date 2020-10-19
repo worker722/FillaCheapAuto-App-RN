@@ -235,7 +235,7 @@ export default class PageTwo extends Component<Props> {
                 nestedScrollEnabled: true,
               }
             }
-        />
+          />
 
         </View>
       </DismissKeyboard>
@@ -378,7 +378,7 @@ export default class PageTwo extends Component<Props> {
                 <View style={styles.headingTextContainer}>
                   <Text style={styles.subHeading}>{item.isRequired ? data.title + " * " : data.title}</Text>
                 </View>
-               {/* { item.title === 'Condition' || item.title === 'Ad Type' ? <TouchableOpacity onPress={() => {
+                {/* { item.title === 'Condition' || item.title === 'Ad Type' ? <TouchableOpacity onPress={() => {
                   ref.show();
                 }}
                   style={styles.row}
@@ -435,44 +435,44 @@ export default class PageTwo extends Component<Props> {
                 </TouchableOpacity> : */}
 
                 <SearchableDropdown
-                    items={namesSearch}
-                    onItemSelect={(value, index) => {
-                      item.selectedValue = names[value.index];
-                      item.selectedId = ids[value.index];
-                      if (ids[value.index].length != 0) {
-                        var selecStateClone = [...this.state.pageTwo];
-                        if(selecStateClone[index]){
-                          selecStateClone[index].showError = false;
-                        }
-                        this.setState({ pageTwo: selecStateClone });
+                  items={namesSearch}
+                  onItemSelect={(value, index) => {
+                    item.selectedValue = names[value.index];
+                    item.selectedId = ids[value.index];
+                    if (ids[value.index].length != 0) {
+                      var selecStateClone = [...this.state.pageTwo];
+                      if (selecStateClone[index]) {
+                        selecStateClone[index].showError = false;
                       }
-                    }}
-                    containerStyle={{ paddingTop: 10 }}
-                    onRemoveItem={(item, index) => {
-                      // this.setState({ categoryId: '', showCategoryError: true });
-                      // const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
-                      // this.setState({ selectedItems: items });
-                    }}
-                    itemStyle={styles.searchableDropdown}
-                    itemTextStyle={styles.dropDownTextStyle}
-                    itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
-                    resetValue={false}
-                    textInputProps={
-                      {
-                        placeholder: `Search ${item.title}`,
-                        underlineColorAndroid: 'transparent',
-                        textAlign: Appearences.Rtl.enabled ? 'right' : 'left',
-                        placeholderTextColor: Appearences.Registration.textColor,
-                        style: item.showError ? styles.pickerContainerError : styles.pickerContainer,
-                        onTextChange: text => console.log(text)
-                      }
+                      this.setState({ pageTwo: selecStateClone });
                     }
-                    listProps={
-                      {
-                        nestedScrollEnabled: true,
-                      }
+                  }}
+                  containerStyle={{ paddingTop: 10 }}
+                  onRemoveItem={(item, index) => {
+                    // this.setState({ categoryId: '', showCategoryError: true });
+                    // const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
+                    // this.setState({ selectedItems: items });
+                  }}
+                  itemStyle={styles.searchableDropdown}
+                  itemTextStyle={styles.dropDownTextStyle}
+                  itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
+                  resetValue={false}
+                  textInputProps={
+                    {
+                      placeholder: `Search ${item.title}`,
+                      underlineColorAndroid: 'transparent',
+                      textAlign: Appearences.Rtl.enabled ? 'right' : 'left',
+                      placeholderTextColor: Appearences.Registration.textColor,
+                      style: item.showError ? styles.pickerContainerError : styles.pickerContainer,
+                      onTextChange: text => console.log(text)
                     }
-                /> 
+                  }
+                  listProps={
+                    {
+                      nestedScrollEnabled: true,
+                    }
+                  }
+                />
                 {/* } */}
 
 
@@ -1161,7 +1161,7 @@ export default class PageTwo extends Component<Props> {
                 // height: ((names.length * 27) + 27)>'80%'?'80%': ((names.length * 27) + 27),
                 // elevation: 1,
                 // shadowOpacity: 0.1,
-              }}  
+              }}
               dropdownTextHighlightStyle={styles.dropDownTextStyle}
               textStyle={styles.dorpdownContainerTextStyle}
               defaultValue={orderStore.sell.extra.select}
@@ -1300,11 +1300,11 @@ export default class PageTwo extends Component<Props> {
     orderStore.setOnDynamicOptionSeleted(false);
     this.setState({ categoryId: orderStore.optionSelectedModel.categoryId });
     // if (orderStore.optionSelectedModel.hasTemp)
-      this.getDynamicFields(orderStore.optionSelectedModel.categoryId);
+    this.getDynamicFields(orderStore.optionSelectedModel.categoryId);
 
   }
 
- 
+
   createData = async () => {
     let { orderStore } = Store;
 

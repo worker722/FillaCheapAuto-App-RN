@@ -2,387 +2,387 @@
 import React, { Component } from 'react';
 import Appearences from '../../../config/Appearences';
 import {
-  StyleSheet,I18nManager
+  StyleSheet, I18nManager
 } from 'react-native';
 
 
-  const localProps = {
-     topMargin:10,
-    sidePadding:15,
-  
-  };
+const localProps = {
+  topMargin: 10,
+  sidePadding: 15,
+
+};
 const styles = StyleSheet.create({
- 
-    container:{
-   
-   paddingStart:localProps.sidePadding,
-   paddingEnd:localProps.sidePadding,
+
+  container: {
+
+    paddingStart: localProps.sidePadding,
+    paddingEnd: localProps.sidePadding,
   },
-  
- 
-  
- 
-    headingTextContainer:{
-      flexDirection:'row',
-      marginTop:localProps.topMargin,
-      alignItems:'center',
-      justifyContent:'space-between'
-    },
-    subHeading:{
-      fontSize:Appearences.Fonts.subHeadingFontSize-1,
-      fontWeight:Appearences.Fonts.fontWeight,
-      color:Appearences.Colors.black,
-    },
-    headingTextBlack:{
-      fontSize:Appearences.Fonts.headingFontSize,
-      color:Appearences.Colors.headingGrey,
-   },
-   errorImage:{
-    width:25,
-    height:25,
-   },
-   richEditorContainer:{
-    borderColor:Appearences.Colors.lightGrey,
-    borderWidth:1,
-    width:'100%',
-    height:120,
+
+
+
+
+  headingTextContainer: {
+    flexDirection: 'row',
+    marginTop: localProps.topMargin,
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  subHeading: {
+    fontSize: Appearences.Fonts.subHeadingFontSize - 1,
+    fontWeight: Appearences.Fonts.fontWeight,
+    color: Appearences.Colors.black,
+  },
+  headingTextBlack: {
+    fontSize: Appearences.Fonts.headingFontSize,
+    color: Appearences.Colors.headingGrey,
+  },
+  errorImage: {
+    width: 25,
+    height: 25,
+  },
+  richEditorContainer: {
+    borderColor: Appearences.Colors.lightGrey,
+    borderWidth: 1,
+    width: '100%',
+    height: 120,
     flexDirection: 'column-reverse',
-    marginTop:localProps.topMargin,
+    marginTop: localProps.topMargin,
   },
-  richEditorContainerError:{
-    borderColor:Appearences.Colors.lightGrey,
-    borderWidth:1,
-    width:'100%',
-    height:120,
+  richEditorContainerError: {
+    borderColor: Appearences.Colors.lightGrey,
+    borderWidth: 1,
+    width: '100%',
+    height: 120,
     flexDirection: 'column-reverse',
-    marginTop:localProps.topMargin,
-    borderColor:'red',
-    borderWidth:1,
+    marginTop: localProps.topMargin,
+    borderColor: 'red',
+    borderWidth: 1,
   },
-   headingTextGrey:{
-    marginStart:3,
-    fontSize:Appearences.Fonts.paragraphFontSize,
-    color:Appearences.Colors.grey,
+  headingTextGrey: {
+    marginStart: 3,
+    fontSize: Appearences.Fonts.paragraphFontSize,
+    color: Appearences.Colors.grey,
   },
-   TextInput:{
-    height:Appearences.Registration.itemHeight,
-    width:"100%",
-    backgroundColor:Appearences.Registration.boxColor,
-    paddingStart:15,
-    paddingEnd:15,
-    marginTop:localProps.topMargin,
-    paddingBottom:0,
-    paddingTop:0,
-    fontSize:Appearences.Fonts.headingFontSize,
-    color:Appearences.Colors.headingGrey,
-    borderRadius:5,
+  TextInput: {
+    height: Appearences.Registration.itemHeight,
+    width: "100%",
+    backgroundColor: Appearences.Registration.boxColor,
+    paddingStart: 15,
+    paddingEnd: 15,
+    marginTop: localProps.topMargin,
+    paddingBottom: 0,
+    paddingTop: 0,
+    fontSize: Appearences.Fonts.headingFontSize,
+    color: Appearences.Colors.headingGrey,
+    borderRadius: 5,
 
   },
-  TextInputError:{
-    height:Appearences.Registration.itemHeight,
-    width:"100%",
-    backgroundColor:Appearences.Registration.boxColor,
-    paddingStart:15,
-    paddingEnd:15,
-    marginTop:localProps.topMargin,
-    paddingBottom:0,
-    paddingTop:0,
-    fontSize:Appearences.Fonts.headingFontSize,
-    borderColor:'red',
-    borderWidth:1,
-    fontSize:Appearences.Fonts.headingFontSize,
-    color:Appearences.Colors.headingGrey,
-    borderRadius:5,
+  TextInputError: {
+    height: Appearences.Registration.itemHeight,
+    width: "100%",
+    backgroundColor: Appearences.Registration.boxColor,
+    paddingStart: 15,
+    paddingEnd: 15,
+    marginTop: localProps.topMargin,
+    paddingBottom: 0,
+    paddingTop: 0,
+    fontSize: Appearences.Fonts.headingFontSize,
+    borderColor: 'red',
+    borderWidth: 1,
+    fontSize: Appearences.Fonts.headingFontSize,
+    color: Appearences.Colors.headingGrey,
+    borderRadius: 5,
   },
-   PopupViewContainer:{
-    height:Appearences.Registration.itemHeight,
-    width:"100%",
-    backgroundColor:Appearences.Registration.boxColor,  
-    paddingStart:15,
-    paddingEnd:15,
-    marginTop:localProps.topMargin,
-    paddingBottom:0,
-    paddingTop:0,
-     justifyContent:'space-between',
-    alignItems:'center',
-    flexDirection:'row',
+  PopupViewContainer: {
+    height: Appearences.Registration.itemHeight,
+    width: "100%",
+    backgroundColor: Appearences.Registration.boxColor,
+    paddingStart: 15,
+    paddingEnd: 15,
+    marginTop: localProps.topMargin,
+    paddingBottom: 0,
+    paddingTop: 0,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
-  popupViewText:{
-    fontSize:Appearences.Fonts.paragraphFontSize,
+  popupViewText: {
+    fontSize: Appearences.Fonts.paragraphFontSize,
   },
-  popupViewImage:{
-    width:Appearences.Fonts.paragraphFontSize,
-    height:Appearences.Fonts.paragraphFontSize,
-    transform: [{scaleX: I18nManager.isRTL ? -1 : 1}],
-    marginTop:10,
+  popupViewImage: {
+    width: Appearences.Fonts.paragraphFontSize,
+    height: Appearences.Fonts.paragraphFontSize,
+    transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }],
+    marginTop: 10,
 
   },
-
-
 
 
 
-// Modal Styling Start
+
+
+  // Modal Styling Start
   modal: {
-   
+
     width: '80%',
-    height:'50%',
+    height: '50%',
   },
 
-  modalHeadingTextContainer:{
-    marginTop:localProps.topMargin,
-    marginStart:localProps.sidePadding-6,
-    paddingTop:localProps.topMargin,
-    paddingBottom:localProps.topMargin,
+  modalHeadingTextContainer: {
+    marginTop: localProps.topMargin,
+    marginStart: localProps.sidePadding - 6,
+    paddingTop: localProps.topMargin,
+    paddingBottom: localProps.topMargin,
 
-    
+
   },
-  seperator:{
-    backgroundColor:Appearences.Colors.lightGrey,
-    height:1,
-    width:'100%',
-    marginTop:localProps.topMargin,
+  seperator: {
+    backgroundColor: Appearences.Colors.lightGrey,
+    height: 1,
+    width: '100%',
+    marginTop: localProps.topMargin,
   },
-  modalText:{
-    alignSelf:'flex-start',
-    fontSize:Appearences.Fonts.headingFontSize,
+  modalText: {
+    alignSelf: 'flex-start',
+    fontSize: Appearences.Fonts.headingFontSize,
 
-    color:Appearences.Colors.grey,
-  
+    color: Appearences.Colors.grey,
 
- },
- radioLabelStyle:{
-  fontSize: Appearences.Fonts.headingFontSize,
-   color: Appearences.Colors.grey,
-   marginStart:localProps.sidePadding,
+
   },
- labelWrapStyle:{
-  justifyContent:'flex-start',
-  alignItems:'center',
-  width:'50%',
-
-},
-radioButtonStyle:{
-  alignSelf:'flex-end',
- 
+  radioLabelStyle: {
+    fontSize: Appearences.Fonts.headingFontSize,
+    color: Appearences.Colors.grey,
+    marginStart: localProps.sidePadding,
   },
-  buttonWrapStyle:{
-    width:'50%',
-    justifyContent:'center',
-    alignItems:'center',
-    paddingEnd:localProps.sidePadding,
-    
+  labelWrapStyle: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '50%',
+
   },
-  noStyle:{},
-// Modal Styling End  
+  radioButtonStyle: {
+    alignSelf: 'flex-end',
 
-//picker style start
+  },
+  buttonWrapStyle: {
+    width: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingEnd: localProps.sidePadding,
 
-pickerContainer:{
-  height:Appearences.Registration.itemHeight,
-  width:"100%",
-  backgroundColor:Appearences.Registration.boxColor,  
-  paddingStart:15,
-  paddingEnd:15,
-  marginTop:localProps.topMargin,
-  borderRadius:5,
-  paddingBottom:0,
-  paddingTop:0,
-   justifyContent:'space-between',
-  alignItems:'center',
-  flexDirection:'row',
-},
-pickerContainerError:{
-  height:Appearences.Registration.itemHeight,
-  width:"100%",
-  backgroundColor:Appearences.Registration.boxColor,  
-  paddingStart:15,
-  paddingEnd:15,
-  marginTop:localProps.topMargin,
-  paddingBottom:0,
-  paddingTop:0,
-   justifyContent:'space-between',
-  alignItems:'center',
-  flexDirection:'row',
-  borderColor:'red',
-  borderWidth:1,
-  borderRadius:5,
-},
-dropDownTextStyle :{
-  fontSize:Appearences.Fonts.headingFontSize,
-  color:Appearences.Colors.headingGrey,
-  paddingStart:5,
-  paddingTop:5,
-  paddingBottom:5,
-},
-dorpdownContainerTextStyle:{
-  fontSize:Appearences.Fonts.headingFontSize,
-  color:Appearences.Colors.headingGrey,
-  
-},
-dorpDownRow:{
-  paddingTop:5,
-  paddingStart:15,
-  width:'100%',
-  justifyContent:'center',
-},
-searchableDropdown: {
-  width:'100%',
-  paddingTop:5,
-  paddingStart:15,
-  justifyContent:'center',
-  borderColor: Appearences.Colors.lightGrey, paddingStart:15, borderBottomWidth: 1
-},
+  },
+  noStyle: {},
+  // Modal Styling End  
 
-dorpDownStyle:{
-  width:'92%',
-  height:250,
-  marginStart:-15,
-  elevation:1,
-  shadowOpacity: 0.1,
-},
-TextInputMultiline:{
-    
-  backgroundColor:Appearences.Registration.boxColor,
-  fontSize:Appearences.Fonts.headingFontSize,
-  minHeight: 100,
-  textAlignVertical: 'top',
-  maxHeight:100,
-  padding:15,
-  color:Appearences.Colors.headingGrey,
-  borderRadius:Appearences.Radius.radius,
-  marginTop:localProps.topMargin,
-},
-TextInputMultilineError:{
-    
-  backgroundColor:Appearences.Registration.boxColor,
-  fontSize:Appearences.Fonts.headingFontSize,
-  minHeight: 100,
-  textAlignVertical: 'top',
-  maxHeight:100,
-  padding:15,
-  color:Appearences.Colors.headingGrey,
-  borderRadius:Appearences.Radius.radius,
-  marginTop:localProps.topMargin,
-  borderWidth:1,
-  borderColor:'red',
-},
-dropdownArrowContainer:{
-  flexDirection:'row',
-  alignItems:'center',
-  justifyContent:'flex-end',
-  position:'absolute',
-  height:'100%',
-  width:'100%',
-  backgroundColor:'transparent',
-  paddingEnd:15,
-},
-hideView:{
-  overflow:'hidden',
-  borderWidth:5,
-  borderColor:'red',
-  
-},
-showView:{
-  overflow:'visible',
-  borderWidth:5,
-  borderColor:'black',
-},
-//picker style end
+  //picker style start
 
-fileUploadContainer:{
-  width:'100%',
-  height:200,
-  backgroundColor:Appearences.Colors.lightGrey,
-  alignItems:'center',
-  justifyContent:'center',
-  marginTop:localProps.topMargin,
-  borderRadius:5,
-},
-fileUploadContainerError:{
-  width:'100%',
-  height:200,
-  backgroundColor:Appearences.Colors.lightGrey,
-  alignItems:'center',
-  justifyContent:'center',
-  marginTop:localProps.topMargin,
-  borderWidth:1,
-  borderColor:"red",
-  borderRadius:5,
+  pickerContainer: {
+    height: Appearences.Registration.itemHeight,
+    width: "100%",
+    backgroundColor: Appearences.Registration.boxColor,
+    paddingStart: 15,
+    paddingEnd: 15,
+    marginTop: localProps.topMargin,
+    borderRadius: 5,
+    paddingBottom: 0,
+    paddingTop: 0,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  pickerContainerError: {
+    height: Appearences.Registration.itemHeight,
+    width: "100%",
+    backgroundColor: Appearences.Registration.boxColor,
+    paddingStart: 15,
+    paddingEnd: 15,
+    marginTop: localProps.topMargin,
+    paddingBottom: 0,
+    paddingTop: 0,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderColor: 'red',
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  dropDownTextStyle: {
+    fontSize: Appearences.Fonts.headingFontSize,
+    color: Appearences.Colors.headingGrey,
+    paddingStart: 5,
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  dorpdownContainerTextStyle: {
+    fontSize: Appearences.Fonts.headingFontSize,
+    color: Appearences.Colors.headingGrey,
 
-},
+  },
+  dorpDownRow: {
+    paddingTop: 5,
+    paddingStart: 15,
+    width: '100%',
+    justifyContent: 'center',
+  },
+  searchableDropdown: {
+    width: '100%',
+    paddingTop: 5,
+    paddingStart: 15,
+    justifyContent: 'center',
+    borderColor: Appearences.Colors.lightGrey, paddingStart: 15, borderBottomWidth: 1
+  },
 
+  dorpDownStyle: {
+    width: '92%',
+    height: 250,
+    marginStart: -15,
+    elevation: 1,
+    shadowOpacity: 0.1,
+  },
+  TextInputMultiline: {
 
-fileUploadLoaderAbsoluteContainer:{
-  width:'100%',
-  height:200,
-  backgroundColor:'rgba(102,102,102,0.3)',
-  alignItems:'center',
-  justifyContent:'center',
-  marginTop:localProps.topMargin,
-  position:'absolute',
-  zIndex:1,
-},
-fileListAbsoluteContainer:{
-  width:'100%',
-  height:200,
-  backgroundColor:'transparent',
-  marginTop:localProps.topMargin,
-  position:'absolute',
-  padding:5,
-  flexWrap:'wrap',
-  flexDirection:'row',
-  zIndex:0,
+    backgroundColor: Appearences.Registration.boxColor,
+    fontSize: Appearences.Fonts.headingFontSize,
+    minHeight: 100,
+    textAlignVertical: 'top',
+    maxHeight: 100,
+    padding: 15,
+    color: Appearences.Colors.headingGrey,
+    borderRadius: Appearences.Radius.radius,
+    marginTop: localProps.topMargin,
+  },
+  TextInputMultilineError: {
 
-},
-fileThumbAbsolute:{
-  alignItems:'flex-end',
-  position: 'absolute',
-  width:'100%',
-  height:30,
-},
-fileThumbCrossImage:{
-  width:20,
-  height:20,
-  resizeMode:'cover',
-},
-fileThumb:{
-  width:90,height:90,
-  margin:1,
-},
-fileUploadText:{
-  color:Appearences.Colors.headingGrey,
-  fontSize:Appearences.Fonts.headingFontSize+10,
-  fontWeight:'bold',
-},
-image:{resizeMode:'cover', width:90,height:90,},
+    backgroundColor: Appearences.Registration.boxColor,
+    fontSize: Appearences.Fonts.headingFontSize,
+    minHeight: 100,
+    textAlignVertical: 'top',
+    maxHeight: 100,
+    padding: 15,
+    color: Appearences.Colors.headingGrey,
+    borderRadius: Appearences.Radius.radius,
+    marginTop: localProps.topMargin,
+    borderWidth: 1,
+    borderColor: 'red',
+  },
+  dropdownArrowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    backgroundColor: 'transparent',
+    paddingEnd: 15,
+  },
+  hideView: {
+    overflow: 'hidden',
+    borderWidth: 5,
+    borderColor: 'red',
+
+  },
+  showView: {
+    overflow: 'visible',
+    borderWidth: 5,
+    borderColor: 'black',
+  },
+  //picker style end
+
+  fileUploadContainer: {
+    width: '100%',
+    height: 200,
+    backgroundColor: Appearences.Colors.lightGrey,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: localProps.topMargin,
+    borderRadius: 5,
+  },
+  fileUploadContainerError: {
+    width: '100%',
+    height: 200,
+    backgroundColor: Appearences.Colors.lightGrey,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: localProps.topMargin,
+    borderWidth: 1,
+    borderColor: "red",
+    borderRadius: 5,
+
+  },
 
 
+  fileUploadLoaderAbsoluteContainer: {
+    width: '100%',
+    height: 200,
+    backgroundColor: 'rgba(102,102,102,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: localProps.topMargin,
+    position: 'absolute',
+    zIndex: 1,
+  },
+  fileListAbsoluteContainer: {
+    width: '100%',
+    height: 200,
+    backgroundColor: 'transparent',
+    marginTop: localProps.topMargin,
+    position: 'absolute',
+    padding: 5,
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+    zIndex: 0,
+
+  },
+  fileThumbAbsolute: {
+    alignItems: 'flex-end',
+    position: 'absolute',
+    width: '100%',
+    height: 30,
+  },
+  fileThumbCrossImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'cover',
+  },
+  fileThumb: {
+    width: 90, height: 90,
+    margin: 1,
+  },
+  fileUploadText: {
+    color: Appearences.Colors.headingGrey,
+    fontSize: Appearences.Fonts.headingFontSize + 10,
+    fontWeight: 'bold',
+  },
+  image: { resizeMode: 'cover', width: 90, height: 90, },
 
 
-main: {
-  flex: 1,
-  alignItems: 'stretch',
-},
-toolbarButton: {
-  fontSize: 20,
-  width: 28,
-  height: 28,
-  textAlign: 'center'
-  
-},
-italicButton: {
-  fontStyle: 'italic'
-},
-boldButton: {
-  fontWeight: 'bold'
-},
-underlineButton: {
-  textDecorationLine: 'underline'
-},
-lineThroughButton: {
-  textDecorationLine: 'line-through'
-},
+
+
+  main: {
+    flex: 1,
+    alignItems: 'stretch',
+  },
+  toolbarButton: {
+    fontSize: 20,
+    width: 28,
+    height: 28,
+    textAlign: 'center'
+
+  },
+  italicButton: {
+    fontStyle: 'italic'
+  },
+  boldButton: {
+    fontWeight: 'bold'
+  },
+  underlineButton: {
+    textDecorationLine: 'underline'
+  },
+  lineThroughButton: {
+    textDecorationLine: 'line-through'
+  },
 
 });
 export default styles;
