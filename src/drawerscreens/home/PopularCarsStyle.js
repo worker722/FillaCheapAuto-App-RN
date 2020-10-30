@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Appearences from '../../config/Appearences';
-import {I18nManager} from 'react-native';
+import { I18nManager } from 'react-native';
 
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     // marginStart:-5,
     backgroundColor: 'white',
     borderRadius: Appearences.Radius.radius,
-    
+
   },
   imageContainer: {
     flex: 1,
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   topRightContentImage: {
-    transform: [{scaleX: I18nManager.isRTL ? -1 : 1}],
+    transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }],
   },
   bottomRowContainer: {
     height: '50%',
@@ -80,13 +80,13 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     padding: 15,
-    marginBottom:-12,marginTop:-12,
+    marginBottom: -12, marginTop: -12,
     justifyContent: 'center',
   },
   textContainer1: {
     flex: 1,
     // paddingTop: 5,
-    alignItems:'center',
+    alignItems: 'center',
   },
   brandTitleStyle: {
     fontSize: Appearences.Fonts.headingFontSize,

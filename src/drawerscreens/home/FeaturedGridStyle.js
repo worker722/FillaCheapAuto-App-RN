@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Appearences from '../../config/Appearences';
-import {width, height} from 'react-native-dimension';
-import {I18nManager} from 'react-native';
+import { width, height } from 'react-native-dimension';
+import { I18nManager } from 'react-native';
 
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   topRightContentImage: {
-    transform: [{scaleX: I18nManager.isRTL ? -1 : 1}],
+    transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }],
   },
   triangleCorner: {
     width: 0,
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 50,
     borderTopWidth: 50,
     borderRightColor: 'transparent',
-    transform: [{rotate: '90deg'}, {scaleX: I18nManager.isRTL ? -1 : 1}],
+    transform: [{ rotate: '90deg' }, { scaleX: I18nManager.isRTL ? -1 : 1 }],
   },
   bottomRowContainer: {
     height: '50%',

@@ -44,6 +44,8 @@ import DrawerRightIcons from '../../config/DrawerRightIcons';
 import { NavigationActions, StackActions } from 'react-navigation';
 
 
+const featuredItemWidth = Dimensions.get("screen").width * 47 / 100;
+
 @observer
 export default class Home extends Component<Props> {
   static navigationOptions = ({ navigation }) => ({
@@ -87,6 +89,7 @@ export default class Home extends Component<Props> {
     super(props);
 
     this.springValue = new Animated.Value(100);
+    this.featuredAdsIndex = 2;
 
     this.state = {
       cats: [],
@@ -97,6 +100,16 @@ export default class Home extends Component<Props> {
       showChatModel: false,
       similar_ad_id: 0,
     };
+
+    const renderInterval = setInterval(() => {
+      if (this.flFeaturedAdsRef != null) {
+        if (this.featuredAdsIndex == 3)
+          this.featuredAdsIndex = -1;
+        this.featuredAdsIndex++;
+        this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
+      }
+    }, 2000);
+    this.setState({ renderInterval });
   }
 
   _spring() {
@@ -129,6 +142,7 @@ export default class Home extends Component<Props> {
   };
 
   componentWillUnmount = async () => {
+    clearInterval(this.state.renderInterval);
     await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
   }
   handleBackButton = async () => {
@@ -355,11 +369,16 @@ export default class Home extends Component<Props> {
     Linking.openURL(phoneNumber);
   }
 
+  getItemLayout = (data, index) => (
+    { length: 5, offset: index * featuredItemWidth, index }
+  )
+
   renderFeaturedAdsGrid = () => {
     let { orderStore } = Store;
     if (!orderStore.home.is_show_featured)
       return null;
     const data = orderStore.home.featured_ads;
+
     return (
 
       <View>
@@ -393,6 +412,10 @@ export default class Home extends Component<Props> {
 
 
           <FlatList
+            ref={(ref) => { this.flFeaturedAdsRef = ref; }}
+            initialScrollIndex={0}
+            getItemLayout={this.getItemLayout}
+            initialNumToRender={5}
             data={data.ads}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
