@@ -23,83 +23,84 @@ import ConfirmDialogue from '../../../../components/ConfirmDialogue';
 import MenuConfirmDialogue from '../../../../components/ConfirmDialogue';
 @observer
 export default class AdDetailTabManager extends React.Component {
-selec_opt;item; option; text; index;
-nav_data = this.props.navigation.state.params.adId;
-repeat=false;
+  selec_opt; item; option; text; index;
+  nav_data = this.props.navigation.state.params.adId;
+  repeat = false;
 
-constructor(props) {
-  super(props);
+  constructor(props) {
+    super(props);
 
-  this.state = {
-    showSpinner: true,
-    currentItem: 1,
-    currentImage: 0,
-    isImageViewVisle: false,
-    screenTitle: "title",
-    bidsVisible: true,
-    index: 0,
-    descriptionTitle: [{
-      title: '',
+    this.state = {
+      showSpinner: true,
+      currentItem: 1,
+      currentImage: 0,
+      isImageViewVisle: false,
+      screenTitle: "title",
+      bidsVisible: true,
+      index: 0,
+      descriptionTitle: [{
+        title: '',
 
-    }],
-    mapTitle: [{
-      title: '',
+      }],
+      mapTitle: [{
+        title: '',
 
-    }],
-    ad_data:'',
-    showMenuConfirmDialogue: false,
-    showConfirmDialogue:false
+      }],
+      ad_data: '',
+      showMenuConfirmDialogue: false,
+      showConfirmDialogue: false
+    }
+
   }
+  getdata() {
+    let { orderStore } = Store;
+    if (orderStore.detailToolbarModel.repeat == true) {
+      //console.log('j')
+      if (orderStore.detailToolbarModel.status == 'Edit') {
+        this.props.navigation.navigate('SellEdit', { adId: orderStore.detailToolbarModel.data.ad_id, isUpdate: true });
+      }
+      else if (orderStore.detailToolbarModel.status == 'Delete') {
+        this.setState({ showConfirmDialogue: true })
+        this.item = orderStore.detailToolbarModel.data.ad_id
+      }
+      else {
+        this.setState({ showMenuConfirmDialogue: true })
+        this.option = orderStore.detailToolbarModel.status;
+        this.item = orderStore.detailToolbarModel.data.ad_id
+      }
+      orderStore.setOnClickActiveListner(false, '', '');
+    }
 
-}
-getdata(){
-  let { orderStore } = Store;
-  if(orderStore.detailToolbarModel.repeat == true){
-    //console.log('j')
-    if(orderStore.detailToolbarModel.status == 'Edit'){
-      this.props.navigation.navigate('SellEdit', { adId: orderStore.detailToolbarModel.data.ad_id, isUpdate: true });
-    }
-    else if(orderStore.detailToolbarModel.status == 'Delete'){
-      this.setState({showConfirmDialogue: true})
-      this.item =  orderStore.detailToolbarModel.data.ad_id
-    }
-    else{
-      this.setState({showMenuConfirmDialogue: true})
-      this.option = orderStore.detailToolbarModel.status;
-      this.item =  orderStore.detailToolbarModel.data.ad_id
-    }
-    orderStore.setOnClickActiveListner(false,'','');
   }
-  
-}
-componentDidMount(){
-  let timer = setInterval(()=> this.getdata(), 1000)
- }
+  componentDidMount() {
+    let timer = setInterval(() => this.getdata(), 1000)
+  }
 
 
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('otherParam', stores.screenTitles.ad_detail),
     headerStyle: {
-        backgroundColor: stores.color,
-      },
+      backgroundColor: stores.color,
+    },
 
-      headerTitleStyle: {
-        flex: 1,
-        color: 'white',
-        textAlign: "center",
-        fontFamily: Appearences.Fonts.paragaphFont,
-        fontSize: 13,
-        fontWeight: "200",
+    headerTitleStyle: {
+      flex: 1,
+      color: 'white',
+      textAlign: "center",
+      fontFamily: Appearences.Fonts.paragaphFont,
+      fontSize: 13,
+      fontWeight: "200",
 
-      },
-      headerRight: <Toolbar fnc={async(val,id) => {
-      }}/>,
-      headerLeft: <HeaderBackButton
-        onPress={() => {
-        navigation.goBack(null) }} tintColor={'#fff'} />
+    },
+    headerRight: <Toolbar fnc={async (val, id) => {
+    }} />,
+    headerLeft: <HeaderBackButton
+      onPress={() => {
+        navigation.goBack(null)
+      }} tintColor={'#fff'} />
   });
 
-  
+
   componentWillUpdate = () => {
     let { orderStore } = Store;
     orderStore.setAdDetailComponentMounted(false);
@@ -113,7 +114,7 @@ componentDidMount(){
     orderStore.adDetail = await Api.post('ad_post', params);
     // console.log('so res is',JSON.stringify(orderStore.adDetail))
     const data = orderStore.adDetail.data;
-    this.setState({ad_data: data})
+    this.setState({ ad_data: data })
     const staticText = data.static_text;
     this.setState({ bidsVisible: data.bid_popup.is_show });
     orderStore.setDetailToolbarModel(staticText, data.report_popup.select);
@@ -297,15 +298,15 @@ componentDidMount(){
       );
     return (
       <>
-      <TabView
-        navigationState={this.state.bidsVisible ? this.getNavigationState() : this.getNavigationStateNoBid()}
-        renderScene={this.renderScene}
-        tabBarPosition="bottom"
-        renderTabBar={this._renderTabBar}
-        onIndexChange={index => this.setState({ index: index })}
-        initialLayout={{ height: 0, width: Dimensions.get('window').width }}
-        swipeEnabled={false}
-      />
+        <TabView
+          navigationState={this.state.bidsVisible ? this.getNavigationState() : this.getNavigationStateNoBid()}
+          renderScene={this.renderScene}
+          tabBarPosition="bottom"
+          renderTabBar={this._renderTabBar}
+          onIndexChange={index => this.setState({ index: index })}
+          initialLayout={{ height: 0, width: Dimensions.get('window').width }}
+          swipeEnabled={false}
+        />
         <ConfirmDialogue
           visible={this.state.showConfirmDialogue}
           onConfirm={() => { this.deleteItem(this.item) }}
@@ -313,9 +314,10 @@ componentDidMount(){
         />
         <MenuConfirmDialogue
           visible={this.state.showMenuConfirmDialogue}
-          onConfirm={() => { 
+          onConfirm={() => {
             //console.log(this.item)
-            this.onOptionSelected(this.item, this.option) }}
+            this.onOptionSelected(this.item, this.option)
+          }}
           onCancel={() => { this.setState({ showMenuConfirmDialogue: false }) }}
         />
       </>
