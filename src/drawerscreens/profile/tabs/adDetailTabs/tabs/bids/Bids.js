@@ -56,7 +56,7 @@ export default class Bids extends Component<Props> {
     }, 1000);
   }
 
- 
+
   componentDidMount() {
     let { orderStore } = Store;
     const data = orderStore.adDetail.data;
@@ -101,10 +101,10 @@ export default class Bids extends Component<Props> {
     const response = await Api.post("ad_post/bid/post", params);
 
     if (response.success === true) {
-      let params = { ad_id: adId};
+      let params = { ad_id: adId };
 
       const responsex = await Api.post("ad_post", params);
-      orderStore.adDetail.data.static_text.ad_bids=responsex.data.static_text.ad_bids
+      orderStore.adDetail.data.static_text.ad_bids = responsex.data.static_text.ad_bids
       // console.log('consolex',responsex)
       //it(this.state.isBidListEmpty === false)
       this.setState({ isBidListEmpty: true });
@@ -306,7 +306,7 @@ export default class Bids extends Component<Props> {
           keyboardShouldPersistTaps='always'
           key={this.state.reRender}
           contentContainerStyle={{ backgroundColor: Appearences.Colors.appBackgroundColor }}
-          
+
           refreshControl={
             <RefreshControl
               refreshing={this.state.swipeUp}
@@ -348,7 +348,7 @@ export default class Bids extends Component<Props> {
 
 
 
-                    {/* ////////////Bid Stats////////////// */}
+          {/* ////////////Bid Stats////////////// */}
 
 
           <View style={styles.container}>
@@ -483,7 +483,7 @@ export default class Bids extends Component<Props> {
                     size={Appearences.Fonts.headingFontSize} />
 
                 </Visibility>
-                    {/* ////////////Bid Post////////////// */}
+                {/* ////////////Bid Post////////////// */}
                 <Visibility hide={!this.state.hideBidButtonProgress} style={[styles.sendButtonContainer, { backgroundColor: orderStore.color }]}>
                   <TouchableOpacity onPress={() => this.postBid()}>
                     <Text style={styles.sendButtonText}>{data.bid_popup.btn_send}</Text>

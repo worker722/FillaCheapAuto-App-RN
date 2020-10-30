@@ -36,7 +36,7 @@ import MyWebView from 'react-native-webview-autoheight';
 import * as Animatable from 'react-native-animatable';
 import HTMLView from 'react-native-htmlview';
 import { WebView } from 'react-native-webview';
-import {observer} from 'mobx-react'
+import { observer } from 'mobx-react'
 import { log } from 'react-native-reanimated';
 
 @observer class Overview extends Component<Props> {
@@ -75,7 +75,7 @@ import { log } from 'react-native-reanimated';
       isAboslute: false,
       showChatModel: false,
       similar_ad_id: 0,
-      dealer_ads:[]
+      dealer_ads: []
     }
   }
 
@@ -276,17 +276,17 @@ import { log } from 'react-native-reanimated';
     this.setState({ clicktoViewPhoneNoText: orderStore.adDetail.data.static_text.contact_info.phone.text });
     this.getdata()
   }
-  getdata = async() => {
-    console.log('getdata')
+  getdata = async () => {
     let { orderStore } = Store;
     //console.log(orderStore)
     let params = { user_id: orderStore.adDetail.data.profile_detail.id, page_number: '' };
     //console.log(params)
     let response = await Api.post('profile/public/inventory', params);
+    console.log(response);
     //console.log(response)
     //console.log('resposes')
     if (response.success === true) {
-      this.setState({dealer_ads : response.data.ads})
+      this.setState({ dealer_ads: response.data.ads })
     }
   }
 
@@ -307,8 +307,8 @@ import { log } from 'react-native-reanimated';
     //   return;
     // }
     this.setState({ showMessageProgress: true });
-    const params = {ad_id: orderStore.adDetail.data.ad_detail.ad_id, message: this.state.popupMessage};
-    
+    const params = { ad_id: orderStore.adDetail.data.ad_detail.ad_id, message: this.state.popupMessage };
+
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
     Toast.show(response.message);
@@ -317,34 +317,34 @@ import { log } from 'react-native-reanimated';
 
   sendChatMessage = async () => {
     this.setState({ showMessageProgress: true });
-    const params = {ad_id: this.state.similar_ad_id, message: this.state.popupMessage};
-    
+    const params = { ad_id: this.state.similar_ad_id, message: this.state.popupMessage };
+
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
     Toast.show(response.message);
     this.setState({ showMessageProgress: false, showChatModel: false });
   }
-  addFav(){
+  addFav() {
     let { orderStore } = Store
-    if(orderStore.profile.data){
+    if (orderStore.profile.data) {
 
     }
-    else{
+    else {
       alert('Please login into account')
     }
-    
-  }
-  deleteItem = async (item)=>{
-    this.setState({showSpinner:true});
 
-    const params = {ad_id:item.ad_id,}
-    let response = await Api.post('ad/favourite/remove',params);
-    if(response.success === true){
+  }
+  deleteItem = async (item) => {
+    this.setState({ showSpinner: true });
+
+    const params = { ad_id: item.ad_id, }
+    let response = await Api.post('ad/favourite/remove', params);
+    if (response.success === true) {
       this.start()
     }
-    
-    if(response.message.length!=0)
-    Toast.show(response.message);
+
+    if (response.message.length != 0)
+      Toast.show(response.message);
   }
 
   onCallClick = async (id) => {
@@ -383,7 +383,7 @@ import { log } from 'react-native-reanimated';
     orderStore.setDetailToolbarModel(staticText, data.report_popup.select);
     orderStore.detailToolbarModel.shareText = staticText.share_btn;
     if (orderStore.adDetail.success === true) {
-        this.setState({refreshing:false})
+      this.setState({ refreshing: false })
       // console.log('ad detail', JSON.stringify(data))
       let descriptionTitleClone = [...this.state.descriptionTitle];
       let mapTitleClone = [...this.state.mapTitle];
@@ -422,7 +422,7 @@ import { log } from 'react-native-reanimated';
     // console.log("ad details are",JSON.stringify(adDetail))
     const contactInfo = data.static_text.contact_info;
     const profileDetail = data.profile_detail;
-   
+
     //  const financeCalculator = data.static_text.finacne_calc;
     //  const financeFields = financeCalculator.fields;
     const relatedAds = data.related_ads;
@@ -1010,7 +1010,7 @@ import { log } from 'react-native-reanimated';
 
 
             <View style={styles.functionsRowContainer}>
-            {contactInfo.phone.is_show ?
+              {contactInfo.phone.is_show ?
                 <TouchableOpacity
                   onPress={async () => {
 
@@ -1027,18 +1027,18 @@ import { log } from 'react-native-reanimated';
                     Linking.openURL(phoneNumber);
 
                   }}
-                  style={[styles.functionContainer,{borderBottomWidth:2,borderBottomColor:'green',marginRight:5}]}>
+                  style={[styles.functionContainer, { borderBottomWidth: 2, borderBottomColor: 'green', marginRight: 5 }]}>
                   <Image
                     style={styles.functionImageAppColor}
                     source={require('../../../../../../../res/images/contact.png')}
                   />
                   <Text style={styles.paragraphTextGrey}>Call</Text>
                 </TouchableOpacity>
-                  : null}
+                : null}
               {contactInfo.message.is_show ?
                 <TouchableOpacity
                   onPress={() => this.setState({ showMessageModal: true })}
-                  style={[styles.functionContainer,{borderBottomWidth:2,borderBottomColor:'blue'}]}>
+                  style={[styles.functionContainer, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}>
                   <Image
                     style={styles.functionImageAppColor}
                     source={require('../../../../../../../res/images/message.png')}
@@ -1316,17 +1316,17 @@ import { log } from 'react-native-reanimated';
 
               </View>
               <View style={styles.profileRightContainer}>
-              {
+                {
                   orderStore.isDealer &&
                   <View
 
-                  style={[styles.profileButtonContainer, { backgroundColor: 'green',marginBottom:10 }]}>
-                  <Text style={styles.paragraphTextWhite}>
-                    Verified Dealer
+                    style={[styles.profileButtonContainer, { backgroundColor: 'green', marginBottom: 10 }]}>
+                    <Text style={styles.paragraphTextWhite}>
+                      Verified Dealer
                   </Text>
-                </View>
+                  </View>
 
-               }
+                }
                 <View
 
                   style={[styles.profileButtonContainer, { backgroundColor: orderStore.color }]}>
@@ -1348,124 +1348,124 @@ import { log } from 'react-native-reanimated';
           {/* dealer inventory */}
 
           <View style={{ paddingStart: 15, paddingEnd: 15, marginTop: 5 }}>
-                <Text style={styles.subHeadingText}>Dealer Inventory</Text>
-                <View style={styles.topMargin}>
-
-  
-                    <FlatList
-                      data={this.state.dealer_ads}
-                      horizontal={true}
-                      showsHorizontalScrollIndicator={false}
-
-                      renderItem={({ item, index }) =>
+            <Text style={styles.subHeadingText}>Dealer Inventory</Text>
+            <View style={styles.topMargin}>
 
 
-                        <TouchableOpacity
-                        key={index}
-                          style={index != 0 ? FeaturedGridStyle.container : [FeaturedGridStyle.container, { marginHorizontal: 0 }]}
-                          onPress={() => this.onRelatedAdsClick(item)}
-                        >
+              <FlatList
+                data={this.state.dealer_ads}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
 
-                          <View style={FeaturedGridStyle.imageContainer}>
+                renderItem={({ item, index }) =>
 
-                            <Image
-                              style={FeaturedGridStyle.image}
-                              source={{ uri: item.ad_images[0].thumb }} />
-                            <View
-                              style={FeaturedGridStyle.imageContainerOverlay}>
-                              <View style={FeaturedGridStyle.topRowContainer}>
 
-                              </View>
-                              <View style={FeaturedGridStyle.bottomRowContainer}>
-                                {item.ad_price.price.length != 0 ?
-                                  <View style={[FeaturedGridStyle.bottomLeftContent, { backgroundColor: orderStore.color }]}>
-                                    <Text style={styles.buttonTextStyle}>{item.ad_price.price + ' (' + item.ad_price.price_type + ')'}</Text>
-                                  </View>
-                                  : null}
+                  <TouchableOpacity
+                    key={index}
+                    style={index != 0 ? FeaturedGridStyle.container : [FeaturedGridStyle.container, { marginHorizontal: 0 }]}
+                    onPress={() => this.onRelatedAdsClick(item)}
+                  >
 
-                              </View>
-                            </View>
+                    <View style={FeaturedGridStyle.imageContainer}>
 
-                          </View>
-
-                          <View style={PopularCarsStyle.textContainer}>
-                  <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_cats_name}
-                    </Text>
-                    <View style={[PopularCarsStyle.textContainer,{flexDirection:'row'}]}>
-                    <Text
-                      adjustsFontSizeToFit
-                      numberOfLines={1}
-                      style={PopularCarsStyle.brandTitleStyle}>
-                      {item.ad_title}
-                    </Text>
-                   
-                    {
-                      item.added_fav &&
-                      <TouchableOpacity onPress={() => this.deleteItem(item)}>
                       <Image
-                          source={require('../../../../../../../res/images/heart_filled.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
-                        />
-                        </TouchableOpacity>
-                    }
-                    {
-                      !item.added_fav &&
-                      <TouchableOpacity onPress={() => this.addFav()}>
-                        <Image
-                            source={require('../../../../../../../res/images/heart.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
-                          />
-                          </TouchableOpacity>
-                    }
+                        style={FeaturedGridStyle.image}
+                        source={{ uri: item.ad_images[0].thumb }} />
+                      <View
+                        style={FeaturedGridStyle.imageContainerOverlay}>
+                        <View style={FeaturedGridStyle.topRowContainer}>
+
+                        </View>
+                        <View style={FeaturedGridStyle.bottomRowContainer}>
+                          {item.ad_price.price.length != 0 ?
+                            <View style={[FeaturedGridStyle.bottomLeftContent, { backgroundColor: orderStore.color }]}>
+                              <Text style={styles.buttonTextStyle}>{item.ad_price.price + ' (' + item.ad_price.price_type + ')'}</Text>
+                            </View>
+                            : null}
+
+                        </View>
+                      </View>
+
                     </View>
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_desc}
-                    </Text>
-                    <Text
-                      style={PopularCarsStyle.brandTextStyle}>
-                      {item.ad_engine + ' | ' + item.ad_milage}
-                    </Text>
-                    {/* <Text
+
+                    <View style={PopularCarsStyle.textContainer}>
+                      <Text
+                        style={PopularCarsStyle.modelTextStyle}>
+                        {item.ad_cats_name}
+                      </Text>
+                      <View style={[PopularCarsStyle.textContainer, { flexDirection: 'row' }]}>
+                        <Text
+                          adjustsFontSizeToFit
+                          numberOfLines={1}
+                          style={PopularCarsStyle.brandTitleStyle}>
+                          {item.ad_title}
+                        </Text>
+
+                        {
+                          item.added_fav &&
+                          <TouchableOpacity onPress={() => this.deleteItem(item)}>
+                            <Image
+                              source={require('../../../../../../../res/images/heart_filled.png')}
+                              style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                            />
+                          </TouchableOpacity>
+                        }
+                        {
+                          !item.added_fav &&
+                          <TouchableOpacity onPress={() => this.addFav()}>
+                            <Image
+                              source={require('../../../../../../../res/images/heart.png')}
+                              style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                            />
+                          </TouchableOpacity>
+                        }
+                      </View>
+                      <Text
+                        style={PopularCarsStyle.modelTextStyle}>
+                        {item.ad_desc}
+                      </Text>
+                      <Text
+                        style={PopularCarsStyle.brandTextStyle}>
+                        {item.ad_engine + ' | ' + item.ad_milage}
+                      </Text>
+                      {/* <Text
                       style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
                       {item.ad_price.price}
                       {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
                     </Text> */}
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',flexWrap:'wrap'}]}>
-                    <Image
+                      <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', flexWrap: 'wrap' }]}>
+                        <Image
                           source={require('../../../../../../../res/images/calender_grey.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
+                          style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
                         />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_date}
-                    </Text>
+                        <Text
+                          style={PopularCarsStyle.modelTextStyle}>
+                          {item.ad_date}
+                        </Text>
+                      </View>
+                      <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', }]}>
+                        <Image
+                          source={require('../../../../../../../res/images/location.png')}
+                          style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                        />
+                        <Text
+                          style={PopularCarsStyle.modelTextStyle}>
+                          {item.ad_location.address}
+                        </Text>
+
+
+                      </View>
                     </View>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',}]}>
-                    <Image
-                            source={require('../../../../../../../res/images/location.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                          />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_location.address}
-                    </Text>
-                   
-                      
-                    </View>
-                  </View>
-                        </TouchableOpacity>
+                  </TouchableOpacity>
 
 
 
-                      }
-                      keyExtractor={item => item.ad_id + ''}
-                    >
-                    </FlatList>
-                    </View>
-                    </View>
+                }
+                keyExtractor={item => item.ad_id + ''}
+              >
+              </FlatList>
+            </View>
+          </View>
 
           {/* Map Row Start */}
           <View style={styles.panel}>
@@ -1515,7 +1515,7 @@ import { log } from 'react-native-reanimated';
 
 
                         <TouchableOpacity
-                        key={index}
+                          key={index}
                           style={index != 0 ? FeaturedGridStyle.container : [FeaturedGridStyle.container, { marginHorizontal: 0 }]}
                           onPress={() => this.onRelatedAdsClick(item)}
                         >
@@ -1543,73 +1543,73 @@ import { log } from 'react-native-reanimated';
                           </View>
 
                           <View style={PopularCarsStyle.textContainer}>
-                  <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_cats_name}
-                    </Text>
-                    <View style={[PopularCarsStyle.textContainer,{flexDirection:'row'}]}>
-                    <Text
-                      adjustsFontSizeToFit
-                      numberOfLines={1}
-                      style={PopularCarsStyle.brandTitleStyle}>
-                      {item.ad_title}
-                    </Text>
-                   
-                    {
-                      item.added_fav &&
-                      <TouchableOpacity onPress={() => this.deleteItem(item)}>
-                      <Image
-                          source={require('../../../../../../../res/images/heart_filled.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
-                        />
-                        </TouchableOpacity>
-                    }
-                    {
-                      !item.added_fav &&
-                      <TouchableOpacity onPress={() => this.addFav()}>
-                        <Image
-                            source={require('../../../../../../../res/images/heart.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
-                          />
-                          </TouchableOpacity>
-                    }
-                    </View>
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_desc}
-                    </Text>
-                    <Text
-                      style={PopularCarsStyle.brandTextStyle}>
-                      {item.ad_engine + ' | ' + item.ad_milage}
-                    </Text>
-                    <Text
-                      style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
-                      {item.ad_price.price}
-                      {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
-                    </Text>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',flexWrap:'wrap'}]}>
-                    <Image
-                          source={require('../../../../../../../res/images/calender_grey.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                        />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_date}
-                    </Text>
-                    </View>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',}]}>
-                    <Image
-                            source={require('../../../../../../../res/images/location.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                          />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_location.address}
-                    </Text>
-                   
-                      
-                    </View>
-                  </View>
+                            <Text
+                              style={PopularCarsStyle.modelTextStyle}>
+                              {item.ad_cats_name}
+                            </Text>
+                            <View style={[PopularCarsStyle.textContainer, { flexDirection: 'row' }]}>
+                              <Text
+                                adjustsFontSizeToFit
+                                numberOfLines={1}
+                                style={PopularCarsStyle.brandTitleStyle}>
+                                {item.ad_title}
+                              </Text>
+
+                              {
+                                item.added_fav &&
+                                <TouchableOpacity onPress={() => this.deleteItem(item)}>
+                                  <Image
+                                    source={require('../../../../../../../res/images/heart_filled.png')}
+                                    style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                                  />
+                                </TouchableOpacity>
+                              }
+                              {
+                                !item.added_fav &&
+                                <TouchableOpacity onPress={() => this.addFav()}>
+                                  <Image
+                                    source={require('../../../../../../../res/images/heart.png')}
+                                    style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                                  />
+                                </TouchableOpacity>
+                              }
+                            </View>
+                            <Text
+                              style={PopularCarsStyle.modelTextStyle}>
+                              {item.ad_desc}
+                            </Text>
+                            <Text
+                              style={PopularCarsStyle.brandTextStyle}>
+                              {item.ad_engine + ' | ' + item.ad_milage}
+                            </Text>
+                            <Text
+                              style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
+                              {item.ad_price.price}
+                              {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
+                            </Text>
+                            <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', flexWrap: 'wrap' }]}>
+                              <Image
+                                source={require('../../../../../../../res/images/calender_grey.png')}
+                                style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                              />
+                              <Text
+                                style={PopularCarsStyle.modelTextStyle}>
+                                {item.ad_date}
+                              </Text>
+                            </View>
+                            <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', }]}>
+                              <Image
+                                source={require('../../../../../../../res/images/location.png')}
+                                style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                              />
+                              <Text
+                                style={PopularCarsStyle.modelTextStyle}>
+                                {item.ad_location.address}
+                              </Text>
+
+
+                            </View>
+                          </View>
                         </TouchableOpacity>
 
 
@@ -1629,12 +1629,12 @@ import { log } from 'react-native-reanimated';
 
                       renderItem={({ item, index }) =>
                         <TouchableOpacity
-                        key={index}
+                          key={index}
                           onPress={() => {
                             this.onRelatedAdsClick(item);
                           }}
                           style={PopularCarsStyle.container}>
-                          <View style={{flexDirection: 'row'}}>
+                          <View style={{ flexDirection: 'row' }}>
                             <View style={PopularCarsStyle.imageContainer}>
                               <Image
                                 style={PopularCarsStyle.image}
@@ -1642,93 +1642,93 @@ import { log } from 'react-native-reanimated';
                             </View>
 
                             <View style={PopularCarsStyle.textContainer}>
-                  <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_cats_name}
-                    </Text>
-                    <View style={[PopularCarsStyle.textContainer,{flexDirection:'row'}]}>
-                    <Text
-                      adjustsFontSizeToFit
-                      numberOfLines={1}
-                      style={PopularCarsStyle.brandTitleStyle}>
-                      {item.ad_title}
-                    </Text>
-                   
-                    {
-                      item.added_fav &&
-                      <TouchableOpacity onPress={() => this.deleteItem(item)}>
-                      <Image
-                          source={require('../../../../../../../res/images/heart_filled.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
-                        />
-                        </TouchableOpacity>
-                    }
-                    {
-                      !item.added_fav &&
-                      <TouchableOpacity onPress={() => this.addFav()}>
-                        <Image
-                            source={require('../../../../../../../res/images/heart.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
-                          />
-                          </TouchableOpacity>
-                    }
-                    </View>
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_desc}
-                    </Text>
-                    <Text
-                      style={PopularCarsStyle.brandTextStyle}>
-                      {item.ad_engine + ' | ' + item.ad_milage}
-                    </Text>
-                    <Text
-                      style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
-                      {item.ad_price.price}
-                      {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
-                    </Text>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',flexWrap:'wrap'}]}>
-                    <Image
-                          source={require('../../../../../../../res/images/calender_grey.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                        />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_date}
-                    </Text>
-                    </View>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',}]}>
-                    <Image
-                            source={require('../../../../../../../res/images/location.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                          />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_location.address}
-                    </Text>
-                   
-                      
-                    </View>
-                  </View>
-                          
+                              <Text
+                                style={PopularCarsStyle.modelTextStyle}>
+                                {item.ad_cats_name}
+                              </Text>
+                              <View style={[PopularCarsStyle.textContainer, { flexDirection: 'row' }]}>
+                                <Text
+                                  adjustsFontSizeToFit
+                                  numberOfLines={1}
+                                  style={PopularCarsStyle.brandTitleStyle}>
+                                  {item.ad_title}
+                                </Text>
+
+                                {
+                                  item.added_fav &&
+                                  <TouchableOpacity onPress={() => this.deleteItem(item)}>
+                                    <Image
+                                      source={require('../../../../../../../res/images/heart_filled.png')}
+                                      style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                                    />
+                                  </TouchableOpacity>
+                                }
+                                {
+                                  !item.added_fav &&
+                                  <TouchableOpacity onPress={() => this.addFav()}>
+                                    <Image
+                                      source={require('../../../../../../../res/images/heart.png')}
+                                      style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                                    />
+                                  </TouchableOpacity>
+                                }
+                              </View>
+                              <Text
+                                style={PopularCarsStyle.modelTextStyle}>
+                                {item.ad_desc}
+                              </Text>
+                              <Text
+                                style={PopularCarsStyle.brandTextStyle}>
+                                {item.ad_engine + ' | ' + item.ad_milage}
+                              </Text>
+                              <Text
+                                style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
+                                {item.ad_price.price}
+                                {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
+                              </Text>
+                              <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', flexWrap: 'wrap' }]}>
+                                <Image
+                                  source={require('../../../../../../../res/images/calender_grey.png')}
+                                  style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                                />
+                                <Text
+                                  style={PopularCarsStyle.modelTextStyle}>
+                                  {item.ad_date}
+                                </Text>
+                              </View>
+                              <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', }]}>
+                                <Image
+                                  source={require('../../../../../../../res/images/location.png')}
+                                  style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                                />
+                                <Text
+                                  style={PopularCarsStyle.modelTextStyle}>
+                                  {item.ad_location.address}
+                                </Text>
+
+
+                              </View>
+                            </View>
+
                           </View>
                           <View style={FeaturedGridStyle.featureAdsBottom}>
                             <TouchableOpacity
-                              style={[FeaturedGridStyle.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:'blue'}]}
+                              style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
                               onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
                               <Image
-                                  source={require('../../../../../../../res/images/message_grey.png')}
-                                  style={[FeaturedGridStyle.bottomImgStyl]}
-                                />
+                                source={require('../../../../../../../res/images/message_grey.png')}
+                                style={[FeaturedGridStyle.bottomImgStyl]}
+                              />
                               <Text style={FeaturedGridStyle.featureAdsBtntxt}>Chat</Text>
-                              
+
                             </TouchableOpacity>
                             <TouchableOpacity
-                              style={[FeaturedGridStyle.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:'green'}]} 
+                              style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'green' }]}
                               onPress={() => this.onCallClick(item.ad_id)}>
-                            <Image
-                                  source={require('../../../../../../../res/images/contact.png')}
-                                  style={[FeaturedGridStyle.bottomImgStyl]}
-                                />
+                              <Image
+                                source={require('../../../../../../../res/images/contact.png')}
+                                style={[FeaturedGridStyle.bottomImgStyl]}
+                              />
                               <Text style={FeaturedGridStyle.featureAdsBtntxt}>Call</Text>
                             </TouchableOpacity>
                           </View>
@@ -1797,10 +1797,10 @@ import { log } from 'react-native-reanimated';
               </View>
             </View> */}
             <View
-            style={[styles.panel, { marginTop: 0 }]}
-          >
+              style={[styles.panel, { marginTop: 0 }]}
+            >
 
-            {/* {financeCalculator.is_show ?
+              {/* {financeCalculator.is_show ?
               <TouchableOpacity 
               onPress = { ()=>{
 
@@ -1813,71 +1813,71 @@ import { log } from 'react-native-reanimated';
               :null} */}
 
 
-            <View style={[styles.functionsRowContainer, { marginTop: 0 }]}>
-              {contactInfo.phone.is_show ?
-                <TouchableOpacity
-                  onPress={async () => {
+              <View style={[styles.functionsRowContainer, { marginTop: 0 }]}>
+                {contactInfo.phone.is_show ?
+                  <TouchableOpacity
+                    onPress={async () => {
 
-                    let phoneNumber = '';
-                    await this.setState({ clicktoViewPhoneNoText: contactInfo.phone.number })
+                      let phoneNumber = '';
+                      await this.setState({ clicktoViewPhoneNoText: contactInfo.phone.number })
 
-                    if (Platform.OS === 'android') {
-                      phoneNumber = 'tel:' + contactInfo.phone.number;
-                    }
-                    else {
-                      phoneNumber = 'telprompt:' + contactInfo.phone.number;
-                    }
+                      if (Platform.OS === 'android') {
+                        phoneNumber = 'tel:' + contactInfo.phone.number;
+                      }
+                      else {
+                        phoneNumber = 'telprompt:' + contactInfo.phone.number;
+                      }
 
-                    Linking.openURL(phoneNumber);
+                      Linking.openURL(phoneNumber);
 
-                  }}
-                  style={[styles.functionContainer,{}]}>
-                  <Image
-                    style={styles.functionImageAppColor}
-                    source={require('../../../../../../../res/images/contact.png')}
-                  />
-                  <Text style={styles.paragraphTextGrey}>Call</Text>
-                </TouchableOpacity>
+                    }}
+                    style={[styles.functionContainer, {}]}>
+                    <Image
+                      style={styles.functionImageAppColor}
+                      source={require('../../../../../../../res/images/contact.png')}
+                    />
+                    <Text style={styles.paragraphTextGrey}>Call</Text>
+                  </TouchableOpacity>
                   : null}
-              {contactInfo.message.is_show ?
-                <TouchableOpacity
-                  onPress={() => this.setState({ showMessageModal: true })}
-                  style={[styles.functionContainer,{}]}>
-                  <Image
-                    style={styles.functionImageAppColor}
-                    source={require('../../../../../../../res/images/message.png')}
-                  />
-                  <Text style={styles.paragraphTextGrey}>Chat</Text>
-                </TouchableOpacity>
-                : null}
-              {contactInfo.offer.is_show ?
-                <TouchableOpacity
-                  onPress={() => {
-                    this.onOfferClick();
-                  }}
-                  style={styles.functionContainer}>
-                  <Image
-                    style={styles.functionImageAppColor}
-                    source={require('../../../../../../../res/images/pay.png')}
-                  />
-                  <Text style={styles.paragraphTextGrey}>{contactInfo.offer.text}</Text>
-                </TouchableOpacity>
-                : null}
+                {contactInfo.message.is_show ?
+                  <TouchableOpacity
+                    onPress={() => this.setState({ showMessageModal: true })}
+                    style={[styles.functionContainer, {}]}>
+                    <Image
+                      style={styles.functionImageAppColor}
+                      source={require('../../../../../../../res/images/message.png')}
+                    />
+                    <Text style={styles.paragraphTextGrey}>Chat</Text>
+                  </TouchableOpacity>
+                  : null}
+                {contactInfo.offer.is_show ?
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.onOfferClick();
+                    }}
+                    style={styles.functionContainer}>
+                    <Image
+                      style={styles.functionImageAppColor}
+                      source={require('../../../../../../../res/images/pay.png')}
+                    />
+                    <Text style={styles.paragraphTextGrey}>{contactInfo.offer.text}</Text>
+                  </TouchableOpacity>
+                  : null}
 
-              {contactInfo.schedule.is_show ?
-                <TouchableOpacity
-                  onPress={() => { this.onScheduleClick() }}
-                  style={styles.functionContainer}>
-                  <Image
-                    style={styles.functionImageAppColor}
-                    source={require('../../../../../../../res/images/steer.png')}
-                  />
-                  <Text style={[styles.paragraphTextGrey]}>{contactInfo.schedule.text}</Text>
-                </TouchableOpacity>
-                : null}
+                {contactInfo.schedule.is_show ?
+                  <TouchableOpacity
+                    onPress={() => { this.onScheduleClick() }}
+                    style={styles.functionContainer}>
+                    <Image
+                      style={styles.functionImageAppColor}
+                      source={require('../../../../../../../res/images/steer.png')}
+                    />
+                    <Text style={[styles.paragraphTextGrey]}>{contactInfo.schedule.text}</Text>
+                  </TouchableOpacity>
+                  : null}
+              </View>
+
             </View>
-
-          </View>
 
 
           </Animatable.View>
