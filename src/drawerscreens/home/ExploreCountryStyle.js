@@ -6,56 +6,56 @@ import {
   StyleSheet,
 } from 'react-native';
 
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
 
-    container:{
-        height:200,
-        width:'100%',
-        marginVertical:5,
-        marginHorizontal: 1,      
-        backgroundColor:'white',
-       // elevation   : Appearences.Shadow.elevation,
-        //shadowOpacity: Appearences.Shadow.shadow,
-        borderRadius:Appearences.Radius.radius,
-    },
-    imageContainer:{
-       
-       width:'100%',
-       height:'100%',
-       position:'absolute',
-       backgroundColor:'rgba(0, 0, 0, 0.5)',
+  container: {
+    height: 200,
+    width: '100%',
+    marginVertical: 5,
+    marginHorizontal: 1,
+    backgroundColor: 'white',
+    // elevation   : Appearences.Shadow.elevation,
+    //shadowOpacity: Appearences.Shadow.shadow,
+    borderRadius: Appearences.Radius.radius,
+  },
+  imageContainer: {
 
-       flexDirection:'row',
-       borderRadius:Appearences.Radius.radius,
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
 
-    },
-    image:{
-        width:'100%',
-        height:'100%',
-        resizeMode:'stretch',
-    },
-    textContainer:{
-        flex:1,
-      
-        padding:15,
-        justifyContent:'flex-end',
-    },
-    cityTextStyle:{
+    flexDirection: 'row',
+    borderRadius: Appearences.Radius.radius,
 
-        color:'white',
-        fontWeight:'bold',
-        fontFamily:Appearences.Fonts.headingFont,
-        fontSize:Appearences.Fonts.headingFontSize,
-        alignSelf: 'flex-start',
-    },
-    countryTextStyle:{
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'stretch',
+  },
+  textContainer: {
+    flex: 1,
 
-        color:'white',
-        
-        fontFamily:Appearences.Fonts.paragaphFont,
-        fontSize:Appearences.Fonts.paragraphFontSize,
-        alignSelf: 'flex-start',
+    padding: 15,
+    justifyContent: 'flex-end',
+  },
+  cityTextStyle: {
 
-    },
-    });
-  export default styles;
+    color: 'white',
+    fontWeight: 'bold',
+    fontFamily: Appearences.Fonts.headingFont,
+    fontSize: Appearences.Fonts.headingFontSize,
+    alignSelf: 'flex-start',
+  },
+  countryTextStyle: {
+
+    color: 'white',
+
+    fontFamily: Appearences.Fonts.paragaphFont,
+    fontSize: Appearences.Fonts.paragraphFontSize,
+    alignSelf: 'flex-start',
+
+  },
+});
+export default styles;
