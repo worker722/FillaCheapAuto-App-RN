@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import Appearences from '../../config/Appearences';
+import Appearences from '../../config/Appearences';;
 import {
     StyleSheet,
   } from 'react-native';
