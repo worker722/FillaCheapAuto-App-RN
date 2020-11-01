@@ -19,6 +19,7 @@ import {
 import AdDetailHeader from '../../../../../../components/AdDetailHeader';
 import styles from './Styles';
 import Store from '../../../../../../Stores';
+import Db from '../../../../../../storage/LocalDb';
 import { Avatar } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import DatePicker from 'react-native-datepicker'
@@ -75,7 +76,10 @@ import { log } from 'react-native-reanimated';
       isAboslute: false,
       showChatModel: false,
       similar_ad_id: 0,
-      dealer_ads: []
+      dealer_ads: [],
+
+      //custom
+      ownAds: false,
     }
   }
 
@@ -269,22 +273,23 @@ import { log } from 'react-native-reanimated';
     // console.log('adDetail is', orderStore.adDetail.fieldsData)
 
   }
-  componentWillMount = () => {
+  componentWillMount = async () => {
 
     let { orderStore } = Store;
+
+    const profile = await Db.getUserProfile();
+    if (profile != null && profile.id == orderStore.adDetail.data.profile_detail.id) {
+      this.setState({ ownAds: true });
+    }
+
     // console.log('adDetail is',orderStore.adDetail.fieldsData)
     this.setState({ clicktoViewPhoneNoText: orderStore.adDetail.data.static_text.contact_info.phone.text });
     this.getdata()
   }
   getdata = async () => {
     let { orderStore } = Store;
-    //console.log(orderStore)
     let params = { user_id: orderStore.adDetail.data.profile_detail.id, page_number: '' };
-    //console.log(params)
     let response = await Api.post('profile/public/inventory', params);
-    console.log(response);
-    //console.log(response)
-    //console.log('resposes')
     if (response.success === true) {
       this.setState({ dealer_ads: response.data.ads })
     }
@@ -300,12 +305,7 @@ import { log } from 'react-native-reanimated';
   }
   sendMessage = async () => {
     let { orderStore } = Store;
-    // if (orderStore.isPublicProfile) {
-    //   await this.setState({ showMessageModal: false })
-    //   Toast.show("Public profile cannot send message");
 
-    //   return;
-    // }
     this.setState({ showMessageProgress: true });
     const params = { ad_id: orderStore.adDetail.data.ad_detail.ad_id, message: this.state.popupMessage };
 
@@ -396,7 +396,6 @@ import { log } from 'react-native-reanimated';
 
         if (profile.id == data.profile_detail.id) {
           orderStore.setAdDetailComponentMounted(true);
-
         }
         else {
           orderStore.setAdDetailComponentMounted(false);
@@ -417,6 +416,7 @@ import { log } from 'react-native-reanimated';
     const data = orderStore.adDetail.data;
 
     const adDetail = data.ad_detail;
+
     const videoId = adDetail.ad_video.video_id;
     const carFeatures = adDetail.car_features;
     // console.log("ad details are",JSON.stringify(adDetail))
@@ -945,6 +945,36 @@ import { log } from 'react-native-reanimated';
         >
           <AdDetailHeader />
 
+          {this.state.ownAds ?
+            <View style={[styles.panel, { marginTop: 0, flexDirection: "row" }]}>
+              <TouchableOpacity
+                onPress={async () => {
+                  const params = { ad_id: adDetail.ad_id, custom_type: "bump" };
+                  let response = await Api.post('ad_post/featured', params);
+                  console.log(response);
+                }}
+                style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1, marginRight: 10 }]}>
+                <Text style={styles.headingTextWhite}>Bump It Up</Text>
+              </TouchableOpacity>
+              {adDetail.is_feature ? <View style={{ flex: 1 }}></View> :
+                <TouchableOpacity
+                  onPress={async () => {
+                    const params = { ad_id: adDetail.ad_id, custom_type: "feature" };
+                    let response = await Api.post('ad_post/featured', params);
+                    if (response.success)
+                      this._onRefresh();
+                  }}
+                  style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1 }]}>
+                  <Text style={styles.headingTextWhite}>Featured Ads Make</Text>
+                </TouchableOpacity>
+              }
+
+            </View>
+            :
+            <></>
+          }
+
+
           <View
             style={s.triangleRowcontainer}>
             <View
@@ -1172,9 +1202,9 @@ import { log } from 'react-native-reanimated';
 
 
 
-                <WebView
+                {/* <WebView
                   source={{ html: customStyle + beforAd }}
-                  startInLoadingState={true} />
+                  startInLoadingState={true} /> */}
               </View>
               : null
 
@@ -1200,9 +1230,9 @@ import { log } from 'react-native-reanimated';
 
             afterAd.length != 0 ?
               <View style={[styles.panel, { alignItems: 'center', padding: 0 }]}>
-                <WebView
+                {/* <WebView
                   source={{ html: customStyle + afterAd }}
-                  startInLoadingState={true} />
+                  startInLoadingState={true} /> */}
               </View>
               : null
           }
@@ -1270,12 +1300,12 @@ import { log } from 'react-native-reanimated';
               <Text style={styles.subHeadingText}>
                 {data.section_title.video_title}</Text>
               <View style={[styles.videoContentContainer, { height: 180 }]}>
-                <WebView
+                {/* <WebView
                   useWebKit={false}
                   source={{ uri: 'https://www.youtube.com/embed/' + videoId + '?rel=0&autoplay=0&showinfo=0&controls=0' }}
                   style={styles.videoContent}
                   javaScriptEnabled={true}
-                />
+                /> */}
               </View>
             </View>}
           {/* Vide Container End */}
@@ -1749,12 +1779,12 @@ import { log } from 'react-native-reanimated';
           }
           {/*}Similar Ads Section End--->{*/}
           <View style={{ width: '100%', height: 'auto' }}>
-            <WebView
+            {/* <WebView
               useWebKit={false}
               source={{ uri: 'https://www.youtube.com/embed/' + videoId + '?rel=0&autoplay=0&showinfo=0&controls=0' }}
               style={styles.videoContent}
               javaScriptEnabled={true}
-            />
+            /> */}
           </View>
 
 

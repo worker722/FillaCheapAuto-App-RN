@@ -831,7 +831,7 @@ class PageFour extends Component<Props> {
                 nestedScrollEnabled: true,
               }
             }
-        />
+          />
 
         </View>
       </DismissKeyboard>
