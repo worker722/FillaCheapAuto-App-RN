@@ -152,10 +152,10 @@ class FeaturedAds extends Component<Props> {
     if (orderStore.profile.success == true) {
       this.defaultData = [...orderStore.profile.data.featured_add.ads];
       this.paginationDefault = orderStore.profile.data.featured_add.pagination;
-      this.setState({ listData: orderStore.profile.data.featured_add.ads,refreshing:false });
+      this.setState({ listData: orderStore.profile.data.featured_add.ads, refreshing: false });
       if (orderStore.profile.data.featured_add.ads.length === 0)
-        this.setState({ noDataVisivility: true, noDataMessage: orderStore.profile.data.featured_add.msg,refreshing:false });
-  
+        this.setState({ noDataVisivility: true, noDataMessage: orderStore.profile.data.featured_add.msg, refreshing: false });
+
     }
   }
 
