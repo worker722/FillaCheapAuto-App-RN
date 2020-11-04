@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Platform,
   StyleSheet,
+  DeviceEventEmitter,
   Text,
   View,
   Image,
@@ -45,6 +46,8 @@ import { NavigationActions, StackActions } from 'react-navigation';
 
 
 const featuredItemWidth = Dimensions.get("screen").width * 47 / 100;
+let addFavAdsIndex = -1;
+let removeFavAdsIndex = -1;
 
 @observer
 export default class Home extends Component<Props> {
@@ -110,6 +113,10 @@ export default class Home extends Component<Props> {
       }
     }, 2000);
     this.setState({ renderInterval });
+
+    props.navigation.addListener("willFocus", (event) => {
+      this.componentWillMount();
+    });
   }
 
   _spring() {
@@ -210,6 +217,8 @@ export default class Home extends Component<Props> {
       this.jobsPositions = response.data.ads_position;
 
       this.setRandomFeaturedAds();
+
+      orderStore.profile = await Api.get('profile');
     }
     if (response.message.length != 0)
       Toast.show(response.message);
@@ -530,7 +539,7 @@ export default class Home extends Component<Props> {
                     }
                     {
                       !item.added_fav &&
-                      <TouchableOpacity onPress={() => this.addFav()}>
+                      <TouchableOpacity onPress={() => this.addFav(item)}>
                         <Image
                           source={require('../../../res/images/heart.png')}
                           style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
@@ -623,10 +632,17 @@ export default class Home extends Component<Props> {
 
 
   }
-  addFav() {
+  addFav = async (item) => {
     let { orderStore } = Store
     if (orderStore.profile.data) {
 
+      const params = { ad_id: item.ad_id };
+      let response = await Api.post('ad_post/favourite', params);
+      if (response.success === true)
+        this.start();
+
+      if (response.message.length != 0)
+        Toast.show(response.message);
     }
     else {
       alert('Please login into account')
@@ -634,16 +650,21 @@ export default class Home extends Component<Props> {
 
   }
   deleteItem = async (item) => {
-    this.setState({ showSpinner: true });
+    let { orderStore } = Store
+    if (orderStore.profile.data) {
 
-    const params = { ad_id: item.ad_id, }
-    let response = await Api.post('ad/favourite/remove', params);
-    if (response.success === true) {
-      this.start()
+      const params = { ad_id: item.ad_id }
+      let response = await Api.post('ad/favourite/remove', params);
+      if (response.success === true) {
+        this.start()
+      }
+
+      if (response.message.length != 0)
+        Toast.show(response.message);
     }
-
-    if (response.message.length != 0)
-      Toast.show(response.message);
+    else {
+      alert('Please login into account')
+    }
   }
   handleScroll = (event) => {
     if (event.nativeEvent.contentOffset.y > 290)
@@ -854,7 +875,7 @@ export default class Home extends Component<Props> {
                       }
                       {
                         !item.added_fav &&
-                        <TouchableOpacity onPress={() => this.addFav()}>
+                        <TouchableOpacity onPress={() => this.addFav(item)}>
                           <Image
                             source={require('../../../res/images/heart.png')}
                             style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}

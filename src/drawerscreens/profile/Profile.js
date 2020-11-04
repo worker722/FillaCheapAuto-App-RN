@@ -53,6 +53,10 @@ export default class TabManager extends React.Component {
       index: 0,
 
     }
+
+    props.navigation.addListener("willFocus", (event) => {
+      this.componentWillMount();
+    });
   }
   componentWillMount = async () => {
     let data = await LocalDb.getUserProfile();

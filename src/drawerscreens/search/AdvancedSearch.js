@@ -1521,6 +1521,10 @@ export default class AdvancedSearch extends Component<Props> {
       assemblyContainer: [],
       insauranceContaier: [],
     };
+
+    props.navigation.addListener("willFocus", (event) => {
+      this.componentWillMount();
+    });
   }
 
 

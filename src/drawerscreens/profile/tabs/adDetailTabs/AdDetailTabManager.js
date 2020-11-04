@@ -51,6 +51,10 @@ export default class AdDetailTabManager extends React.Component {
       showConfirmDialogue: false
     }
 
+    props.navigation.addListener("willFocus", (event) => {
+      this.componentWillMount();
+    });
+
   }
   getdata() {
     let { orderStore } = Store;

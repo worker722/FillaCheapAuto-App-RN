@@ -46,7 +46,12 @@ class MyAds extends Component<Props> {
       swipeUp: false,
       reRender: false,
     }
+
+    props.navigation.addListener("willFocus", (event) => {
+      this.componentWillMount();
+    });
   }
+
   _onSwipeUp = async () => {
     await this.setState({ swipeUp: true });
 

@@ -160,6 +160,10 @@ export default class Inbox extends Component<Props> {
       reCaller: false,
       swipeUp: false,
     }
+
+    props.navigation.addListener("willFocus", (event) => {
+      this.componentWillMount();
+    });
   }
 
   _onRefresh = async () => {
