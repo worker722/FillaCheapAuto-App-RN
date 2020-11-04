@@ -188,18 +188,34 @@ export default class Home extends Component<Props> {
     }
   }
 
+  setRandomFeaturedAds = () => {
+    let { orderStore } = Store;
+
+    var currentIndex = orderStore.home.featured_ads.ads.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      temporaryValue = orderStore.home.featured_ads.ads[currentIndex];
+      orderStore.home.featured_ads.ads[currentIndex] = orderStore.home.featured_ads.ads[randomIndex];
+      orderStore.home.featured_ads.ads[randomIndex] = temporaryValue;
+    }
+  }
+
   start = async () => {
     let { orderStore } = Store;
     const response = await Api.get('home');
     if (response.success === true) {
       orderStore.home = response.data;
-      // orderStore.drawerMenu=response.data.menu.home_menu
       this.jobsPositions = response.data.ads_position;
+
+      this.setRandomFeaturedAds();
     }
     if (response.message.length != 0)
       Toast.show(response.message);
     this.setState({ showSpinner: false });
   }
+
   componentWillMount = async () => {
     this.start();
     this.manageFcmToken();
@@ -243,6 +259,7 @@ export default class Home extends Component<Props> {
 
   };
   onFeaturedGridClick = async (item) => {
+    console.log(item.ad_images[0].thumb);
     const { navigate } = this.props.navigation;
     await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
 
@@ -1272,6 +1289,8 @@ export default class Home extends Component<Props> {
 
         orderStore.home = response.data;
         this.jobsPositions = response.data.ads_position;
+
+        this.setRandomFeaturedAds();
       }
       if (response.message.length != 0)
         Toast.show(response.message);

@@ -72,7 +72,7 @@ export default class App extends Component<Props> {
         if (enabled) {
           firebase.messaging().getToken().then(token => {
             orderStore.DEVICE_TOKEN = token
-            console.warn("LOG: ", token);
+            console.warn("device_token: ", token);
           })
 
           if (Platform.OS === 'ios') {
@@ -172,6 +172,7 @@ export default class App extends Component<Props> {
       // const { title, body } = notification;
 
       // this.showNotification(title, body);
+      console.log("onNotificationDisplayed");
     });
 
 
@@ -179,8 +180,10 @@ export default class App extends Component<Props> {
     * Triggered when a particular notification has been received in foreground
     * */
     firebase.notifications().onNotification((notification) => {
+      console.log("Triggered when a particular notification has been received in foreground");
       const { title, body } = notification;
       // this.showNotification(title, body);
+
     });
 
     /*
@@ -188,7 +191,7 @@ export default class App extends Component<Props> {
     * */
     firebase.notifications().onNotificationOpened((notificationOpen) => {
       const { title, body } = notificationOpen.notification;
-
+      console.log("If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:");
       // this.showNotification(title, body);
     });
 
@@ -199,6 +202,7 @@ export default class App extends Component<Props> {
     if (notificationOpen) {
       const { title, body } = notificationOpen.notification;
       // this.showNotification(title, body);
+      console.log("If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:")
     }
 
     firebase.messaging().onMessage(async message => {

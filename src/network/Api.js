@@ -9,6 +9,7 @@ import Toast from 'react-native-simple-toast';
 export const GoogleApiKey = "AIzaSyB2mMTVAZWAvBCNhEaI0wgYLkvCev6oZS0"
 
 const host = 'https://www.fillacheapauto.com/wp-json/carspot/v1';
+// const host = 'http://10.0.2.2/FillaCheapAuto-Admin-WD/wp-json/carspot/v1';
 const PURCHASE_CODE = 'b45201c0-84d0-432a-9112-340f0bfddaaa';
 const CUSTOM_SECURITY = '8NCzextVXPXILUchCp7rVJucnJ6Pf1';
 
