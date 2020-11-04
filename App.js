@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import { View, Text, AsyncStorage, Alert, I18nManager, Platform, AppState, SafeAreaView, StatusBar, BackHandler, Linking } from 'react-native';
+import { NavigationActions, StackActions } from 'react-navigation';
 import VersionCheck from 'react-native-version-check';
 import StackNav from './src/config/StackNav';
 import { MenuProvider } from 'react-native-popup-menu';
@@ -16,6 +17,7 @@ import { observer } from 'mobx-react';
 import {
   AdMobInterstitial,
 } from 'react-native-admob'
+import { or } from 'react-native-reanimated';
 @observer
 export default class App extends Component<Props> {
 
@@ -169,10 +171,6 @@ export default class App extends Component<Props> {
     firebase.notifications().onNotificationDisplayed((notification: Notification) => {
       // Process your notification as required
       // ANDROID: Remote notifications do not contain the channel ID. You will have to specify this manually if you'd like to re-display the notification.
-      // const { title, body } = notification;
-
-      // this.showNotification(title, body);
-      console.log("onNotificationDisplayed");
     });
 
 
@@ -180,10 +178,7 @@ export default class App extends Component<Props> {
     * Triggered when a particular notification has been received in foreground
     * */
     firebase.notifications().onNotification((notification) => {
-      console.log("Triggered when a particular notification has been received in foreground");
       const { title, body } = notification;
-      // this.showNotification(title, body);
-
     });
 
     /*
@@ -191,8 +186,6 @@ export default class App extends Component<Props> {
     * */
     firebase.notifications().onNotificationOpened((notificationOpen) => {
       const { title, body } = notificationOpen.notification;
-      console.log("If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:");
-      // this.showNotification(title, body);
     });
 
     /*
@@ -201,8 +194,6 @@ export default class App extends Component<Props> {
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
       const { title, body } = notificationOpen.notification;
-      // this.showNotification(title, body);
-      console.log("If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:")
     }
 
     firebase.messaging().onMessage(async message => {

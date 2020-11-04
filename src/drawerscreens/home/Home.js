@@ -70,10 +70,46 @@ export default class Home extends Component<Props> {
     headerRight: <DrawerRightIcons />
   });
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    await this.createNotificationListeners();
+  }
 
-    // console.log('this props',this.props.getParam('callbackss'))
+  async createNotificationListeners() {
+    firebase.notifications().onNotificationDisplayed((notification: Notification) => {
+      const { title, body } = notification;
+    });
+
+    /*
+    * Triggered when a particular notification has been received in foreground
+    * */
+    firebase.notifications().onNotification((notification) => {
+      const { title, body } = notification;
+    });
+
+    /*
+    * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
+    * */
+    firebase.notifications().onNotificationOpened((notificationOpen) => {
+      let { orderStore } = Store;
+      orderStore.setNotificationCount(orderStore.notificationCount + 1);
+      const screenTitle = orderStore.screenTitles;
+      this.nav('Inbox', screenTitle.inbox)
+    });
+
+    /*
+    * If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:
+    * */
+    const notificationOpen = await firebase.notifications().getInitialNotification();
+    if (notificationOpen) {
+      let { orderStore } = Store;
+      orderStore.setNotificationCount(orderStore.notificationCount + 1);
+      const screenTitle = orderStore.screenTitles;
+      this.nav('Inbox', screenTitle.inbox)
+    }
+
+    firebase.messaging().onMessage(async message => {
+    });
   }
 
   nav = (route, title) => {
