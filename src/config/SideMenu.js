@@ -234,28 +234,27 @@ class SideMenu extends Component {
     }
   }
 
-UNSAFE_componentWillUpdate = ()=>{
-  let { orderStore } = Store;
-  if(orderStore.onBlogsViewAllClicked)
-    {
-      for(let x=0;x<orderStore.drawerMenu.length;x++){
-        if(orderStore.drawerMenu[x].key=='blog'){
+  UNSAFE_componentWillUpdate = () => {
+    let { orderStore } = Store;
+    if (orderStore.onBlogsViewAllClicked) {
+      for (let x = 0; x < orderStore.drawerMenu.length; x++) {
+        if (orderStore.drawerMenu[x].key == 'blog') {
           // console.log('keyxx',orderStore.drawerMenu[x].key)
-          this.onItemSelected(orderStore.drawerMenu[x],x)
+          this.onItemSelected(orderStore.drawerMenu[x], x)
           this.onPressLink(orderStore.drawerMenu[x])
         }
       }
       orderStore.setOnBlogViewAll(false);
- 
+
     }
-  
-  // console.log('clicked on blog view all')
-  // console.log('calledß')
-}
-  
+
+    // console.log('clicked on blog view all')
+    // console.log('calledß')
+  }
+
   render() {
     let { orderStore } = Store;
-    if(orderStore.onBlogsViewAllClicked)
+    if (orderStore.onBlogsViewAllClicked)
       console.log('blog view all clicked')
     return (
       <View>
@@ -307,7 +306,7 @@ UNSAFE_componentWillUpdate = ()=>{
                       {
                         item.key == 'inbox_list' ?
                           <Text style={[styles.navItemStyle, { color: this.state.backgroundColor[key].textColor }]}>
-                            {item.value} {item.message_count}
+                            {item.value} {orderStore.notificationCount}
                           </Text> :
                           <Text style={[styles.navItemStyle, { color: this.state.backgroundColor[key].textColor }]}>
                             {item.value}
