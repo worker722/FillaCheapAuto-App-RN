@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Platform,
   AppState,
   Text,
   View,
@@ -222,13 +221,14 @@ export default class Inbox extends Component<Props> {
                     navigate('Chat', { data: params });
                   }}
                   style={[styles.listItemContainer]}>
+                  <View style={{ width: 10, height: 10, borderRadius: 100, backgroundColor: item.message_read_status ? "transparent" : Appearences.Colors.green }}></View>
                   <View style={[styles.listImageContainer, { flex: 0.7 }]}>
                     <Avatar
                       size='large'
                       rounded
                       source={{ uri: item.message_ad_img[0].thumb ? item.message_ad_img[0].thumb : item.message_ad_img }}
                       activeOpacity={0.7}
-                      containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
+                      containerStyle={{ alignSelf: 'center', marginVertical: 20, marginRight: 10 }}
                     />
                   </View>
                   <View style={[styles.listTextContainer]}>
@@ -237,8 +237,8 @@ export default class Inbox extends Component<Props> {
                         {item.message_author_name}
                       </Text>
                       :
-                      <Text style={styles.listTitleText} numberOfLines={1}>
-                        unread_message
+                      <Text style={[styles.listTitleText, { fontWeight: "bold", fontSize: 16 }]} numberOfLines={1}>
+                        {item.message_author_name}
                       </Text>
                     }
 
@@ -250,7 +250,7 @@ export default class Inbox extends Component<Props> {
                     </Text>
                   </View>
 
-                  <View style={styles.timeView} numberOfLines={1}>
+                  <View style={[styles.timeView]} numberOfLines={1}>
                     {!_.isUndefined(item.chat_latest[item.chat_latest.length - 1].date) && !_.isEmpty(item.chat_latest[item.chat_latest.length - 1].date) ?
                       <Text style={styles.listTimeText}>
                         {item.chat_latest[item.chat_latest.length - 1].date}
