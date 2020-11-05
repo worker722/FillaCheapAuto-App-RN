@@ -47,7 +47,6 @@ export default class Chat extends Component<Props> {
     headerLeft: <HeaderBackButton
       onPress={() => {
         navigation.goBack(null);
-        console.log("remove chat")
         clearInterval(this.getDataInterval);
         this.messageListener && this.messageListener();
         AppState.removeEventListener('change', this.handleAppStateChange);
@@ -64,13 +63,13 @@ export default class Chat extends Component<Props> {
       text: chat.text,
       ad_id: chat.ad_id,
     };
-    console.log("chat message")
     if (data.push_type == 'yes') {
       const paramdata = this.props.navigation.state.params.data;
-      console.log(paramdata);
-      console.log(data);
       if (paramdata.receiverId == data.receiverId && paramdata.senderId == data.senderId) {
-        console.log("add chat message")
+
+        let { orderStore } = Store;
+        orderStore.setNotificationCount(orderStore.notificationCount - 1);
+
         this.setState({ messages: this.state.messages.concat(message) });
       }
     }
@@ -79,7 +78,6 @@ export default class Chat extends Component<Props> {
   async componentDidMount() {
     // add this line
     await this.createNotificationListeners();
-    console.log("add chat")
     AppState.addEventListener('change', this.handleAppStateChange);
   }
 
@@ -93,7 +91,6 @@ export default class Chat extends Component<Props> {
   handleAppStateChange = (nextAppState) => { }
 
   componentWillUnmount() {
-    console.log("remove chat")
     clearInterval(this.getDataInterval);
     this.messageListener && this.messageListener();
     AppState.removeEventListener('change', this.handleAppStateChange);

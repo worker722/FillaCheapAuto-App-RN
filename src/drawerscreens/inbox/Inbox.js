@@ -99,7 +99,8 @@ export default class Inbox extends Component<Props> {
       });
 
       let max_num_offers = allOffers.length;
-      pagination.current_page = -1;
+      if (pagination.current_page == 0)
+        pagination.current_page = -1;
       pagination.max_num_page = max_num_offers / pagination.per_page_num;
       if (max_num_offers % pagination.per_page_num != 0)
         pagination.max_num_page++;
@@ -231,9 +232,16 @@ export default class Inbox extends Component<Props> {
                     />
                   </View>
                   <View style={[styles.listTextContainer]}>
-                    <Text style={styles.listTitleText} numberOfLines={1}>
-                      {item.message_author_name}
-                    </Text>
+                    {item.message_read_status ?
+                      <Text style={styles.listTitleText} numberOfLines={1}>
+                        {item.message_author_name}
+                      </Text>
+                      :
+                      <Text style={styles.listTitleText} numberOfLines={1}>
+                        unread_message
+                      </Text>
+                    }
+
                     <Text style={styles.listNameText} numberOfLines={1}>
                       {item.message_ad_title}
                     </Text>
