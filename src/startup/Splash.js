@@ -330,6 +330,10 @@ export default class Splash extends Component<Props> {
       orderStore.color = data.main_color;
       orderStore.screenTitles = data.screen_titles;
       orderStore.drawerMenu = data.menu;
+      data.menu.map((item, key) => {
+        if (item.key == 'inbox_list')
+          orderStore.setNotificationCount(item.message_count);
+      })
       orderStore.appRating = data.app_rating;
       orderStore.dp = data.guest_image;
       orderStore.name = data.guest_name;

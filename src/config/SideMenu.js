@@ -304,7 +304,7 @@ class SideMenu extends Component {
                         style={[styles.iconStyle, { tintColor: this.state.backgroundColor[key].tintColor }]}
                       />
                       {
-                        item.key == 'inbox_list' ?
+                        item.key == 'inbox_list' && item.message_count > 0 ?
                           <Text style={[styles.navItemStyle, { color: this.state.backgroundColor[key].textColor }]}>
                             {item.value} {item.message_count}
                           </Text> :
