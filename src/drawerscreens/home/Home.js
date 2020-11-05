@@ -85,6 +85,8 @@ export default class Home extends Component<Props> {
     * */
     firebase.notifications().onNotification((notification) => {
       const { title, body } = notification;
+      let { orderStore } = Store;
+      orderStore.setNotificationCount(orderStore.notificationCount + 1);
     });
 
     /*
@@ -92,7 +94,6 @@ export default class Home extends Component<Props> {
     * */
     firebase.notifications().onNotificationOpened((notificationOpen) => {
       let { orderStore } = Store;
-      orderStore.setNotificationCount(orderStore.notificationCount + 1);
       const screenTitle = orderStore.screenTitles;
       this.nav('Inbox', screenTitle.inbox)
     });
@@ -103,7 +104,6 @@ export default class Home extends Component<Props> {
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
       let { orderStore } = Store;
-      orderStore.setNotificationCount(orderStore.notificationCount + 1);
       const screenTitle = orderStore.screenTitles;
       this.nav('Inbox', screenTitle.inbox)
     }
@@ -118,7 +118,6 @@ export default class Home extends Component<Props> {
     const navigateAction = NavigationActions.navigate({
       routeName: route
     });
-    // console.log('title is',title)
     this.props.navigation.setParams({ otherParam: title });
     this.props.navigation.dispatch(navigateAction);
   }
@@ -227,7 +226,6 @@ export default class Home extends Component<Props> {
         return this.renderBlog();
       default:
         break;
-
     }
   }
 

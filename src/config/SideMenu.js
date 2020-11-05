@@ -306,7 +306,7 @@ class SideMenu extends Component {
                       {
                         item.key == 'inbox_list' ?
                           <Text style={[styles.navItemStyle, { color: this.state.backgroundColor[key].textColor }]}>
-                            {item.value} {orderStore.notificationCount}
+                            {item.value} {item.message_count}
                           </Text> :
                           <Text style={[styles.navItemStyle, { color: this.state.backgroundColor[key].textColor }]}>
                             {item.value}
