@@ -48,6 +48,7 @@ export default class PageOne extends Component<Props> {
   isCategoryRequired = false;
   isTitleRequired = false;
   categoryClear = true;
+  carMakeClear = true;
   titleClear = true;
 
   constructor(props) {
@@ -60,7 +61,9 @@ export default class PageOne extends Component<Props> {
       showSpinner: false,
       showCategorySpinner: false,
       categoryId: "",
+      carMakeId: "",
       showCategoryError: false,
+      showCarMakeError: false,
       showImageError: false,
       images: [],
 
@@ -435,58 +438,7 @@ export default class PageOne extends Component<Props> {
 
 
           </View>
-          {/* <TouchableOpacity onPress={() => {
-            this.makeDropdownRef.show();
-          }}
-            style={styles.row}
-          > 
-            {/* <ModalDropdown
-              options={valuesArray}
-              ref={el => this.makeDropdownRef = el}
-              style={this.state.showCategoryError ? styles.pickerContainerError : styles.pickerContainer}
-              dropdownStyle={styles.dorpDownStyle}
-              dropdownTextHighlightStyle={styles.dropDownTextStyle}
-              textStyle={styles.dorpdownContainerTextStyle}
-              defaultValue={valuesArray[0]}
-              onSelect={(index, value) => {
 
-                let { orderStore } = Store;
-
-
-                if (idsArray[index].length != 0)
-                  this.setState({ categoryId: idsArray[index], showCategoryError: false });
-
-                if (item.values[index].has_sub) {
-
-                  this.getSubCategories(idsArray[index]);
-
-                }
-                this.setState({ showSubCategories: false, showSubSubCategories: false, showSubSubSubCategories: false, });
-
-                if (item.values[index].has_template) {
-                  orderStore.optionSelectedModel.hasTemp = true;
-
-
-                }
-                else
-                  orderStore.optionSelectedModel.hasTemp = false;
-                orderStore.optionSelectedModel.categoryId = idsArray[index];
-                orderStore.setOnDynamicOptionSeleted(true);
-
-              }}
-              renderSeparator={() => {
-                return (<View style={{
-                  width: 0,
-                  height: 0,
-                }} />);
-              }}
-
-              renderRow={(option, index, isSelected) => {
-
-                return (<View style={styles.dorpDownRow}>
-                  <Text style={styles.dropDownTextStyle}>{option}</Text>
-                </View>);
-              }} /> */}
           <SearchableDropdown
             selectedItems={this.state.selectedItems}
             onItemSelect={(item, index) => {
@@ -520,6 +472,7 @@ export default class PageOne extends Component<Props> {
               this.setState({ categoryId: '', showCategoryError: true });
               const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
               this.setState({ selectedItems: items });
+              console.log("remove category")
             }}
             itemStyle={styles.searchableDropdown}
             itemTextStyle={styles.dropDownTextStyle}
@@ -533,7 +486,7 @@ export default class PageOne extends Component<Props> {
                 textAlign: Appearences.Rtl.enabled ? 'right' : 'left',
                 placeholderTextColor: Appearences.Registration.textColor,
                 style: showCategoryError && categoryId === '' ? styles.TextInputError : styles.TextInput,
-                onTextChange: text => console.log(text)
+                onTextChange: text => text === '' ? this.setState({ showCategoryError: true, categoryId: '', showCarMakeError: true, carMakeId: '' }) : console.log(text)
               }
             }
             listProps={
@@ -549,17 +502,6 @@ export default class PageOne extends Component<Props> {
                 style={{ position: 'absolute', zIndex: 10, alignSelf: 'center', right: '5%', bottom: '15%', }}
               /> : null
           }
-          {/* <View style={styles.dropdownArrowContainer}>
-              
-              <Image
-                style={styles.popupViewImage}
-                source={require('../../../../res/images/right_arrow.png')}
-              />
-            </View> */}
-          {/* </TouchableOpacity> */}
-
-
-
         </View>
 
       </DismissKeyboard>
@@ -568,6 +510,7 @@ export default class PageOne extends Component<Props> {
 
   getSubCategoriesView = () => {
     // alert('hello');
+    const { showCarMakeError, carMakeId } = this.state;
     var names = [];
     var ids = [];
     var hasSubs = [];
@@ -591,77 +534,13 @@ export default class PageOne extends Component<Props> {
     return (
       <DismissKeyboard>
         <View >
-          {/* Model */}
-
-
-          {/* <TouchableOpacity onPress={() => {
-            this.subRef.show();
-          }}
-            style={styles.row}
-          >
-            <ModalDropdown
-              options={names}
-              ref={el => this.subRef = el}
-              style={styles.pickerContainer}
-              dropdownStyle={styles.dorpDownStyle}
-              dropdownTextHighlightStyle={styles.dropDownTextStyle}
-              textStyle={styles.dorpdownContainerTextStyle}
-              defaultValue={orderStore.sell.extra.select}
-              onSelect={(index, value) => {
-                let { orderStore } = Store;
-                if (ids[index].length != 0)
-                  this.setState({ categoryId: ids[index] });
-
-                if (hasSubs[index]) {
-                  this.getSubSubCategories(ids[index]);
-                }
-
-                this.setState({ showSubSubCategories: false, showSubSubSubCategories: false });
-                if (hasTemplate[index]) {
-                  orderStore.optionSelectedModel.hasTemp = true;
-
-                }
-                else
-                  orderStore.optionSelectedModel.hasTemp = false;
-                orderStore.optionSelectedModel.categoryId = ids[index];
-                orderStore.setOnDynamicOptionSeleted(true);
-
-
-
-              }}
-              renderSeparator={() => {
-                return (<View style={{
-                  width: 0,
-                  height: 0,
-                }} />);
-              }}
-              renderRow={(option, index, isSelected) => {
-                return (<View style={styles.dorpDownRow}>
-                  <Text style={styles.dropDownTextStyle}>{option}</Text>
-                </View>);
-              }} />
-            <View style={styles.dropdownArrowContainer}>
-              {
-                this.state.showCategorySpinner ?
-                  <ActivityIndicator
-                    size="small"
-                    style={{ position: 'absolute', zIndex: 10, alignSelf: 'center', right: '10%', bottom: '25%', }}
-                  /> : null
-              }
-              <Image
-                style={styles.popupViewImage}
-                source={require('../../../../res/images/right_arrow.png')}
-              />
-            </View>
-          </TouchableOpacity> */}
-
           <SearchableDropdown
             onItemSelect={(item, index) => {
 
               // const items = this.state.selectedItems;
               let { orderStore } = Store;
-              if (ids[index].length != 0)
-                this.setState({ categoryId: ids[index] });
+              // if (ids[index].length != 0)
+              this.setState({ categoryId: ids[index], carMakeId: ids[index], showCarMakeError: false });
 
               if (hasSubs[index]) {
                 this.getSubSubCategories(ids[index]);
@@ -670,7 +549,6 @@ export default class PageOne extends Component<Props> {
               this.setState({ showSubSubCategories: false, showSubSubSubCategories: false });
               if (hasTemplate[index]) {
                 orderStore.optionSelectedModel.hasTemp = true;
-
               }
               else
                 orderStore.optionSelectedModel.hasTemp = false;
@@ -679,6 +557,7 @@ export default class PageOne extends Component<Props> {
             }}
             containerStyle={{ paddingTop: 5 }}
             onRemoveItem={(item, index) => {
+              this.setState({ showCarMakeError: true, carMakeId: '' });
               const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
               this.setState({ selectedItems: items });
             }}
@@ -694,8 +573,8 @@ export default class PageOne extends Component<Props> {
                 underlineColorAndroid: 'transparent',
                 textAlign: Appearences.Rtl.enabled ? 'right' : 'left',
                 placeholderTextColor: Appearences.Registration.textColor,
-                style: styles.TextInput,
-                onTextChange: text => console.log(text)
+                style: showCarMakeError ?? carMakeId === '' ? styles.TextInputError : styles.TextInput,
+                onTextChange: text => text === '' ? this.setState({ showCarMakeError: true, carMakeId: '' }) : console.log(text)
               }
             }
             listProps={
@@ -743,61 +622,6 @@ export default class PageOne extends Component<Props> {
     return (
       <DismissKeyboard>
         <View>
-
-
-          {/* <TouchableOpacity onPress={() => {
-            this.subSubRef.show();
-          }}
-            style={styles.row}
-          >
-            <ModalDropdown
-              options={names}
-              ref={el => this.subSubRef = el}
-              style={styles.pickerContainer}
-              dropdownStyle={styles.dorpDownStyle}
-              dropdownTextHighlightStyle={styles.dropDownTextStyle}
-              textStyle={styles.dorpdownContainerTextStyle}
-              defaultValue={orderStore.sell.extra.select}
-              onSelect={(index, value) => {
-                let { orderStore } = Store;
-                if (ids[index].length != 0)
-                  this.setState({ categoryId: ids[index] });
-
-                if (hasSubs[index]) {
-                  this.getSubSubSubCategories(ids[index]);
-                }
-
-                this.setState({ showSubSubSubCategories: false });
-
-                if (hasTemplate[index]) {
-                  orderStore.optionSelectedModel.hasTemp = true;
-
-                }
-                else
-                  orderStore.optionSelectedModel.hasTemp = false;
-                orderStore.optionSelectedModel.categoryId = ids[index];
-                orderStore.setOnDynamicOptionSeleted(true);
-
-
-              }}
-              renderSeparator={() => {
-                return (<View style={{
-                  width: 0,
-                  height: 0,
-                }} />);
-              }}
-              renderRow={(option, index, isSelected) => {
-                return (<View style={styles.dorpDownRow}>
-                  <Text style={styles.dropDownTextStyle}>{option}</Text>
-                </View>);
-              }} />
-            <View style={styles.dropdownArrowContainer}>
-              <Image
-                style={styles.popupViewImage}
-                source={require('../../../../res/images/right_arrow.png')}
-              />
-            </View>
-          </TouchableOpacity> */}
           <SearchableDropdown
             onItemSelect={(item, index) => {
               let { orderStore } = Store;
@@ -871,57 +695,6 @@ export default class PageOne extends Component<Props> {
     return (
       <DismissKeyboard>
         <View>
-
-
-
-          {/* <TouchableOpacity onPress={() => {
-            this.subSubSubRef.show();
-          }}
-            style={styles.row}
-          >
-            <ModalDropdown
-              options={names}
-              ref={el => this.subSubSubRef = el}
-              style={styles.pickerContainer}
-              dropdownStyle={styles.dorpDownStyle}
-              dropdownTextHighlightStyle={styles.dropDownTextStyle}
-              textStyle={styles.dorpdownContainerTextStyle}
-              defaultValue={orderStore.sell.extra.select}
-              onSelect={(index, value) => {
-                let { orderStore } = Store;
-                if (ids[index].length != 0)
-                  this.setState({ categoryId: ids[index] });
-
-                if (hasTemplate[index]) {
-                  orderStore.optionSelectedModel.hasTemp = true;
-
-
-                }
-                else
-                  orderStore.optionSelectedModel.hasTemp = false;
-                orderStore.optionSelectedModel.categoryId = ids[index];
-                orderStore.setOnDynamicOptionSeleted(true);
-
-              }}
-              renderSeparator={() => {
-                return (<View style={{
-                  width: 0,
-                  height: 0,
-                }} />);
-              }}
-
-              renderRow={(option, index, isSelected) => {
-                return (<View style={styles.dorpDownRow}>
-                  <Text style={styles.dropDownTextStyle}>{option}</Text>
-                </View>);
-              }} />
-            <View style={styles.dropdownArrowContainer}>
-              <Image
-                style={styles.popupViewImage}
-                source={require('../../../../res/images/right_arrow.png')}
-              />
-            </View>
-          </TouchableOpacity> */}
 
           <SearchableDropdown
             onItemSelect={(item, index) => {
@@ -1424,6 +1197,14 @@ export default class PageOne extends Component<Props> {
       this.setState({ showCategoryError: false });
       this.categoryClear = true;
     }
+    if (this.state.carMakeId.length === 0) {
+      this.setState({ showCarMakeError: true });
+      this.carMakeClear = false;
+    }
+    else {
+      this.setState({ showCarMakeError: false });
+      this.carMakeClear = true;
+    }
     for (var i = 0; i < this.state.pageOne.length; i++) {
       if (this.state.pageOne[i].showError) {
         if (this.state.pageOne[i].fieldTypeName === "ad_cats1")
@@ -1432,7 +1213,7 @@ export default class PageOne extends Component<Props> {
       }
 
     }
-    if (this.categoryClear && this.isImagesClear && areStaticFieldsClear) {
+    if (this.categoryClear && this.carMakeClear && this.isImagesClear && areStaticFieldsClear) {
       orderStore.isFirstPageClear = true;
     }
     else {

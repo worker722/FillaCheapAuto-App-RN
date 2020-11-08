@@ -3,6 +3,7 @@ import {
   Text,
   View,
   Image,
+  BackHandler,
   TouchableOpacity,
   ScrollView,
   FlatList,
@@ -34,51 +35,73 @@ import { NavigationActions } from 'react-navigation';
 
 const sortOptions = [];
 const sortKeys = [];
-
+let instance = null;
 @observer
 export default class SearchDetail extends Component<Props> {
   static navigationOptions = ({ navigation }) => ({
-    headerStyle: {
-      backgroundColor: stores.color,
-    },
+    header: (
+      <View style={{ backgroundColor: stores.color, height: Appearences.Registration.itemHeight + 10, flexDirection: "row" }}>
+        <HeaderBackButton
+          onPress={() => {
+            navigation.goBack(null)
+          }} tintColor={'#fff'} />
+        <View style={[styles.headerSearchbarContainer]}>
+          <TextInput
+            style={[styles.TextInput, { borderTopLeftRadius: Appearences.Radius.radius, borderBottomLeftRadius: Appearences.Radius.radius }]}
+            underlineColorAndroid='transparent'
+            placeholderTextColor={Appearences.Colors.placeholderTextColor}
+            placeholder={stores.home.placehldr}
+            onChangeText={(text) => {
+              instance.setState({ searchText: text });
+            }}
+            textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+          />
 
-    headerTitleStyle: {
-      flex: 1,
-      color: 'white',
-      textAlign: "center",
-      fontFamily: Appearences.Fonts.paragaphFont,
-      fontSize: 13,
-      fontWeight: "200",
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={async () => {
+              let param = { ad_title: instance.state.searchText }
+              // const { navigate } = instance.props.navigation;
+              // await BackHandler.removeEventListener("hardwareBackPress", instance.handleBackButton);
+              // stores.setIsCallAdvance(false);
+              // navigate('SearchDetail', { params: param });
+              instance.searchFromText(param)
+            }}
+          >
+            <View style={[styles.searchButton, { backgroundColor: stores.color }]}>
+              <Image source={require('../../../../res/images/search_white.png')}
+                style={styles.searchImage}
+              />
+            </View >
+          </TouchableOpacity>
 
-    },
-    headerRight: <SearchDetailRightIcon />,
-    headerLeft: <HeaderBackButton
-      onPress={() => {
-        navigation.goBack(null)
-      }} tintColor={'#fff'} />
+        </View>
+        <SearchDetailRightIcon />
+      </View>
+    ),
   });
   adsDefaulValue = [];
   adsPaginationDefaultValue;
-  searchFromText = async () => {
+
+  searchFromText = async (params) => {
 
     this.setState({ showSpinner: true });
     let { orderStore } = Store;
-    const params = this.props.navigation.state.params.params;
     orderStore.innerResponse = await Api.post('ad_post/search', params);
     const data = orderStore.innerResponse.data;
 
     if (orderStore.innerResponse.success === true) {
-      if (orderStore.innerResponse.data.featured_ads.ads.length === 0) {
+      if (orderStore.innerResponse.data.featured_ads.ads.length === 0)
         this.setState({ noFeaturedAdsVisibility: true });
-      }
-      if (orderStore.innerResponse.data.ads.length === 0) {
+      else
+        this.setState({ noFeaturedAdsVisibility: false });
+      if (orderStore.innerResponse.data.ads.length === 0)
         this.setState({ noAdsVisibility: true });
-      }
-      orderStore.innerResponse.data.ads = [...this.adsDefaulValue];
-      orderStore.innerResponse.pagination = this.adsPaginationDefaultValue;
+      else
+        this.setState({ noAdsVisibility: false });
+
+      adsDefaulValue = [];
       this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads });
-
-
     }
 
     this.setState({ showSpinner: false, reCaller: false, });
@@ -132,9 +155,15 @@ export default class SearchDetail extends Component<Props> {
         if (orderStore.innerResponse.data.featured_ads.ads.length === 0) {
           this.setState({ noFeaturedAdsVisibility: true });
         }
+        else {
+          this.setState({ noFeaturedAdsVisibility: false });
+        }
         if (orderStore.innerResponse.data.ads.length === 0) {
           this.setState({ noAdsVisibility: true });
         }
+        else
+          this.setState({ noAdsVisibility: false });
+
         orderStore.innerResponse.data.ads = [...this.adsDefaulValue];
         orderStore.innerResponse.pagination = this.adsPaginationDefaultValue;
         this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads });
@@ -206,6 +235,8 @@ export default class SearchDetail extends Component<Props> {
       showChatModel: false,
       similar_ad_id: 0,
     }
+
+    instance = this;
   }
   renderFeaturedAds = () => {
     let { orderStore } = Store;
@@ -861,83 +892,6 @@ export default class SearchDetail extends Component<Props> {
           </View>
 
         </Modal>
-        {/* Absolute view start */}
-        {this.state.isAboslute ?
-
-          <Animatable.View
-            animation={this.state.isAboslute ? "fadeInDown" : "fadeOut"} iterationCount={1} direction="normal"
-            style={{
-              position: 'absolute',
-              backgroundColor: orderStore.color,
-              flex: 1,
-              paddingStart: 10,
-              paddingEnd: 10,
-              width: '100%',
-              paddingBottom: 3,
-              // elevation: 5,
-              // shadowOpacity: 0.5,
-            }}>
-            {/* <View
-  style={ {  paddingStart:15,
-    paddingEnd:15,
-    justifyContent:'center',
-    width:'100%',
-    flex:1,
-    backgroundColor:'white',
-    marginTop:localProps.topMargin,
-    paddingBottom:15,
-    paddingTop:15,marginTop: 0,
-    backgroundColor: orderStore.color,
-     }}
-> */}
-
-
-            <View style={[styles.headerSearchbarContainer, {}]}>
-
-              <TextInput
-                style={[styles.TextInput, { borderTopLeftRadius: Appearences.Radius.radius, borderBottomLeftRadius: Appearences.Radius.radius }]}
-                underlineColorAndroid='transparent'
-                placeholderTextColor={Appearences.Colors.placeholderTextColor}
-                placeholder={orderStore.home.placehldr}
-                onChangeText={(text) => {
-                  this.setState({ searchText: text });
-                }}
-                textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-              />
-
-              <TouchableOpacity
-                activeOpacity={1}
-                onPress={async () => {
-                  let param = { ad_title: this.state.searchText }
-                  const { navigate } = this.props.navigation;
-                  await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
-                  let { orderStore } = Store;
-                  orderStore.setIsCallAdvance(false);
-                  navigate('SearchDetail', { params: param });
-
-                }}
-              >
-                <View style={[styles.searchButton, { backgroundColor: orderStore.color }]}>
-                  <Image source={require('../../../../res/images/search_white.png')}
-                    style={styles.searchImage}
-                  />
-                </View >
-              </TouchableOpacity>
-
-            </View>
-
-            {/* </View> */}
-
-
-          </Animatable.View>
-
-          : null
-
-
-        }
-
-
-        {/* Absolute view end */}
 
       </View>
     );
