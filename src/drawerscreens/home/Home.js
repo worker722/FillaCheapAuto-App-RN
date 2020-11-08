@@ -43,6 +43,7 @@ import Banner from '../../components/adMob/Banner';
 import DrawerButton from '../../config/DrawerButton';
 import DrawerRightIcons from '../../config/DrawerRightIcons';
 import { NavigationActions, StackActions } from 'react-navigation';
+import { toUint8Array } from 'js-base64';
 
 
 const featuredItemWidth = Dimensions.get("screen").width * 47 / 100;
@@ -136,7 +137,7 @@ export default class Home extends Component<Props> {
       refreshing: false,
       searchText: '',
       showChatModel: false,
-      similar_ad_id: 0,
+      similar_ad: null,
     };
 
     const renderInterval = setInterval(() => {
@@ -398,9 +399,19 @@ export default class Home extends Component<Props> {
 
   }
 
+  showChatModal = async (item) => {
+    let { orderStore } = Store;
+
+    const params = { ad_id: item.ad_id };
+    orderStore.adDetail = await Api.post('ad_post', params);
+
+    this.setState({ showChatModel: true, similar_ad: item });
+  }
+
   sendChatMessage = async () => {
+
     this.setState({ showMessageProgress: true });
-    const params = { ad_id: this.state.similar_ad_id, message: this.state.popupMessage };
+    const params = { ad_id: this.state.similar_ad.ad_id, message: this.state.popupMessage };
 
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
@@ -623,7 +634,7 @@ export default class Home extends Component<Props> {
                 }]}>
                   <TouchableOpacity
                     style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
-                    onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
+                    onPress={() => this.showChatModal(item)}>
                     <Image
                       source={require('../../../res/images/message_grey.png')}
                       style={[FeaturedGridStyle.bottomImgStyl]}
@@ -668,7 +679,8 @@ export default class Home extends Component<Props> {
   }
   addFav = async (item) => {
     let { orderStore } = Store
-    if (orderStore.profile.data) {
+    console.log(orderStore.name)
+    if (orderStore.name == "Guest") {
 
       const params = { ad_id: item.ad_id };
       let response = await Api.post('ad_post/favourite', params);
@@ -685,7 +697,7 @@ export default class Home extends Component<Props> {
   }
   deleteItem = async (item) => {
     let { orderStore } = Store
-    if (orderStore.profile.data) {
+    if (orderStore.name == "Guest") {
 
       const params = { ad_id: item.ad_id }
       let response = await Api.post('ad/favourite/remove', params);
@@ -957,7 +969,7 @@ export default class Home extends Component<Props> {
                 <View style={{ flexDirection: 'row', width: '100%', height: 30, alignItems: 'center', }}>
                   <TouchableOpacity
                     style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
-                    onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
+                    onPress={() => this.showChatModal(item)}>
                     <Image
                       source={require('../../../res/images/message_grey.png')}
                       style={[FeaturedGridStyle.bottomImgStyl]}
@@ -1058,9 +1070,6 @@ export default class Home extends Component<Props> {
                   let { orderStore } = Store;
                   orderStore.setIsCallAdvance(false);
                   navigate('SearchDetail', { params: params });
-
-
-
                 }}
                 activeOpacity={1}
                 style={ExploreCountryStyle.container}>
@@ -1520,6 +1529,24 @@ export default class Home extends Component<Props> {
               <View style={styles.modalContainer}>
 
                 <View style={styles.modalContentContainer}>
+                  {this.state.similar_ad != null ?
+                    <View style={{ height: 70, width: "100%", flexDirection: "row" }}>
+                      <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                        <Image source={{ uri: this.state.similar_ad.ad_images[0].thumb }} style={{ width: 70, height: 70 }}></Image>
+                      </View>
+                      <View style={{ flex: 1, flexDirection: "column" }}>
+                        <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>
+                        <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text>
+                        <Text style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
+                      </View>
+                      <TouchableOpacity onPress={() => this.onCallClick(this.state.similar_ad.ad_id)} style={{ width: 20, height: 30 }}>
+                        <Image
+                          source={require('../../../res/images/contact.png')}
+                          style={[FeaturedGridStyle.bottomImgStyl]}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    : null}
                   <ScrollView
                     keyboardShouldPersistTaps='always'
                   >

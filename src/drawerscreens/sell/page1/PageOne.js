@@ -1024,6 +1024,7 @@ export default class PageOne extends Component<Props> {
                     underlineColorAndroid='transparent'
                     textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
                     placeholderTextColor={Appearences.Registration.textColor}
+                    placeholder={"eg, Toyota hilux 2002"}
                     keyboardType="numeric"
                     returnKeyType="done"
 
@@ -1051,7 +1052,8 @@ export default class PageOne extends Component<Props> {
               <TextInput style={item.showError ? styles.TextInputError : styles.TextInput}
                 underlineColorAndroid='transparent'
                 textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-                placeholderTextColor={Appearences.Registration.textColor}
+                placeholderTextColor={Appearences.Registration.lightGrey}
+                placeholder={"eg, Toyota hilux 2002"}
                 onChangeText={(message) => {
                   let stateClone = [...this.state.pageOne];
                   if (message.length != 0 && item.isRequired) {
@@ -1082,6 +1084,7 @@ export default class PageOne extends Component<Props> {
                 numberOfLines={10}
                 textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
                 placeholderTextColor={Appearences.Registration.textColor}
+                placeholder={"eg, Toyota hilux 2002"}
                 onChangeText={(message) => {
                   let stateClone = [...this.state.pageOne];
                   if (message.length != 0 && item.isRequired) {
@@ -1326,7 +1329,7 @@ export default class PageOne extends Component<Props> {
                 }
                 style={this.state.showImageError ? styles.fileUploadContainerError : styles.fileUploadContainer}>
                 <Visibility hide={!this.state.hideImageIndicator}>
-                  {this.state.fullImages.length === 0 ? <Text style={styles.fileUploadText}>{}</Text> : null}
+                  {this.state.fullImages.length === 0 ? <Text style={styles.fileUploadText}>{ }</Text> : null}
                 </Visibility>
                 <Visibility
                   hide={this.state.hideImageIndicator}
