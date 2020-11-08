@@ -228,7 +228,7 @@ export default class Inbox extends Component<Props> {
                       rounded
                       source={{ uri: item.message_ad_img[0].thumb ? item.message_ad_img[0].thumb : item.message_ad_img }}
                       activeOpacity={0.7}
-                      containerStyle={{ alignSelf: 'center', marginVertical: 20, marginRight: 10 }}
+                      containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
                     />
                   </View>
                   <View style={[styles.listTextContainer]}>

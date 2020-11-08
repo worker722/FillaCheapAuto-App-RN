@@ -67,8 +67,10 @@ export default class Chat extends Component<Props> {
       const paramdata = this.props.navigation.state.params.data;
       if (paramdata.receiverId == data.receiverId && paramdata.senderId == data.senderId) {
 
-        let { orderStore } = Store;
-        orderStore.setNotificationCount(orderStore.notificationCount - 1);
+        if (this.removeBadge) {
+          let { orderStore } = Store;
+          orderStore.setNotificationCount(orderStore.notificationCount - 1);
+        }
 
         this.setState({ messages: this.state.messages.concat(message) });
       }
@@ -109,6 +111,7 @@ export default class Chat extends Component<Props> {
       message: '',
       hideArrowButton: false,
     }
+    this.removeBadge = true;
   }
 
   componentWillMount = async () => {
@@ -116,6 +119,10 @@ export default class Chat extends Component<Props> {
     this.getDataInterval = setInterval(() => {
       this.getAllChatData();
     }, 10000);
+
+    props.navigation.addListener("willBlur", (event) => {
+      this.removeBadge = false;
+    });
   }
 
   getAllChatData = async () => {

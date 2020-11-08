@@ -16,7 +16,7 @@ import Visibility from '../../../../components/Visibility';
 import * as Progress from 'react-native-progress';
 import { observer } from 'mobx-react';
 import Store from '../../../../Stores';
-import Api ,{GoogleApiKey} from '../../../../network/Api';
+import Api, { GoogleApiKey } from '../../../../network/Api';
 import styles from './Styles';
 import ProfileHeader from '../../../../components/ProfileHeader';
 import { DocumentPicker, DocumentPickerUtil } from 'react-native-document-picker';
@@ -90,6 +90,7 @@ export default class EditProfile extends Component<Props> {
       latitude: "0",
       longitude: "0",
       uploadingDealerProfile: false,
+      profileImageUri: "",
     }
   }
   componentWillMount() {
@@ -118,21 +119,21 @@ export default class EditProfile extends Component<Props> {
 
     }
 
-    if(orderStore.profile.data.is_show_social==true){
+    if (orderStore.profile.data.is_show_social == true) {
       this.setState({
-        fb:dealerDetails.social.facebook.value,
-        twitter:dealerDetails.social.twitter.value,
-        linkedin:dealerDetails.social.linkedIn.value,
-        google:dealerDetails.social.youtube.value
+        fb: dealerDetails.social.facebook.value,
+        twitter: dealerDetails.social.twitter.value,
+        linkedin: dealerDetails.social.linkedIn.value,
+        google: dealerDetails.social.youtube.value
       })
     }
   }
-  updateProfile = async (isShow,sIsShow) => {
+  updateProfile = async (isShow, sIsShow) => {
     this.setState({ uploadingDealerProfile: true });
     let params;
     // let goog=""
     if (isShow) {
-      if(sIsShow){
+      if (sIsShow) {
         params = {
           sb_camp_name: this.state.companyName,
           sb_user_web_url: this.state.companyUrl,
@@ -144,13 +145,13 @@ export default class EditProfile extends Component<Props> {
           sb_user_about: this.state.companyAbout,
           user_name: this.state.name,
           phone_number: this.state.phone,
-          sb_user_facebook:this.state.fb,
-          sb_user_twitter:this.state.twitter,
-          sb_user_linkedin:this.state.linkedin,
-          sb_user_youtube:this.state.google
+          sb_user_facebook: this.state.fb,
+          sb_user_twitter: this.state.twitter,
+          sb_user_linkedin: this.state.linkedin,
+          sb_user_youtube: this.state.google
 
         };
-      }else{
+      } else {
         params = {
           sb_camp_name: this.state.companyName,
           sb_user_web_url: this.state.companyUrl,
@@ -164,7 +165,7 @@ export default class EditProfile extends Component<Props> {
           phone_number: this.state.phone,
         };
       }
-     
+
 
     }
     else {
@@ -226,26 +227,17 @@ export default class EditProfile extends Component<Props> {
     let { orderStore } = Store;
     ImagePicker.openPicker({
       multiple: false
-    }).then( async images => {
-      // if (res != null) {
-        this.setState({ uploadingStoreImage: true });
-        orderStore.innerResponse = await Api.postImage('profile/image_store', 'store_img', images);
-        if (orderStore.innerResponse.success === true) {
-          // console.log('picked img', orderStore.innerResponse);
-          // let locaDb = await LocalDb.getUserProfile();
-          // orderStore.dp = orderStore.innerResponse.data.profile_img;
-          // locaDb.dp = orderStore.innerResponse.data.profile_img;
-          // await LocalDb.saveProfile(locaDb);
-
-
-        }
-        this.setState({ uploadingStoreImage: false });
-        if (orderStore.innerResponse.message.length != 0)
-          Toast.show(orderStore.innerResponse.message);
-
-      // }
+    }).then(async images => {
+      this.setState({ uploadingStoreImage: true });
+      orderStore.innerResponse = await Api.postImage('profile/image_store', 'store_img', images);
+      if (orderStore.innerResponse.success === true) {
+        this.setState({ profileImageUri: orderStore.innerResponse.data.profile_img });
+      }
+      this.setState({ uploadingStoreImage: false });
+      if (orderStore.innerResponse.message.length != 0)
+        Toast.show(orderStore.innerResponse.message);
     });
-  
+
 
   }
   _onRefresh = async () => {
@@ -253,19 +245,18 @@ export default class EditProfile extends Component<Props> {
     this.setState({ refreshing: true });
 
 
-    let {orderStore} = Store;
+    let { orderStore } = Store;
     orderStore.profile = await Api.get('profile');
-    if(orderStore.profile.success === true)
-       {
-        let tabsText = orderStore.profile.data.tabs_text; 
-        
-        this.tabsText = {profile:tabsText.profile,editProfile:tabsText.edit_profile,featuredAds:tabsText.featured_ads,inactiveAds:tabsText.inactive_ads,myAds:tabsText.my_ads,favouriteAds:tabsText.favorite_ads};
-        this.setState({showSpinner:false});
+    if (orderStore.profile.success === true) {
+      let tabsText = orderStore.profile.data.tabs_text;
+
+      this.tabsText = { profile: tabsText.profile, editProfile: tabsText.edit_profile, featuredAds: tabsText.featured_ads, inactiveAds: tabsText.inactive_ads, myAds: tabsText.my_ads, favouriteAds: tabsText.favorite_ads };
+      this.setState({ showSpinner: false });
       // this.props.navigation.navigate('Profile');   
-        
-       }
-       if(orderStore.profile.message.length!=0)
-       Toast.show(orderStore.profile.message);
+
+    }
+    if (orderStore.profile.message.length != 0)
+      Toast.show(orderStore.profile.message);
 
     setTimeout(async () => {
 
@@ -514,11 +505,11 @@ export default class EditProfile extends Component<Props> {
                     <Text style={styles.headingTextBlack}>{data.dealer_details.store_front_image.key}</Text>
                     <TouchableOpacity
                       onPress={this.showImagePicker}
-                      style={styles.fileUploadContainer}
+                      style={[styles.fileUploadContainer, { height: 80, paddingVertical: 5 }]}
                       disabled={this.state.uploadingStoreImage}
 
                     >
-                      <Text style={styles.containerFont}>{data.dealer_details.store_front_image.placeholder}</Text>
+                      <Image source={{ uri: this.state.profileImageUri }} style={{ width: 70, height: 70 }}></Image>
                       {this.state.uploadingStoreImage ?
                         <Progress.Circle
                           color={orderStore.color}
@@ -688,7 +679,7 @@ export default class EditProfile extends Component<Props> {
                       <Text style={[styles.forgotPasswordText, { color: orderStore.color, marginTop: 15 }]}>{extraText.change_pass.title}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.buttonRow}
-                      onPress={() => this.updateProfile(data.dealer_details_is_show,data.is_show_social)}
+                      onPress={() => this.updateProfile(data.dealer_details_is_show, data.is_show_social)}
                       disabled={this.state.uploadingDealerProfile}>
 
                       <View
