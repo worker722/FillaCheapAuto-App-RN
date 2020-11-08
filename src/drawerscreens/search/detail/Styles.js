@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     marginStart: 5,
   },
   headerSearchbarContainer: {
-    width: '100%',
+    width: '80%',
     height: Appearences.Registration.itemHeight + 10,
     flexDirection: 'row',
     paddingStart: 15,
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }],
-    tintColor: 'black',
+    tintColor: 'white',
   },
   filterRow: {
     width: '100%',
