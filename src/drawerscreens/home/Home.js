@@ -679,8 +679,7 @@ export default class Home extends Component<Props> {
   }
   addFav = async (item) => {
     let { orderStore } = Store
-    console.log(orderStore.name)
-    if (orderStore.name == "Guest") {
+    if (orderStore.name != "Guest") {
 
       const params = { ad_id: item.ad_id };
       let response = await Api.post('ad_post/favourite', params);
@@ -697,7 +696,7 @@ export default class Home extends Component<Props> {
   }
   deleteItem = async (item) => {
     let { orderStore } = Store
-    if (orderStore.name == "Guest") {
+    if (orderStore.name != "Guest") {
 
       const params = { ad_id: item.ad_id }
       let response = await Api.post('ad/favourite/remove', params);
@@ -811,6 +810,7 @@ export default class Home extends Component<Props> {
 
     if (orderStore.profile.data) {
       favouriteAds = orderStore.profile.data.favourite_add.ads;
+      console.log(favouriteAds.length);
       for (let i in favouriteAds) {
         for (let j in data.ads) {
           if (data.ads[j].ad_id === favouriteAds[i].ad_id) {
