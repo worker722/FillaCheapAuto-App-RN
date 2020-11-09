@@ -63,6 +63,7 @@ export default class SearchDetail extends Component<Props> {
             activeOpacity={1}
             onPress={async () => {
               let param = { ad_title: instance.state.searchText }
+              instance.setState({ showSpinner: true });
               instance.searchFromText(param)
             }}
           >
@@ -83,7 +84,7 @@ export default class SearchDetail extends Component<Props> {
 
   searchFromText = async (params) => {
 
-    this.setState({ showSpinner: true });
+
     let { orderStore } = Store;
     orderStore.innerResponse = await Api.post('ad_post/search', params);
     const data = orderStore.innerResponse.data;
@@ -98,7 +99,8 @@ export default class SearchDetail extends Component<Props> {
       else
         this.setState({ noAdsVisibility: false });
 
-      adsDefaulValue = [];
+      orderStore.profile = await Api.get('profile');
+
       this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads });
     }
 
@@ -109,12 +111,9 @@ export default class SearchDetail extends Component<Props> {
   componentWillMount = async () => {
     let { orderStore } = Store;
     const params = this.props.navigation.state.params.params;
-    //  console.warn(params);
     orderStore.innerResponse = await Api.post('ad_post/search', params);
-    // console.log('after search results are', JSON.stringify(orderStore.innerResponse))
     const data = orderStore.innerResponse.data;
     const extra = orderStore.innerResponse.extra;
-    //   const staticText = data.static_text;
     if (orderStore.innerResponse.success === true) {
       if (orderStore.innerResponse.data.featured_ads.ads.length === 0) {
         this.setState({ noFeaturedAdsVisibility: true });
@@ -122,10 +121,11 @@ export default class SearchDetail extends Component<Props> {
       if (orderStore.innerResponse.data.ads.length === 0) {
         this.setState({ noAdsVisibility: true });
       }
+
+      orderStore.profile = await Api.get('profile');
       this.adsDefaulValue = [...orderStore.innerResponse.data.ads];
       this.adsPaginationDefaultValue = orderStore.innerResponse.pagination;
       this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads, noAdsMessage: extra.no_ads_found, noFeaturedAdsMessage: extra.no_ads_found });
-      console.log(this.state.listData[0]);
       const sortOptionsArray = orderStore.innerResponse.topbar.sort_arr;
       for (var i = 0; i < sortOptionsArray.length; i++) {
 
@@ -138,7 +138,6 @@ export default class SearchDetail extends Component<Props> {
 
   }
   _onSwipeUp = async () => {
-    // console.log('onswipeup called')
     await this.setState({ swipeUp: true });
 
     setTimeout(async () => {
@@ -162,7 +161,7 @@ export default class SearchDetail extends Component<Props> {
         else
           this.setState({ noAdsVisibility: false });
 
-        adsDefaulValue = [];
+        orderStore.profile = await Api.get('profile');
         this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads });
 
       }
@@ -175,7 +174,6 @@ export default class SearchDetail extends Component<Props> {
 
     let { orderStore } = Store;
     let pagination = orderStore.innerResponse.pagination;
-    // console.log('pagination next pas ?', JSON.stringify(pagination))
     if (pagination.has_next_page === true) {
 
       this.setState({ refreshing: true });
@@ -189,17 +187,12 @@ export default class SearchDetail extends Component<Props> {
 
     params.page_number = nextPage;
     let response = await Api.post('ad_post/search', params);
-    // console.log("search res after refresh", response)
 
     if (response.success === true) {
-      // console.warn("before ", this.state.listData.length);
       orderStore.innerResponse.pagination = response.pagination;
       orderStore.innerResponse.data.ads = [...orderStore.innerResponse.data.ads, ...response.data.ads];
-      // console.warn('response', JSON.stringify(orderStore.innerResponse.ads));
 
       await this.setState({ listData: orderStore.innerResponse.data.ads });
-      // console.warn("after ", this.state.listData.length);
-
     }
     if (response.message.length != 0)
       Toast.show(response.message);
@@ -208,12 +201,14 @@ export default class SearchDetail extends Component<Props> {
 
   addFav = async (item) => {
     let { orderStore } = Store
-    if (orderStore.name == "Guest") {
+    if (orderStore.name != "Guest") {
 
       const params = { ad_id: item.ad_id };
       let response = await Api.post('ad_post/favourite', params);
-      if (response.success === true)
-        this.searchFromText({ ad_title: this.state.searchText });
+      if (response.success === true) {
+        this.searchFromText(this.props.navigation.state.params.params);
+
+      }
 
       if (response.message.length != 0)
         Toast.show(response.message);
@@ -225,12 +220,12 @@ export default class SearchDetail extends Component<Props> {
   }
   deleteItem = async (item) => {
     let { orderStore } = Store
-    if (orderStore.name == "Guest") {
+    if (orderStore.name != "Guest") {
 
       const params = { ad_id: item.ad_id }
       let response = await Api.post('ad/favourite/remove', params);
       if (response.success === true) {
-        this.start()
+        this.searchFromText(this.props.navigation.state.params.params);
       }
 
       if (response.message.length != 0)
@@ -264,7 +259,7 @@ export default class SearchDetail extends Component<Props> {
       { title: 'Alphabatically[z-a]', checked: false },],
       firstModalCurrentIndex: 0,
       showChatModel: false,
-      similar_ad_id: 0,
+      similar_ad: null,
     }
 
     instance = this;
@@ -463,17 +458,12 @@ export default class SearchDetail extends Component<Props> {
 
     let { orderStore } = Store;
 
-    // const pa .rams = sortKeys[index];
-
     const param = {
       sort: sortKeys[index]
     }
-    //  console.warn(params);
     orderStore.innerResponse = await Api.post('ad_post/search', param);
-    // console.log('after search results are', JSON.stringify(orderStore.innerResponse))
     const data = orderStore.innerResponse.data;
     const extra = orderStore.innerResponse.extra;
-    //   const staticText = data.static_text;
     if (orderStore.innerResponse.success === true) {
       if (orderStore.innerResponse.data.featured_ads.ads.length === 0) {
         this.setState({ noFeaturedAdsVisibility: true });
@@ -484,15 +474,6 @@ export default class SearchDetail extends Component<Props> {
       this.adsDefaulValue = [...orderStore.innerResponse.data.ads];
       this.adsPaginationDefaultValue = orderStore.innerResponse.pagination;
       this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads, noAdsMessage: extra.no_ads_found, noFeaturedAdsMessage: extra.no_ads_found });
-
-      //   const sortOptionsArray = orderStore.innerResponse.topbar.sort_arr;
-      //   for (var i = 0; i < sortOptionsArray.length; i++) {
-
-      //     sortOptions.push(sortOptionsArray[i].value);
-      //     sortKeys.push(sortOptionsArray[i].key);
-
-      //   }
-      // }
     }
     this.setState({ showSpinner: false });
 
@@ -506,6 +487,15 @@ export default class SearchDetail extends Component<Props> {
     if (response.success === true) { }
     Toast.show(response.message);
     this.setState({ showMessageProgress: false, showChatModel: false });
+  }
+
+  showChatModal = async (item) => {
+    let { orderStore } = Store;
+
+    const params = { ad_id: item.ad_id };
+    orderStore.adDetail = await Api.post('ad_post', params);
+
+    this.setState({ showChatModel: true, similar_ad: item });
   }
 
   onCallClick = async (id) => {
@@ -528,7 +518,6 @@ export default class SearchDetail extends Component<Props> {
     Linking.openURL(phoneNumber);
   }
   handleScroll = (event) => {
-    // console.log(event.nativeEvent.contentOffset.y);
     if (event.contentOffset.y > 290)
       this.setState({ isAboslute: true });
     else
@@ -536,15 +525,23 @@ export default class SearchDetail extends Component<Props> {
   }
   render() {
     let { orderStore } = Store;
-    if (orderStore.onClickSearch) {
-      // console.warn(orderStore.isCallAdvance);
-      // if(orderStore.isCallAdvance)
-      //   { console.warn("calllleddddd");
-      //     this.props.navigation.dispatch(NavigationActions.back())
-      //   }
-      //   else
-      this.props.navigation.replace("Search");
 
+    let listData = this.state.listData;
+    let favouriteAds = []
+
+    if (orderStore.profile.data) {
+      favouriteAds = orderStore.profile.data.favourite_add.ads;
+      console.log(favouriteAds.length);
+      for (let i in favouriteAds) {
+        for (let j in listData) {
+          if (listData[j].ad_id === favouriteAds[i].ad_id) {
+            listData[j].added_fav = true
+          }
+        }
+      }
+    }
+    if (orderStore.onClickSearch) {
+      this.props.navigation.replace("Search");
     }
     if (this.state.showSpinner)
       return (
@@ -640,7 +637,7 @@ export default class SearchDetail extends Component<Props> {
 
             <FlatList
 
-              data={this.state.listData}
+              data={listData}
               horizontal={false}
               showsVerticalScrollIndicator={false}
               renderItem={({ item, index }) =>
@@ -860,6 +857,24 @@ export default class SearchDetail extends Component<Props> {
           <View style={styles.modalContainer}>
 
             <View style={styles.modalContentContainer}>
+              {this.state.similar_ad != null ?
+                <View style={{ height: 70, width: "100%", flexDirection: "row" }}>
+                  <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                    <Image source={{ uri: this.state.similar_ad.images[0].thumb }} style={{ width: 70, height: 70 }}></Image>
+                  </View>
+                  <View style={{ flex: 1, flexDirection: "column" }}>
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text>
+                    <Text style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => this.onCallClick(this.state.similar_ad.ad_id)} style={{ width: 20, height: 30 }}>
+                    <Image
+                      source={require('../../../../res/images/contact.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl]}
+                    />
+                  </TouchableOpacity>
+                </View>
+                : null}
               <ScrollView
                 keyboardShouldPersistTaps='always'
               >
