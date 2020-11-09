@@ -304,7 +304,7 @@ export default class SearchDetail extends Component<Props> {
 
                   <Image
                     style={styles.image}
-                    source={{ uri: item.images[0].thumb }} />
+                    source={{ uri: item.ad_images[0].thumb }} />
                   <View
                     style={styles.imageContainerOverlay}>
                     <View style={styles.topRowContainer}>
@@ -661,7 +661,7 @@ export default class SearchDetail extends Component<Props> {
                     <View style={PopularCarsStyle.imageContainer}>
                       <Image
                         style={PopularCarsStyle.image}
-                        source={{ uri: item.images[0].thumb }} />
+                        source={{ uri: item.ad_images[0].thumb }} />
                       <View
                         style={PopularCarsStyle.imageContainerOverlay}>
                         <View style={PopularCarsStyle.topRowContainer}>
@@ -733,7 +733,7 @@ export default class SearchDetail extends Component<Props> {
                         />
                         <Text
                           style={PopularCarsStyle.modelTextStyle}>
-                          {item.location.address}
+                          {item.ad_location.address}
                         </Text>
 
 
@@ -860,7 +860,7 @@ export default class SearchDetail extends Component<Props> {
               {this.state.similar_ad != null ?
                 <View style={{ height: 70, width: "100%", flexDirection: "row" }}>
                   <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
-                    <Image source={{ uri: this.state.similar_ad.images[0].thumb }} style={{ width: 70, height: 70 }}></Image>
+                    <Image source={{ uri: this.state.similar_ad.ad_images[0].thumb }} style={{ width: 70, height: 70 }}></Image>
                   </View>
                   <View style={{ flex: 1, flexDirection: "column" }}>
                     <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>

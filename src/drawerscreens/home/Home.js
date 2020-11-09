@@ -810,7 +810,6 @@ export default class Home extends Component<Props> {
 
     if (orderStore.profile.data) {
       favouriteAds = orderStore.profile.data.favourite_add.ads;
-      console.log(favouriteAds.length);
       for (let i in favouriteAds) {
         for (let j in data.ads) {
           if (data.ads[j].ad_id === favouriteAds[i].ad_id) {

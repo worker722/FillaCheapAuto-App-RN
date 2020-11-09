@@ -134,10 +134,10 @@ class Sell extends React.Component {
       orderStore.sell = response;
 
     }
-    if (response.message.length != 0)
-     { 
+    if (response.message.length != 0) {
       // console.log('here i am') 
-      Toast.show(response.message);}
+      Toast.show(response.message);
+    }
 
     // const navigateAction = NavigationActions.navigate({
     //   routeName: "Package"
@@ -165,11 +165,28 @@ class Sell extends React.Component {
       onPageThreeNextClick: false,
 
     }
-    props.navigation.addListener("willFocus", (event) => {
-      this.componentWillMount();
+
+    props.navigation.addListener("willFocus", async (event) => {
+      let { orderStore } = Store;
+      if (orderStore.isFirstPageClear && orderStore.isSecondPageClear && orderStore.isThirdPageClear && orderStore.isForthPageClear) {
+        this.setState({
+          showSpinner: true,
+          showSomething: true,
+          index: 0,
+          indexToShow: 1,
+          showProgress: false,
+          onPageOneNextClick: false,
+          onPageTwoNextClick: false,
+          onPageThreeNextClick: false,
+        }, () => {
+          orderStore.isFirstPageClear = false;
+          orderStore.isSecondPageClear = false;
+          orderStore.isThirdPageClear = false;
+          orderStore.isForthPageClear = false;
+          this.componentWillMount();
+        })
+      }
     });
-
-
   }
   nav = (route, title) => {
     firebase.analytics().setCurrentScreen(title);
@@ -225,6 +242,7 @@ class Sell extends React.Component {
   onPreviousClick = () => {
     let { orderStore } = Store;
     orderStore.setOnPreviousPageChangeListener(true);
+    console.log("ddd");
     switch (this.state.index) {
 
       case 2:
@@ -345,35 +363,35 @@ class Sell extends React.Component {
         <Loader />
 
       );
-  
-      return (
-        <TabView
-          navigationState={
-            {
-              index: this.state.index,
-              routes: [
-                { key: 'PageOne', title: 'Page One' },
-                { key: 'PageTwo', title: 'Page Two' },
-                { key: 'PageThree', title: 'Page Three' },
-                { key: 'PageFour', title: 'Page Four' },
 
-              ],
-            }
+    return (
+      <TabView
+        navigationState={
+          {
+            index: this.state.index,
+            routes: [
+              { key: 'PageOne', title: 'Page One' },
+              { key: 'PageTwo', title: 'Page Two' },
+              { key: 'PageThree', title: 'Page Three' },
+              { key: 'PageFour', title: 'Page Four' },
+
+            ],
           }
-          renderScene={this.renderScene}
-          tabBarPosition="bottom"
-          renderTabBar={this._renderTabBar}
-          swipeEnabled={false}
-          onIndexChange={index => {
+        }
+        renderScene={this.renderScene}
+        tabBarPosition="bottom"
+        renderTabBar={this._renderTabBar}
+        swipeEnabled={false}
+        onIndexChange={index => {
 
-            this.setState({ index });
-            this.setState({ indexToShow: index + 1 })
+          this.setState({ index });
+          this.setState({ indexToShow: index + 1 })
 
-          }}
-          initialLayout={{ height: 0, width: Dimensions.get('window').width }}
-        />
-      );
-  
+        }}
+        initialLayout={{ height: 0, width: Dimensions.get('window').width }}
+      />
+    );
+
 
   }
   postAd = async () => {
