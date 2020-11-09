@@ -216,6 +216,9 @@ export default class Inbox extends Component<Props> {
               renderItem={({ item, index }) =>
                 <TouchableOpacity
                   onPress={() => {
+                    if (!item.message_read_status)
+                      orderStore.setNotificationCount(orderStore.notificationCount - 1);
+
                     const { navigate } = this.props.navigation;
                     const params = { adId: item.ad_id, senderId: item.message_sender_id, receiverId: item.message_receiver_id, type: item.message_type }
                     navigate('Chat', { data: params });

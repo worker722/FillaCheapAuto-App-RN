@@ -80,7 +80,8 @@ export default class App extends Component<Props> {
           if (Platform.OS === 'ios') {
             this.notificationListenerIOS = firebase.messaging().onMessage(notification => {
               // console.warn('notification===>>>',notification);
-
+              let { orderStore } = Store;
+              orderStore.setNotificationCount(orderStore.notificationCount + 1);
               //Showing Local notification IOS
               const localNotification = new firebase.notifications.Notification()
                 .setNotificationId(new Date().toLocaleString())
@@ -95,6 +96,10 @@ export default class App extends Component<Props> {
             this.notificationListenerANDROID = firebase.notifications().onNotification(notification => {
               //Showing local notification Android
               console.log("app push");
+
+              let { orderStore } = Store;
+              orderStore.setNotificationCount(orderStore.notificationCount + 1);
+
               const localNotification = new firebase.notifications.Notification({
                 sound: 'default',
                 show_in_foreground: true,
