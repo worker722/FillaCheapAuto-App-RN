@@ -15,6 +15,8 @@ import {
 } from 'react-native';
 import { HeaderBackButton } from 'react-navigation-stack';
 import Appearences from '../../../config/Appearences';
+import PopularCarsStyle from '../../home/PopularCarsStyle';
+import FeaturedGridStyle from '../../home/FeaturedGridStyle';
 import styles from './Styles';
 import Store from '../../../Stores';
 import Toast from 'react-native-simple-toast';
@@ -61,10 +63,6 @@ export default class SearchDetail extends Component<Props> {
             activeOpacity={1}
             onPress={async () => {
               let param = { ad_title: instance.state.searchText }
-              // const { navigate } = instance.props.navigation;
-              // await BackHandler.removeEventListener("hardwareBackPress", instance.handleBackButton);
-              // stores.setIsCallAdvance(false);
-              // navigate('SearchDetail', { params: param });
               instance.searchFromText(param)
             }}
           >
@@ -127,7 +125,7 @@ export default class SearchDetail extends Component<Props> {
       this.adsDefaulValue = [...orderStore.innerResponse.data.ads];
       this.adsPaginationDefaultValue = orderStore.innerResponse.pagination;
       this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads, noAdsMessage: extra.no_ads_found, noFeaturedAdsMessage: extra.no_ads_found });
-
+      console.log(this.state.listData[0]);
       const sortOptionsArray = orderStore.innerResponse.topbar.sort_arr;
       for (var i = 0; i < sortOptionsArray.length; i++) {
 
@@ -164,10 +162,8 @@ export default class SearchDetail extends Component<Props> {
         else
           this.setState({ noAdsVisibility: false });
 
-        orderStore.innerResponse.data.ads = [...this.adsDefaulValue];
-        orderStore.innerResponse.pagination = this.adsPaginationDefaultValue;
+        adsDefaulValue = [];
         this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads });
-
 
       }
 
@@ -208,6 +204,41 @@ export default class SearchDetail extends Component<Props> {
     if (response.message.length != 0)
       Toast.show(response.message);
     this.setState({ refreshing: false, reCaller: false, });
+  }
+
+  addFav = async (item) => {
+    let { orderStore } = Store
+    if (orderStore.name == "Guest") {
+
+      const params = { ad_id: item.ad_id };
+      let response = await Api.post('ad_post/favourite', params);
+      if (response.success === true)
+        this.searchFromText({ ad_title: this.state.searchText });
+
+      if (response.message.length != 0)
+        Toast.show(response.message);
+    }
+    else {
+      alert('Please login into account')
+    }
+
+  }
+  deleteItem = async (item) => {
+    let { orderStore } = Store
+    if (orderStore.name == "Guest") {
+
+      const params = { ad_id: item.ad_id }
+      let response = await Api.post('ad/favourite/remove', params);
+      if (response.success === true) {
+        this.start()
+      }
+
+      if (response.message.length != 0)
+        Toast.show(response.message);
+    }
+    else {
+      alert('Please login into account')
+    }
   }
 
 
@@ -278,7 +309,7 @@ export default class SearchDetail extends Component<Props> {
 
                     <Image
                       style={styles.image}
-                      source={{ uri: item.ad_images[0].thumb }} />
+                      source={{ uri: item.images[0].thumb }} />
                     <View
                       style={styles.imageContainerOverlay}>
                       <View style={styles.topRowContainer}>
@@ -614,123 +645,123 @@ export default class SearchDetail extends Component<Props> {
               showsVerticalScrollIndicator={false}
               renderItem={({ item, index }) =>
                 <TouchableOpacity
-
-                  onPress={() => {
+                  activeOpacity={1}
+                  onPress={async () => {
                     const { navigate } = this.props.navigation;
+                    await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton)
                     navigate('AdDetailTabManager', { adId: item.ad_id });
-
                   }}
-
-                  style={[styles.flastListItemContainer, {
+                  style={[PopularCarsStyle.container, {
                     elevation: 5,
                     shadowColor: 'rgb(24, 81, 70)',
                     shadowOffset: { width: 3, height: 3 },
                     shadowOpacity: 0.9,
                     shadowRadius: 3,
-                    marginBottom: 10
+                    marginBottom: 10,
+
                   }]}>
                   <View style={{ flexDirection: 'row' }}>
-                    <View style={styles.flatListBackgroundImageContainer}>
+                    <View style={PopularCarsStyle.imageContainer}>
                       <Image
-                        style={styles.flatListBackgroundImage}
+                        style={PopularCarsStyle.image}
                         source={{ uri: item.images[0].thumb }} />
-                    </View>
+                      <View
+                        style={PopularCarsStyle.imageContainerOverlay}>
+                        <View style={PopularCarsStyle.topRowContainer}>
+                          <View style={FeaturedGridStyle.topRightContent}>
 
-                    <View style={styles.flatListContentContainer}>
-                      <View style={{ padding: 15, }}>
-                        <View style={styles.flatListContentRow1}>
-                          <View>
-                            <Text style={styles.flatListContentRow1Text}>
-                              {item.ad_cats_name}
-                            </Text>
-                            <Text
-                              numberOfLines={1}
-                              style={styles.flatListItemHeadingText}>
-                              {item.ad_title}
-                            </Text>
                           </View>
                         </View>
-
-                        {item.ad_engine == undefined && item.ad_milage == undefined ? null
-                          : <Text style={styles.flatListItemMileageText}>
-                            {item.ad_engine + ' | ' + item.ad_milage}
-                          </Text> ||
-                            item.ad_engine == undefined && item.ad_milage != undefined ?
-                            <Text style={styles.flatListItemMileageText}>
-                              {item.ad_engine}
-                            </Text>
-                            : <Text style={styles.flatListItemMileageText}>
-                              {item.ad_engine + ' | ' + item.ad_milage}
-                            </Text>
-                              ||
-                              item.ad_engine != undefined && item.ad_milage == undefined ?
-                              <Text style={styles.flatListItemMileageText}>
-                                {item.ad_milage}
-                              </Text>
-                              : <Text style={styles.flatListItemMileageText}>
-                                {item.ad_engine + ' | ' + item.ad_milage}
-                              </Text>
-                        }
-                        <Text style={[styles.flatListItemPriceText, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
-                          {item.ad_price.price}
-                          <Text style={[styles.flatListItemPriceText, { color: orderStore.color }]}>
-                            {
-                              item.ad_price.price_type != '' ? [
-                                ' (' + item.ad_price.price_type + ')'
-
-                              ] : []
-                            }
-                          </Text>
-                        </Text>
-                        <View numberOfLines={1} style={[styles.flatListContentContainer, { flexDirection: 'row', flexWrap: 'wrap', marginVertical: 5 }]}>
-                          <Image
-                            source={require('../../../../res/images/calender_grey.png')}
-                            style={{
-                              marginHorizontal: 5, height: 15,
-                              width: 15,
-                            }}
-                          />
-                          <Text style={styles.flatListContentRow1Text}>
-                            {item.ad_date}
-                          </Text>
-                        </View>
-                        <View numberOfLines={1} style={[styles.flatListContentContainer, { flexDirection: 'row', }]}>
-                          <Image
-                            source={require('../../../../res/images/location.png')}
-                            style={{
-                              marginHorizontal: 5, height: 15,
-                              width: 15,
-                            }}
-                          />
-                          <Text style={styles.flatListContentRow1Text}>
-                            {item.ad_location ? item.ad_location.address : null}
-                          </Text>
-
-
-                        </View>
                       </View>
-                      <View style={styles.menuItemSperator} />
+                    </View>
+                    <View style={PopularCarsStyle.textContainer}>
+                      <Text
+                        style={PopularCarsStyle.modelTextStyle}>
+                        {item.ad_cats_name}
+                      </Text>
+                      <View style={[PopularCarsStyle.textContainer, { flexDirection: 'row' }]}>
+                        <Text
+                          adjustsFontSizeToFit
+                          numberOfLines={1}
+                          style={PopularCarsStyle.brandTitleStyle}>
+                          {item.ad_title}
+                        </Text>
+
+                        {
+                          item.added_fav &&
+                          <TouchableOpacity onPress={() => this.deleteItem(item)}>
+                            <Image
+                              source={require('../../../../res/images/heart_filled.png')}
+                              style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                            />
+                          </TouchableOpacity>
+                        }
+                        {
+                          !item.added_fav &&
+                          <TouchableOpacity onPress={() => this.addFav(item)}>
+                            <Image
+                              source={require('../../../../res/images/heart.png')}
+                              style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                            />
+                          </TouchableOpacity>
+                        }
+                      </View>
+                      <Text
+                        style={PopularCarsStyle.modelTextStyle}>
+                        {item.ad_desc}
+                      </Text>
+                      <Text
+                        style={PopularCarsStyle.brandTextStyle}>
+                        {item.ad_engine + ' | ' + item.ad_milage}
+                      </Text>
+                      <Text
+                        style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
+                        {item.ad_price.price}
+                        {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
+                      </Text>
+                      <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', flexWrap: 'wrap' }]}>
+                        <Image
+                          source={require('../../../../res/images/calender_grey.png')}
+                          style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                        />
+                        <Text
+                          style={PopularCarsStyle.modelTextStyle}>
+                          {item.ad_date}
+                        </Text>
+                      </View>
+                      <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', }]}>
+                        <Image
+                          source={require('../../../../res/images/location.png')}
+                          style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                        />
+                        <Text
+                          style={PopularCarsStyle.modelTextStyle}>
+                          {item.location.address}
+                        </Text>
+
+
+                      </View>
                     </View>
                   </View>
-                  <View style={{ flexDirection: 'row', width: '100%', height: 30, alignItems: 'center' }}>
+                  <View style={{ flexDirection: 'row', width: '100%', height: 30, alignItems: 'center', }}>
                     <TouchableOpacity
-                      style={[styles.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
-                      onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
+                      style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
+                      onPress={() => this.showChatModal(item)}>
                       <Image
                         source={require('../../../../res/images/message_grey.png')}
-                        style={[styles.bottomImgStyl]}
+                        style={[FeaturedGridStyle.bottomImgStyl]}
                       />
-                      <Text style={styles.featureAdsBtntxt}>Chat</Text>
+                      <Text style={FeaturedGridStyle.featureAdsBtntxt}>Chat</Text>
 
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={[styles.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
+                      style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
                       onPress={() => this.onCallClick(item.ad_id)}>
                       <Image
                         source={require('../../../../res/images/contact.png')}
-                        style={[styles.bottomImgStyl]}
+                        style={[FeaturedGridStyle.bottomImgStyl]}
                       />
-                      <Text style={styles.featureAdsBtntxt}>Call</Text>
+                      <Text style={FeaturedGridStyle.featureAdsBtntxt}>Call</Text>
 
                     </TouchableOpacity>
                   </View>
