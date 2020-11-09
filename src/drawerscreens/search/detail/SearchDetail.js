@@ -272,168 +272,168 @@ export default class SearchDetail extends Component<Props> {
   renderFeaturedAds = () => {
     let { orderStore } = Store;
     if (orderStore.innerResponse.extra != undefined) {
-      if (orderStore.innerResponse.extra.is_show_featured === true) {
-        return (<View style={[styles.container, { backgroundColor: 'black', paddingBottom: 25, paddingTop: 15 }]}>
+      // if (orderStore.innerResponse.extra.is_show_featured === true) {
+      return (<View style={[styles.container, { backgroundColor: 'black', paddingBottom: 25, paddingTop: 15 }]}>
 
 
 
-          <View style={styles.topSpace} />
-          <Text style={[styles.subHeading, { color: 'white' }]}>{orderStore.innerResponse.data.featured_ads.text}</Text>
-          <View style={styles.topSpace} />
-          <View style={styles.featuredGrid}>
+        <View style={styles.topSpace} />
+        <Text style={[styles.subHeading, { color: 'white' }]}>{orderStore.innerResponse.data.featured_ads.text}</Text>
+        <View style={styles.topSpace} />
+        <View style={styles.featuredGrid}>
 
 
-            <FlatList
-              data={this.state.featuredGridData}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item, index }) =>
-                <TouchableOpacity
-                  style={[styles.containerFeatured, {
-                    elevation: 5,
-                    shadowColor: 'rgb(24, 81, 70)',
-                    shadowOffset: { width: 3, height: 3 },
-                    shadowOpacity: 0.9,
-                    shadowRadius: 3,
-                    marginBottom: 10,
-                  }]}
-                  onPress={() => {
-                    const { navigate } = this.props.navigation;
-                    navigate('AdDetailTabManager', { adId: item.ad_id });
+          <FlatList
+            data={this.state.featuredGridData}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item, index }) =>
+              <TouchableOpacity
+                style={[styles.containerFeatured, {
+                  elevation: 5,
+                  shadowColor: 'rgb(24, 81, 70)',
+                  shadowOffset: { width: 3, height: 3 },
+                  shadowOpacity: 0.9,
+                  shadowRadius: 3,
+                  marginBottom: 10,
+                }]}
+                onPress={() => {
+                  const { navigate } = this.props.navigation;
+                  navigate('AdDetailTabManager', { adId: item.ad_id });
 
-                  }}
+                }}
 
-                >
+              >
 
-                  <View style={styles.imageContainer}>
+                <View style={styles.imageContainer}>
 
-                    <Image
-                      style={styles.image}
-                      source={{ uri: item.images[0].thumb }} />
-                    <View
-                      style={styles.imageContainerOverlay}>
-                      <View style={styles.topRowContainer}>
-                        <View style={styles.topRightContent}>
-                          <View
-                            style={
+                  <Image
+                    style={styles.image}
+                    source={{ uri: item.images[0].thumb }} />
+                  <View
+                    style={styles.imageContainerOverlay}>
+                    <View style={styles.topRowContainer}>
+                      <View style={styles.topRightContent}>
+                        <View
+                          style={
 
-                              {
-                                width: 0,
-                                height: 0,
-                                backgroundColor: 'transparent',
-                                borderStyle: 'solid',
-                                borderRightWidth: 40,
-                                borderTopWidth: 40,
-                                borderRightColor: 'transparent',
-                                borderTopColor: orderStore.color,
-                                borderTopLeftRadius: Appearences.Radius.radius,
-                                transform: [
-                                  { rotate: I18nManager.isRTL ? '360deg' : '90deg' },
+                            {
+                              width: 0,
+                              height: 0,
+                              backgroundColor: 'transparent',
+                              borderStyle: 'solid',
+                              borderRightWidth: 40,
+                              borderTopWidth: 40,
+                              borderRightColor: 'transparent',
+                              borderTopColor: orderStore.color,
+                              borderTopLeftRadius: Appearences.Radius.radius,
+                              transform: [
+                                { rotate: I18nManager.isRTL ? '360deg' : '90deg' },
 
-                                  { scaleX: I18nManager.isRTL ? -1 : 1 }
-                                ]
-                              }
+                                { scaleX: I18nManager.isRTL ? -1 : 1 }
+                              ]
+                            }
 
-                            } />
+                          } />
 
-                          <View style={{ width: '100%', height: '100%', position: 'absolute', alignItems: 'flex-end' }}>
-                            <Image
-                              style={{ width: 10, height: 10, marginTop: 8, marginEnd: 8 }}
-                              source={require('../../../../res/images/star_white.png')} />
-                          </View>
-
-                        </View>
-                      </View>
-                      <View style={styles.bottomRowContainer}>
-                        <View style={[styles.bottomLeftContent, { backgroundColor: orderStore.color }]}>
-                          <Text style={styles.headingFontWhite}>{item.ad_price.price}
-                            <Text style={styles.buttonTextStyle}>
-                              {' (' + item.ad_price.price_type + ')'}
-                            </Text>
-                          </Text>
-                        </View>
-
-                        <View style={[styles.bottomRightContent, { backgroundColor: orderStore.color }]}>
+                        <View style={{ width: '100%', height: '100%', position: 'absolute', alignItems: 'flex-end' }}>
                           <Image
-                            style={styles.bottomRightContentImage}
-                            source={require('../../../../res/images/play.png')} />
+                            style={{ width: 10, height: 10, marginTop: 8, marginEnd: 8 }}
+                            source={require('../../../../res/images/star_white.png')} />
                         </View>
+
                       </View>
                     </View>
-
-                  </View>
-
-                  <View style={styles.textContainer}>
-
-                    <Text style={styles.modelTextStyle}>
-                      {item.ad_title}
-                    </Text>
-                    <Text style={styles.brandTextStyle}>
-                      {item.ad_desc}
-                    </Text>
-                    {item.ad_location.address.length != 0 ?
-                      <View style={styles.locationRowContainer}>
-                        <Image
-                          style={[styles.locationImage, { tintColor: orderStore.color }]}
-                          source={require('../../../../res/images/location_red.png')}
-                        />
-                        <Text style={styles.locationTextStyle}>
-                          {item.ad_location.address}
-                        </Text>
-                      </View>
-                      : null}
-                    <View style={styles.milageRow} >
-
-                      <View style={styles.petrolContainer}>
-                        <Image
-                          source={require('../../../../res/images/petrol_pump_red.png')}
-                          style={[styles.petrolImageStyle, { tintColor: orderStore.color }]}
-                        />
-                        <Text
-                          style={styles.petrolTextStyle}>
-                          {item.ad_engine}
+                    <View style={styles.bottomRowContainer}>
+                      <View style={[styles.bottomLeftContent, { backgroundColor: orderStore.color }]}>
+                        <Text style={styles.headingFontWhite}>{item.ad_price.price}
+                          <Text style={styles.buttonTextStyle}>
+                            {' (' + item.ad_price.price_type + ')'}
+                          </Text>
                         </Text>
                       </View>
 
-                      <View style={styles.mileageContainer}>
+                      <View style={[styles.bottomRightContent, { backgroundColor: orderStore.color }]}>
                         <Image
-                          source={require('../../../../res/images/meter_red.png')}
-                          style={[styles.mileageImageStyle, { tintColor: orderStore.color }]}
-                        />
-                        <Text
-                          style={styles.mileageTextStyle}>
-                          {item.ad_milage}
-                        </Text>
+                          style={styles.bottomRightContentImage}
+                          source={require('../../../../res/images/play.png')} />
                       </View>
-
-
                     </View>
                   </View>
-                </TouchableOpacity>
+
+                </View>
+
+                <View style={styles.textContainer}>
+
+                  <Text style={styles.modelTextStyle}>
+                    {item.ad_title}
+                  </Text>
+                  <Text style={styles.brandTextStyle}>
+                    {item.ad_desc}
+                  </Text>
+                  {item.ad_location.address.length != 0 ?
+                    <View style={styles.locationRowContainer}>
+                      <Image
+                        style={[styles.locationImage, { tintColor: orderStore.color }]}
+                        source={require('../../../../res/images/location_red.png')}
+                      />
+                      <Text style={styles.locationTextStyle}>
+                        {item.ad_location.address}
+                      </Text>
+                    </View>
+                    : null}
+                  <View style={styles.milageRow} >
+
+                    <View style={styles.petrolContainer}>
+                      <Image
+                        source={require('../../../../res/images/petrol_pump_red.png')}
+                        style={[styles.petrolImageStyle, { tintColor: orderStore.color }]}
+                      />
+                      <Text
+                        style={styles.petrolTextStyle}>
+                        {item.ad_engine}
+                      </Text>
+                    </View>
+
+                    <View style={styles.mileageContainer}>
+                      <Image
+                        source={require('../../../../res/images/meter_red.png')}
+                        style={[styles.mileageImageStyle, { tintColor: orderStore.color }]}
+                      />
+                      <Text
+                        style={styles.mileageTextStyle}>
+                        {item.ad_milage}
+                      </Text>
+                    </View>
+
+
+                  </View>
+                </View>
+              </TouchableOpacity>
 
 
 
-              }
-              keyExtractor={item => item.ad_id + "" + item.ad_title}
-            >
-            </FlatList>
+            }
+            keyExtractor={item => item.ad_id + "" + item.ad_title}
+          >
+          </FlatList>
 
 
-            <NoFeaturedAdsFound
-              message={this.state.noFeaturedAdsMessage}
-              visible={this.state.noFeaturedAdsVisibility}
-            />
-
-
-
-          </View>
+          <NoFeaturedAdsFound
+            message={this.state.noFeaturedAdsMessage}
+            visible={this.state.noFeaturedAdsVisibility}
+          />
 
 
 
+        </View>
 
-        </View>);
 
-      }
+
+
+      </View>);
+
+      // }
     }
 
     else

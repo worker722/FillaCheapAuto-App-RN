@@ -175,12 +175,13 @@ import { log } from 'react-native-reanimated';
     });
   }
   onOfferClick = async () => {
-
+    let { orderStore } = Store;
+    let data = orderStore.profile.data;
     this.setState({
       showFormModal: true,
-      name: '',
-      email: '',
-      phone: '',
+      name: data.display_name.value,
+      email: data.user_email,
+      phone: data.phone.value,
       message: '',
       isOffer: true,
     });
