@@ -144,6 +144,10 @@ class SellEdit extends React.Component {
 
     }
 
+    props.navigation.addListener("willFocus", (event) => {
+      this.componentWillMount();
+    });
+
   }
   onNextClick = () => {
     let { orderStore } = Store;

@@ -165,6 +165,10 @@ class Sell extends React.Component {
       onPageThreeNextClick: false,
 
     }
+    props.navigation.addListener("willFocus", (event) => {
+      this.componentWillMount();
+    });
+
 
   }
   nav = (route, title) => {
