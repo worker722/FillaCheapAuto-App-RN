@@ -263,6 +263,7 @@ export default class Home extends Component<Props> {
   componentWillMount = async () => {
     this.start();
     this.manageFcmToken();
+    this.settings();
   }
 
   manageFcmToken = async () => {
@@ -279,6 +280,18 @@ export default class Home extends Component<Props> {
         orderStore.fcmToken = fcmToken;
       else if (response.message.length != 0)
         Toast.show(response.message);
+    }
+  }
+
+  settings = async () => {
+    let { orderStore } = Store;
+    const response = await Api.get("settings");
+    if (response.success) {
+      const data = response.data;
+      data.menu.map((item, key) => {
+        if (item.key == 'inbox_list')
+          orderStore.setNotificationCount(item.message_count);
+      })
     }
   }
 
