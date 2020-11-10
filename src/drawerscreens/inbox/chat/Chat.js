@@ -112,7 +112,7 @@ export default class Chat extends Component<Props> {
       isComment: true,
       message: '',
       hideArrowButton: false,
-      attachedFile: "",
+      attachedFileUri: "",
       hideAttachFileButton: false,
     }
     this.removeBadge = true;
@@ -248,26 +248,22 @@ export default class Chat extends Component<Props> {
           </ScrollView>
           <View style={styles.lastRowContainer}>
             <View style={styles.lastRow}>
-              <Visibility
-                hide={!this.state.hideAttachFileButton}
-                style={{ width: "10%", height: 50 }}>
-                <TouchableOpacity onPress={() => this.ActionSheet.show()} style={{ width: "10%", height: 50, borderRadius: 100, marginRight: 3, alignItems: "center", justifyContent: "center" }}>
+              {!this.state.hideAttachFileButton ?
+                <TouchableOpacity onPress={() => this.ActionSheet.show()} activeOpacity={0.8} style={{ width: "10%", height: 50, borderRadius: 100, marginRight: 3, alignItems: "center", justifyContent: "center" }}>
                   <Icon name="paperclip" size={20} color={stores.color} />
                 </TouchableOpacity>
-              </Visibility>
-              <Visibility
-                hide={this.state.hideAttachFileButton}
-                style={{ width: "10%", height: 50 }}>
+                :
                 <TouchableOpacity
-                  style={styles.searchButton}>
+                  style={[styles.searchButton, { width: "10%", height: 50 }]}>
                   <Progress.Circle
                     size={Appearences.Fonts.headingFontSize}
                     indeterminate={true}
-                    color={stores.color} />
+                    color={stores.color}
+                  />
                 </TouchableOpacity>
-              </Visibility>
+              }
 
-              <TouchableOpacity style={{ width: "10%", height: 50, borderRadius: 100, alignItems: "center", justifyContent: "center" }}>
+              <TouchableOpacity activeOpacity={0.8} style={{ width: "10%", height: 50, borderRadius: 100, alignItems: "center", justifyContent: "center" }}>
                 <Icon name="microphone" size={20} color={stores.color} />
               </TouchableOpacity>
               <TextInput
@@ -284,9 +280,10 @@ export default class Chat extends Component<Props> {
               />
               <Visibility
                 hide={this.state.hideArrowButton}
-                style={{ width: "10%", height: 50 }}>
+                style={{ height: 50, width: "10%" }}>
                 <TouchableOpacity
                   onPress={this.postMessage}
+                  activeOpacity={0.8}
                   style={[styles.searchButton]}>
                   <Icon name="location-arrow" size={20} color={stores.color} />
                 </TouchableOpacity>
@@ -294,21 +291,23 @@ export default class Chat extends Component<Props> {
 
               <Visibility
                 hide={!this.state.hideArrowButton}
-                style={{ width: "10%", height: 50 }}>
+                style={{ height: '100%', width: '10%', }}>
                 <TouchableOpacity
+
                   style={styles.searchButton}>
                   <Progress.Circle
                     size={Appearences.Fonts.headingFontSize}
                     indeterminate={true}
-                    color={stores.color} />
+                    color={stores.color}
+                  />
                 </TouchableOpacity>
               </Visibility>
             </View>
           </View>
-          {this.state.attachedFile != '' ?
+          {this.state.attachedFileUri != '' ?
             <View style={{ height: 50, width: "100%", flexDirection: "row", justifyContent: "center", alignItems: "center", paddingHorizontal: 15 }}>
-              <Text style={{ fontSize: 15, marginLeft: 20, flex: 1 }}>{this.state.attachedFile}</Text>
-              <TouchableOpacity onPress={() => this.setState({ attachedFile: "" })} style={{ width: 50, height: 50, justifyContent: "center", position: "absolute", right: 0 }}>
+              <Text numberOfLines={1} style={{ fontSize: 15, marginLeft: 20, flex: 1 }}>{this.state.attachedFileUri}</Text>
+              <TouchableOpacity onPress={() => this.setState({ attachedFileUri: "" })} style={{ width: 50, height: 50, justifyContent: "center", position: "absolute", right: 0 }}>
                 <Icon name="times" size={20} color={"#000"} />
               </TouchableOpacity>
             </View> : <></>
@@ -321,7 +320,6 @@ export default class Chat extends Component<Props> {
             cancelButtonIndex={2}
             destructiveButtonIndex={2}
             onPress={(index) => {
-              this.setState({ hideAttachFileButton: true })
               if (index == 0) {
                 ImagePicker.openCamera({
                   mediaType: 'photo',
@@ -329,6 +327,7 @@ export default class Chat extends Component<Props> {
                   height: 500,
                   includeExif: true
                 }).then(images => {
+                  this.setState({ hideAttachFileButton: true })
                   this.uploadMultipleImages(images);
                 });
               }
@@ -336,9 +335,11 @@ export default class Chat extends Component<Props> {
                 ImagePicker.openPicker({
                   multiple: true
                 }).then(images => {
+                  this.setState({ hideAttachFileButton: true })
                   this.uploadMultipleImages(images);
                 });
               }
+              // console.log('index',index)
             }}
           />
         </View>
@@ -382,7 +383,7 @@ export default class Chat extends Component<Props> {
   }
 
   uploadMultipleImages = (image) => {
-    this.setState({ attachedFile: "test file" });
+    this.setState({ attachedFileUri: "image" });
     this.setState({ hideAttachFileButton: false })
   }
 
