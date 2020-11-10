@@ -13,7 +13,9 @@ import {
   Linking,
 } from 'react-native';
 import { HeaderBackButton } from 'react-navigation-stack';
-
+import Icon from 'react-native-vector-icons//FontAwesome5'
+import ImagePicker from 'react-native-image-crop-picker';
+import ActionSheet from 'react-native-actionsheet'
 import styles from './Styles';
 import Store from '../../../Stores';
 import Toast from 'react-native-simple-toast';
@@ -110,6 +112,8 @@ export default class Chat extends Component<Props> {
       isComment: true,
       message: '',
       hideArrowButton: false,
+      attachedFile: "",
+      hideAttachFileButton: false,
     }
     this.removeBadge = true;
   }
@@ -196,6 +200,7 @@ export default class Chat extends Component<Props> {
               source={{ uri: orderStore.innerResponse.data.ad_img[0].thumb }}
               onPress={this.onChatAvtarClick}
               activeOpacity={0.7}
+              placeholderStyle={{ backgroundColor: "transparent" }}
               containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
             />
 
@@ -243,6 +248,28 @@ export default class Chat extends Component<Props> {
           </ScrollView>
           <View style={styles.lastRowContainer}>
             <View style={styles.lastRow}>
+              <Visibility
+                hide={!this.state.hideAttachFileButton}
+                style={{ width: "10%", height: 50 }}>
+                <TouchableOpacity onPress={() => this.ActionSheet.show()} style={{ width: "10%", height: 50, borderRadius: 100, marginRight: 3, alignItems: "center", justifyContent: "center" }}>
+                  <Icon name="paperclip" size={20} color={stores.color} />
+                </TouchableOpacity>
+              </Visibility>
+              <Visibility
+                hide={this.state.hideAttachFileButton}
+                style={{ width: "10%", height: 50 }}>
+                <TouchableOpacity
+                  style={styles.searchButton}>
+                  <Progress.Circle
+                    size={Appearences.Fonts.headingFontSize}
+                    indeterminate={true}
+                    color={stores.color} />
+                </TouchableOpacity>
+              </Visibility>
+
+              <TouchableOpacity style={{ width: "10%", height: 50, borderRadius: 100, alignItems: "center", justifyContent: "center" }}>
+                <Icon name="microphone" size={20} color={stores.color} />
+              </TouchableOpacity>
               <TextInput
                 style={styles.TextInput}
                 onChangeText={(text) => {
@@ -251,35 +278,69 @@ export default class Chat extends Component<Props> {
                 value={this.state.message}
                 underlineColorAndroid='transparent'
                 placeholderTextColor={Appearences.Colors.headingGrey}
+                placeholder={"Start typing..."}
                 textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
                 multiline={true}
               />
               <Visibility
                 hide={this.state.hideArrowButton}
-                style={{ height: '100%', width: '15%', }}>
+                style={{ width: "10%", height: 50 }}>
                 <TouchableOpacity
                   onPress={this.postMessage}
-                  style={[styles.searchButton, { backgroundColor: stores.color }]}>
-                  <Image source={require('../../../../res/images/chat_send.png')}
-                    style={styles.searchImage} />
+                  style={[styles.searchButton]}>
+                  <Icon name="location-arrow" size={20} color={stores.color} />
                 </TouchableOpacity>
               </Visibility>
 
               <Visibility
                 hide={!this.state.hideArrowButton}
-                style={{ height: '100%', width: '15%', }}>
+                style={{ width: "10%", height: 50 }}>
                 <TouchableOpacity
-
                   style={styles.searchButton}>
                   <Progress.Circle
                     size={Appearences.Fonts.headingFontSize}
                     indeterminate={true}
-                    color={stores.color}
-                  />
+                    color={stores.color} />
                 </TouchableOpacity>
               </Visibility>
             </View>
           </View>
+          {this.state.attachedFile != '' ?
+            <View style={{ height: 50, width: "100%", flexDirection: "row", justifyContent: "center", alignItems: "center", paddingHorizontal: 15 }}>
+              <Text style={{ fontSize: 15, marginLeft: 20, flex: 1 }}>{this.state.attachedFile}</Text>
+              <TouchableOpacity onPress={() => this.setState({ attachedFile: "" })} style={{ width: 50, height: 50, justifyContent: "center", position: "absolute", right: 0 }}>
+                <Icon name="times" size={20} color={"#000"} />
+              </TouchableOpacity>
+            </View> : <></>
+          }
+
+          <ActionSheet
+            ref={o => this.ActionSheet = o}
+            title={'Select Photos'}
+            options={['Select from Camera', 'Select from Library', 'Cancel']}
+            cancelButtonIndex={2}
+            destructiveButtonIndex={2}
+            onPress={(index) => {
+              this.setState({ hideAttachFileButton: true })
+              if (index == 0) {
+                ImagePicker.openCamera({
+                  mediaType: 'photo',
+                  width: 500,
+                  height: 500,
+                  includeExif: true
+                }).then(images => {
+                  this.uploadMultipleImages(images);
+                });
+              }
+              if (index == 1) {
+                ImagePicker.openPicker({
+                  multiple: true
+                }).then(images => {
+                  this.uploadMultipleImages(images);
+                });
+              }
+            }}
+          />
         </View>
       </View>
     );
@@ -320,6 +381,11 @@ export default class Chat extends Component<Props> {
     this.setState({ refreshing: false });
   }
 
+  uploadMultipleImages = (image) => {
+    this.setState({ attachedFile: "test file" });
+    this.setState({ hideAttachFileButton: false })
+  }
+
   postMessage = async () => {
     this.setState({ hideArrowButton: true });
     const data = this.props.navigation.state.params.data;
@@ -354,6 +420,7 @@ export default class Chat extends Component<Props> {
                 source={{ uri: item.img }}
                 onPress={() => console.log("Works!")}
                 activeOpacity={0.7}
+                placeholderStyle={{ backgroundColor: "transparent" }}
                 containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
               />
 
@@ -393,6 +460,7 @@ export default class Chat extends Component<Props> {
                 source={{ uri: item.img }}
                 onPress={() => console.log("Works!")}
                 activeOpacity={0.7}
+                placeholderStyle={{ backgroundColor: "transparent" }}
                 containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
               />
 
