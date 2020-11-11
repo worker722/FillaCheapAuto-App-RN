@@ -82,10 +82,11 @@ class Api {
     return this.func(route, params, 'DELETE')
   }
 
-  static async postImage(route, key, image) {
+  static async postImage(route, key, image, paramKey, paramValue) {
     let { orderStore } = Store;
     const url = `${host}/${route}`;
     const formData = new FormData();
+    formData.append(paramKey, paramValue + "");
     let options = {};
 
     const extension = image.mime.substring(image.mime.indexOf("/") + 1, image.mime.length);

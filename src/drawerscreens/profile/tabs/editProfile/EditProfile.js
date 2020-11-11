@@ -509,7 +509,7 @@ export default class EditProfile extends Component<Props> {
                       disabled={this.state.uploadingStoreImage}
 
                     >
-                      <Image source={{ uri: this.state.profileImageUri }} style={{ width: 70, height: 70 }}></Image>
+                      <Image source={{ uri: this.state.profileImageUri == "" ? data.store_img : this.state.profileImageUri }} style={{ width: 70, height: 70 }}></Image>
                       {this.state.uploadingStoreImage ?
                         <Progress.Circle
                           color={orderStore.color}

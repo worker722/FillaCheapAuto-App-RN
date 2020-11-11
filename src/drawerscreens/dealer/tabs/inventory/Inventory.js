@@ -47,39 +47,54 @@ class Inventory extends Component<Props> {
       swipeUp: false,
       reRender: false,
       showChatModel: false,
-      similar_ad_id: 0,
+      similar_ad: null,
     }
   }
 
   componentWillMount = async () => {
     let { orderStore } = Store;
+    orderStore.profile = await Api.get('profile');
     //console.log('orderStore')
     //console.log(orderStore)
     this.defaultData = [...orderStore.publicProfile.inventory.lists.ads];
     this.paginationDefault = orderStore.publicProfile.inventory.lists.pagination;
     this.setState({ listData: orderStore.publicProfile.inventory.lists.ads });
   }
-  addFav(){
+  addFav = async () => {
     let { orderStore } = Store
-    if(orderStore.profile.data){
+    if (orderStore.name != "Guest") {
 
+      const params = { ad_id: item.ad_id };
+      let response = await Api.post('ad_post/favourite', params);
+      if (response.success === true)
+        this.componentWillMount();
+
+      if (response.message.length != 0)
+        Toast.show(response.message);
     }
-    else{
+    else {
       alert('Please login into account')
     }
-    
-  }
-  deleteItem = async (item)=>{
-    this.setState({showSpinner:true});
 
-    const params = {ad_id:item.ad_id,}
-    let response = await Api.post('ad/favourite/remove',params);
-    if(response.success === true){
-      this.start()
+  }
+  deleteItem = async (item) => {
+    // this.setState({ showSpinner: true });
+
+    let { orderStore } = Store
+    if (orderStore.name != "Guest") {
+
+      const params = { ad_id: item.ad_id }
+      let response = await Api.post('ad/favourite/remove', params);
+      if (response.success === true) {
+        this.componentWillMount()
+      }
+
+      if (response.message.length != 0)
+        Toast.show(response.message);
     }
-    
-    if(response.message.length!=0)
-    Toast.show(response.message);
+    else {
+      alert('Please login into account')
+    }
   }
   setLatLong = () => {
     let { orderStore } = Store;
@@ -105,9 +120,6 @@ class Inventory extends Component<Props> {
 
     Linking.openURL(url);
 
-
-
-
   }
 
   _onSwipeUp = async () => {
@@ -115,6 +127,7 @@ class Inventory extends Component<Props> {
 
     setTimeout(async () => {
       let { orderStore } = Store;
+      orderStore.profile = await Api.get('profile');
       orderStore.publicProfile.inventory.lists.ads = [...this.defaultData];
       orderStore.publicProfile.inventory.lists.pagination = this.paginationDefault;
       this.setState({ listData: this.defaultData, swipeUp: false, reCaller: false, refreshing: false, reRender: !this.state.reRender });
@@ -157,11 +170,20 @@ class Inventory extends Component<Props> {
       contentSize.height - paddingToBottom;
   };
 
+  showChatModal = async (item) => {
+    // let { orderStore } = Store;
+
+    // const params = { ad_id: item.ad_id };
+    // orderStore.adDetail = await Api.post('ad_post', params);
+    // item = Object.assign(item, { ad_images: item.images });
+    this.setState({ showChatModel: true, similar_ad: item });
+  }
+
   sendChatMessage = async () => {
     this.setState({ showMessageProgress: true });
     //console.log(this.state.similar_ad_id);
-    const params = {ad_id: this.state.similar_ad_id, message: this.state.popupMessage};
-    
+    const params = { ad_id: this.state.similar.ad_id, message: this.state.popupMessage };
+
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
     Toast.show(response.message);
@@ -188,10 +210,26 @@ class Inventory extends Component<Props> {
 
   render() {
     const { orderStore } = Store;
-    
+
     const profile = orderStore.publicProfile;
-    const inventory = orderStore.publicProfile.inventory;
+    let tempIntentoryData = orderStore.publicProfile.inventory;
+    let favouriteAds = []
     const latLong = profile.lat_long;
+
+    if (orderStore.profile.data) {
+      favouriteAds = orderStore.profile.data.favourite_add.ads;
+      console.log(favouriteAds.length)
+      for (let i in favouriteAds) {
+        for (let j in tempIntentoryData) {
+          if (tempIntentoryData[j].ad_id === favouriteAds[i].ad_id) {
+            tempIntentoryData[j].added_fav = true;
+          }
+        }
+      }
+    }
+
+    const inventory = tempIntentoryData;
+
     return (
       <View style={{
         height: '100%',
@@ -372,77 +410,77 @@ class Inventory extends Component<Props> {
                       push('AdDetailTabManager', { adId: item.ad_id });
                     }}
                     style={styles.flatListContainer}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <View style={styles.imageContainer}>
                         <Image
-                          style={[styles.image,{alignSelf:'center',marginTop:30}]}
+                          style={[styles.image, { alignSelf: 'center', marginTop: 30 }]}
                           source={{ uri: item.ad_images[0].thumb }} />
                       </View>
                       <View style={FeaturedGridStyle.textContainer}>
-                <Text
-                        style={FeaturedGridStyle.petrolTextStyle}>
-                        {item.ad_cats_name}
-                      </Text>
+                        <Text
+                          style={FeaturedGridStyle.petrolTextStyle}>
+                          {item.ad_cats_name}
+                        </Text>
 
-                       <View style={[PopularCarsStyle.textContainer,{flexDirection:'row',marginBottom:-12}]}>
-                       <Text style={FeaturedGridStyle.brandTextStyle}>
-                    {item.ad_title}
-                  </Text>
-                   
-                    {
-                      item.added_fav &&
-                      <TouchableOpacity onPress={() => this.deleteItem(item)}>
-                      <Image
-                          source={require('../../../../../res/images/heart_filled.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
-                        />
-                        </TouchableOpacity>
-                    }
-                    {
-                      !item.added_fav &&
-                      <TouchableOpacity onPress={() => this.addFav()}>
-                        <Image
-                            source={require('../../../../../res/images/heart.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl,{marginHorizontal:5}]}
+                        <View style={[PopularCarsStyle.textContainer, { flexDirection: 'row', marginBottom: -12 }]}>
+                          <Text style={FeaturedGridStyle.brandTextStyle}>
+                            {item.ad_title}
+                          </Text>
+
+                          {
+                            item.added_fav &&
+                            <TouchableOpacity onPress={() => this.deleteItem(item)}>
+                              <Image
+                                source={require('../../../../../res/images/heart_filled.png')}
+                                style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                              />
+                            </TouchableOpacity>
+                          }
+                          {
+                            !item.added_fav &&
+                            <TouchableOpacity onPress={() => this.addFav(item)}>
+                              <Image
+                                source={require('../../../../../res/images/heart.png')}
+                                style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                              />
+                            </TouchableOpacity>
+                          }
+                        </View>
+
+                        <Text
+                          style={PopularCarsStyle.modelTextStyle}>
+                          {item.ad_desc}
+                        </Text>
+                        <Text
+                          style={PopularCarsStyle.brandTextStyle}>
+                          {item.ad_engine + ' | ' + item.ad_milage}
+                        </Text>
+                        <Text
+                          style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
+                          {item.ad_price.price}
+                          {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
+                        </Text>
+                        <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', flexWrap: 'wrap' }]}>
+                          <Image
+                            source={require('../../../../../res/images/calender_grey.png')}
+                            style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
                           />
-                          </TouchableOpacity>
-                    }
-                    </View>
-                  
-                  <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_desc}
-                    </Text>
-                    <Text
-                      style={PopularCarsStyle.brandTextStyle}>
-                      {item.ad_engine + ' | ' + item.ad_milage}
-                    </Text>
-                    <Text
-                      style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
-                      {item.ad_price.price}
-                      {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
-                    </Text>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',flexWrap:'wrap'}]}>
-                    <Image
-                          source={require('../../../../../res/images/calender_grey.png')}
-                          style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
-                        />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_date}
-                    </Text>
-                    </View>
-                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1,{flexDirection:'row',}]}>
-                    <Image
+                          <Text
+                            style={PopularCarsStyle.modelTextStyle}>
+                            {item.ad_date}
+                          </Text>
+                        </View>
+                        <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', }]}>
+                          <Image
                             source={require('../../../../../res/images/location.png')}
-                            style={[FeaturedGridStyle.bottomImgStyl1,{marginHorizontal:5}]}
+                            style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
                           />
-                    <Text
-                      style={PopularCarsStyle.modelTextStyle}>
-                      {item.ad_location.address}
-                    </Text>
-                    </View>
-                </View>
+                          <Text
+                            style={PopularCarsStyle.modelTextStyle}>
+                            {item.ad_location.address}
+                          </Text>
+                        </View>
+                      </View>
                       {/* <View style={styles.textContainer}>
                       <Text
                         style={styles.modelTextStyle}>
@@ -465,28 +503,28 @@ class Inventory extends Component<Props> {
                         {item.ad_price.price}
                       </Text>
                     </View> */}
-                    
+
                     </View>
-                    <View style={{flexDirection: 'row', width: '100%', height: 30, alignItems: 'center'}}>
+                    <View style={{ flexDirection: 'row', width: '100%', height: 30, alignItems: 'center' }}>
                       <TouchableOpacity
-                        style={[styles.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:'blue'}]}
-                        onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
+                        style={[styles.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
+                        onPress={() => this.showChatModal(item)}>
                         <Image
-                            source={require('../../../../../res/images/message_grey.png')}
-                            style={[styles.bottomImgStyl]}
-                          />
-                        <Text style={[styles.featureAdsBtntxt,{}]}>Chat</Text>
-                        
+                          source={require('../../../../../res/images/message_grey.png')}
+                          style={[styles.bottomImgStyl]}
+                        />
+                        <Text style={[styles.featureAdsBtntxt, {}]}>Chat</Text>
+
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={[styles.featureAdsBtn,{borderBottomWidth:2,borderBottomColor:orderStore.appColor}]}
+                        style={[styles.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
                         onPress={() => this.onCallClick(item.ad_id)}>
                         <Image
-                            source={require('../../../../../res/images/contact.png')}
-                            style={[styles.bottomImgStyl]}
-                          />
-                        <Text style={[styles.featureAdsBtntxt,{}]}>Call</Text>
-                        
+                          source={require('../../../../../res/images/contact.png')}
+                          style={[styles.bottomImgStyl]}
+                        />
+                        <Text style={[styles.featureAdsBtntxt, {}]}>Call</Text>
+
                       </TouchableOpacity>
                     </View>
                   </TouchableOpacity>
@@ -522,6 +560,24 @@ class Inventory extends Component<Props> {
           <View style={styles.modalContainer}>
 
             <View style={styles.modalContentContainer}>
+              {this.state.similar_ad != null ?
+                <View style={{ height: 70, width: "100%", flexDirection: "row" }}>
+                  <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                    <Image source={{ uri: this.state.similar_ad.ad_images[0].thumb }} style={{ width: 70, height: 70 }}></Image>
+                  </View>
+                  <View style={{ flex: 1, flexDirection: "column" }}>
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>
+                    {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => this.onCallClick(this.state.similar_ad.ad_id)} style={{ width: 20, height: 30 }}>
+                    <Image
+                      source={require('../../../../../res/images/contact.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl]}
+                    />
+                  </TouchableOpacity>
+                </View>
+                : null}
               <ScrollView
                 keyboardShouldPersistTaps='always'
               >

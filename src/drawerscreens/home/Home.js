@@ -47,8 +47,6 @@ import { toUint8Array } from 'js-base64';
 
 
 const featuredItemWidth = Dimensions.get("screen").width * 47 / 100;
-let addFavAdsIndex = -1;
-let removeFavAdsIndex = -1;
 
 @observer
 export default class Home extends Component<Props> {
@@ -151,7 +149,30 @@ export default class Home extends Component<Props> {
     this.setState({ renderInterval });
 
     props.navigation.addListener("willFocus", (event) => {
-      this.componentWillMount();
+      
+      this.featuredAdsIndex = 2;
+      clearInterval(this.state.renderInterval);
+      const renderInterval = setInterval(() => {
+        if (this.flFeaturedAdsRef != null) {
+          if (this.featuredAdsIndex == 3)
+            this.featuredAdsIndex = -1;
+          this.featuredAdsIndex++;
+          this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
+        }
+      }, 2000);
+      this.setState({ renderInterval });
+
+      this.setState({
+        cats: [],
+        showSpinner: true,
+        backClickCount: 0,
+        refreshing: false,
+        searchText: '',
+        showChatModel: false,
+        similar_ad: null,
+      }, () => {
+        this.componentWillMount();
+      })
     });
   }
 
@@ -413,10 +434,10 @@ export default class Home extends Component<Props> {
   }
 
   showChatModal = async (item) => {
-    let { orderStore } = Store;
+    // let { orderStore } = Store;
 
-    const params = { ad_id: item.ad_id };
-    orderStore.adDetail = await Api.post('ad_post', params);
+    // const params = { ad_id: item.ad_id };
+    // orderStore.adDetail = await Api.post('ad_post', params);
 
     this.setState({ showChatModel: true, similar_ad: item });
   }
@@ -1548,8 +1569,8 @@ export default class Home extends Component<Props> {
                       </View>
                       <View style={{ flex: 1, flexDirection: "column" }}>
                         <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>
-                        <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text>
-                        <Text style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
+                        {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
+                        <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
                       </View>
                       <TouchableOpacity onPress={() => this.onCallClick(this.state.similar_ad.ad_id)} style={{ width: 20, height: 30 }}>
                         <Image

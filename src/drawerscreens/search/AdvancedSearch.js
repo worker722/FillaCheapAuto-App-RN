@@ -1523,7 +1523,99 @@ export default class AdvancedSearch extends Component<Props> {
     };
 
     props.navigation.addListener("willFocus", (event) => {
-      this.componentWillMount();
+      this.setState({
+        searchByTitleText: "",
+        multiSliderValue: [0, 0],
+        hideMake: true,
+        showSpinner: true,
+        categoryId: "",
+        countryId: "",
+        subCategoriesArray: [],
+        locationsArray: [],
+        fromMilageValue: "",
+        toMilageValue: "",
+
+        transmissionSelectedIndex: -1,
+        transmissionSelectedValue: "",
+        transmissionId: "",
+
+        engineCapacitySelectedIndex: -1,
+        engineCapacitySelectedValue: "",
+        engineCapacityId: "",
+
+        engineTypeSelectedIndex: -1,
+        engineTypeSelectedValue: "",
+        engineTypeId: "",
+
+        engineAssemblySelectedIndex: -1,
+        engineAssemblySelectedValue: "",
+        engineAssemblyId: "",
+
+        colorSelectedIndex: -1,
+        colorSelectedValue: "",
+        colorSelectedId: "",
+
+        carTypeSelectedIndex: -1,
+        carTypeSelectedValue: "",
+        carTypeSelectedId: "",
+
+        carBodyTypeSelectedIndex: -1,
+        carBodyTypeSelectedValue: "",
+        carBodyTypeSelectedId: "",
+
+        carInsauranceSelectedIndex: -1,
+        carInsauranceSelectedValue: "",
+        carInsauranceSelectedId: "",
+
+        carConditionSelectedIndex: -1,
+        carConditionSelectedValue: "",
+        carConditionSelectedId: "",
+
+        carWarrantySelectedIndex: -1,
+        carWarrantySelectedValue: "",
+        carWarrantySelectedId: "",
+
+        isAdsByModalDisabled: false,
+        adsByValue: '',
+
+        fromDate: '',
+        toDate: '',
+
+        showCountrySpinner: false,
+        showCategorySpinner: false,
+
+
+
+        subCategories: [],
+        subSubCategories: [],
+        subSubSubCategories: [],
+
+
+        showSubCategories: false,
+        showSubSubCategories: false,
+        showSubSubSubCategories: false,
+
+        textFieldModel: [],
+        webModel: [],
+        selectModel: [],
+        checkboxModel: [],
+        dateModel: [],
+        rengeTextfieldModel: [],
+        radioFieldModel: [],
+        showCategorySpinner: false,
+
+        refreshing: false,
+
+
+        conditionContainer: [],
+        warrantyContainer: [],
+        adTypeContainer: [],
+        transmissionContainer: [],
+        assemblyContainer: [],
+        insauranceContaier: [],
+      }, () => {
+        this.componentWillMount();
+      });
     });
   }
 

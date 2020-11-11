@@ -787,10 +787,15 @@ class PageFour extends Component<Props> {
           <View style={styles.headingTextContainer}>
             <Text style={styles.subHeading}>{itemCountry.title + " * "}</Text>
           </View>
-          {/* <TouchableOpacity
+
+          <TouchableOpacity
             onPress={() => {
+              // await  Keyboard.dismiss()
+
               this.setState({ locationsArray: itemCountry.values });
               this.refs.locationModal.open();
+
+
             }}
             style={this.state.showCountryError ? styles.pickerContainerError : styles.PopupViewContainer}>
             <Text style={styles.popupViewText}>{this.state.adsByValue}</Text>
@@ -798,9 +803,9 @@ class PageFour extends Component<Props> {
               style={styles.popupViewImage}
               source={require('../../../../res/images/right_arrow.png')}
             />
-          </TouchableOpacity> */}
+          </TouchableOpacity>
 
-          <SearchableDropdown
+          {/* <SearchableDropdown
             defaultIndex={0}
             items={itemCountry.values}
             onItemSelect={(item, index) => {
@@ -831,7 +836,7 @@ class PageFour extends Component<Props> {
                 nestedScrollEnabled: true,
               }
             }
-          />
+          /> */}
 
         </View>
       </DismissKeyboard>
@@ -1019,9 +1024,7 @@ class PageFour extends Component<Props> {
       const response = await Api.post('post_ad', orderStore.postAdObject);
       if (response.success === true) {
         await this.setState({ showProgress: false });
-        const { replace } = this.props.navigation;
-
-        //////////////////////////////
+        const { navigate } = this.props.navigation;
 
         orderStore.profile = await Api.get('profile');
 
@@ -1036,13 +1039,7 @@ class PageFour extends Component<Props> {
 
         }
 
-
-        /////////////////////////////
-
-        replace('AdDetailTabManager', { adId: orderStore.settings.data.ad_id });
-
-
-
+        navigate('AdDetailTabManager', { adId: orderStore.settings.data.ad_id });
       }
       await this.setState({ showProgress: false });
       if (response.message.length != 0)
