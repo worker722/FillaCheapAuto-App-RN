@@ -12,6 +12,7 @@ import {
   TextInput,
   Linking,
   Modal,
+  Dimensions
 } from 'react-native';
 import { HeaderBackButton } from 'react-navigation-stack';
 import Appearences from '../../../config/Appearences';
@@ -38,6 +39,7 @@ import { NavigationActions } from 'react-navigation';
 const sortOptions = [];
 const sortKeys = [];
 let instance = null;
+const featuredItemWidth = Dimensions.get("screen").width * 47 / 100;
 @observer
 export default class SearchDetail extends Component<Props> {
   static navigationOptions = ({ navigation }) => ({
@@ -101,11 +103,17 @@ export default class SearchDetail extends Component<Props> {
 
       orderStore.profile = await Api.get('profile');
 
-      this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads });
+      this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads }, () => {
+        this.setRandomFeaturedAds();
+      });
     }
 
     this.setState({ showSpinner: false, reCaller: false, });
 
+  }
+
+  componentWillUnmount = async () => {
+    clearInterval(this.state.renderInterval);
   }
 
   componentWillMount = async () => {
@@ -125,7 +133,9 @@ export default class SearchDetail extends Component<Props> {
       orderStore.profile = await Api.get('profile');
       this.adsDefaulValue = [...orderStore.innerResponse.data.ads];
       this.adsPaginationDefaultValue = orderStore.innerResponse.pagination;
-      this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads, noAdsMessage: extra.no_ads_found, noFeaturedAdsMessage: extra.no_ads_found });
+      this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads, noAdsMessage: extra.no_ads_found, noFeaturedAdsMessage: extra.no_ads_found }, () => {
+        this.setRandomFeaturedAds();
+      });
       const sortOptionsArray = orderStore.innerResponse.topbar.sort_arr;
       for (var i = 0; i < sortOptionsArray.length; i++) {
 
@@ -262,171 +272,206 @@ export default class SearchDetail extends Component<Props> {
       similar_ad: null,
     }
 
+    this.featuredAdsIndex = 2;
+    const renderInterval = setInterval(() => {
+      if (this.flFeaturedAdsRef != null) {
+        if (this.featuredAdsIndex == 3)
+          this.featuredAdsIndex = -1;
+        this.featuredAdsIndex++;
+        this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
+      }
+    }, 2000);
+    this.setState({ renderInterval });
+
     instance = this;
   }
+
+  getItemLayout = (data, index) => (
+    { length: 5, offset: index * featuredItemWidth, index }
+  )
+
+
+  setRandomFeaturedAds = () => {
+    let tempData = this.state.featuredGridData;
+
+    var currentIndex = tempData.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      temporaryValue = tempData[currentIndex];
+      tempData[currentIndex] = tempData[randomIndex];
+      tempData[randomIndex] = temporaryValue;
+    }
+
+    this.setState({ featuredGridData: tempData });
+  }
+
   renderFeaturedAds = () => {
     let { orderStore } = Store;
-    if (orderStore.innerResponse.extra != undefined) {
-      // if (orderStore.innerResponse.extra.is_show_featured === true) {
-      return (<View style={[styles.container, { backgroundColor: 'black', paddingBottom: 25, paddingTop: 15 }]}>
+    // if (true) {
+    if (orderStore.innerResponse.extra.is_show_featured === true) {
+      return (
+        <View style={[styles.container, { paddingBottom: 25, paddingTop: 15 }]}>
 
 
 
-        <View style={styles.topSpace} />
-        <Text style={[styles.subHeading, { color: 'white' }]}>{orderStore.innerResponse.data.featured_ads.text}</Text>
-        <View style={styles.topSpace} />
-        <View style={styles.featuredGrid}>
+          <View style={styles.topSpace} />
+          <Text style={[styles.subHeading, { color: 'white' }]}>{orderStore.innerResponse.data.featured_ads.text}</Text>
+          <View style={styles.topSpace} />
+          <View style={styles.featuredGrid}>
 
 
-          <FlatList
-            data={this.state.featuredGridData}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) =>
-              <TouchableOpacity
-                style={[styles.containerFeatured, {
-                  elevation: 5,
-                  shadowColor: 'rgb(24, 81, 70)',
-                  shadowOffset: { width: 3, height: 3 },
-                  shadowOpacity: 0.9,
-                  shadowRadius: 3,
-                  marginBottom: 10,
-                }]}
-                onPress={() => {
-                  const { navigate } = this.props.navigation;
-                  navigate('AdDetailTabManager', { adId: item.ad_id });
+            <FlatList
+              ref={(ref) => { this.flFeaturedAdsRef = ref; }}
+              data={this.state.featuredGridData}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item, index }) =>
+                <TouchableOpacity
+                  style={[styles.containerFeatured, {
+                    elevation: 5,
+                    shadowColor: 'rgb(24, 81, 70)',
+                    shadowOffset: { width: 3, height: 3 },
+                    shadowOpacity: 0.9,
+                    shadowRadius: 3,
+                    marginBottom: 10,
+                  }]}
+                  onPress={() => {
+                    const { navigate } = this.props.navigation;
+                    navigate('AdDetailTabManager', { adId: item.ad_id });
 
-                }}
+                  }}
 
-              >
+                >
 
-                <View style={styles.imageContainer}>
+                  <View style={styles.imageContainer}>
 
-                  <Image
-                    style={styles.image}
-                    source={{ uri: item.ad_images[0].thumb }} />
-                  <View
-                    style={styles.imageContainerOverlay}>
-                    <View style={styles.topRowContainer}>
-                      <View style={styles.topRightContent}>
-                        <View
-                          style={
+                    <Image
+                      style={styles.image}
+                      source={{ uri: item.ad_images[0].thumb }} />
+                    <View
+                      style={styles.imageContainerOverlay}>
+                      <View style={styles.topRowContainer}>
+                        <View style={styles.topRightContent}>
+                          <View
+                            style={
 
-                            {
-                              width: 0,
-                              height: 0,
-                              backgroundColor: 'transparent',
-                              borderStyle: 'solid',
-                              borderRightWidth: 40,
-                              borderTopWidth: 40,
-                              borderRightColor: 'transparent',
-                              borderTopColor: orderStore.color,
-                              borderTopLeftRadius: Appearences.Radius.radius,
-                              transform: [
-                                { rotate: I18nManager.isRTL ? '360deg' : '90deg' },
+                              {
+                                width: 0,
+                                height: 0,
+                                backgroundColor: 'transparent',
+                                borderStyle: 'solid',
+                                borderRightWidth: 40,
+                                borderTopWidth: 40,
+                                borderRightColor: 'transparent',
+                                borderTopColor: orderStore.color,
+                                borderTopLeftRadius: Appearences.Radius.radius,
+                                transform: [
+                                  { rotate: I18nManager.isRTL ? '360deg' : '90deg' },
 
-                                { scaleX: I18nManager.isRTL ? -1 : 1 }
-                              ]
-                            }
+                                  { scaleX: I18nManager.isRTL ? -1 : 1 }
+                                ]
+                              }
 
-                          } />
+                            } />
 
-                        <View style={{ width: '100%', height: '100%', position: 'absolute', alignItems: 'flex-end' }}>
-                          <Image
-                            style={{ width: 10, height: 10, marginTop: 8, marginEnd: 8 }}
-                            source={require('../../../../res/images/star_white.png')} />
+                          <View style={{ width: '100%', height: '100%', position: 'absolute', alignItems: 'flex-end' }}>
+                            <Image
+                              style={{ width: 10, height: 10, marginTop: 8, marginEnd: 8 }}
+                              source={require('../../../../res/images/star_white.png')} />
+                          </View>
+
+                        </View>
+                      </View>
+                      <View style={styles.bottomRowContainer}>
+                        <View style={[styles.bottomLeftContent, { backgroundColor: orderStore.color }]}>
+                          <Text style={styles.headingFontWhite}>{item.ad_price.price}
+                            <Text style={styles.buttonTextStyle}>
+                              {' (' + item.ad_price.price_type + ')'}
+                            </Text>
+                          </Text>
                         </View>
 
+                        <View style={[styles.bottomRightContent, { backgroundColor: orderStore.color }]}>
+                          <Image
+                            style={styles.bottomRightContentImage}
+                            source={require('../../../../res/images/play.png')} />
+                        </View>
                       </View>
                     </View>
-                    <View style={styles.bottomRowContainer}>
-                      <View style={[styles.bottomLeftContent, { backgroundColor: orderStore.color }]}>
-                        <Text style={styles.headingFontWhite}>{item.ad_price.price}
-                          <Text style={styles.buttonTextStyle}>
-                            {' (' + item.ad_price.price_type + ')'}
-                          </Text>
+
+                  </View>
+
+                  <View style={styles.textContainer}>
+
+                    <Text style={styles.modelTextStyle}>
+                      {item.ad_title}
+                    </Text>
+                    <Text style={styles.brandTextStyle}>
+                      {item.ad_desc}
+                    </Text>
+                    {item.ad_location.address.length != 0 ?
+                      <View style={styles.locationRowContainer}>
+                        <Image
+                          style={[styles.locationImage, { tintColor: orderStore.color }]}
+                          source={require('../../../../res/images/location_red.png')}
+                        />
+                        <Text style={styles.locationTextStyle}>
+                          {item.ad_location.address}
+                        </Text>
+                      </View>
+                      : null}
+                    <View style={styles.milageRow} >
+
+                      <View style={styles.petrolContainer}>
+                        <Image
+                          source={require('../../../../res/images/petrol_pump_red.png')}
+                          style={[styles.petrolImageStyle, { tintColor: orderStore.color }]}
+                        />
+                        <Text
+                          style={styles.petrolTextStyle}>
+                          {item.ad_engine}
                         </Text>
                       </View>
 
-                      <View style={[styles.bottomRightContent, { backgroundColor: orderStore.color }]}>
+                      <View style={styles.mileageContainer}>
                         <Image
-                          style={styles.bottomRightContentImage}
-                          source={require('../../../../res/images/play.png')} />
+                          source={require('../../../../res/images/meter_red.png')}
+                          style={[styles.mileageImageStyle, { tintColor: orderStore.color }]}
+                        />
+                        <Text
+                          style={styles.mileageTextStyle}>
+                          {item.ad_milage}
+                        </Text>
                       </View>
+
+
                     </View>
                   </View>
-
-                </View>
-
-                <View style={styles.textContainer}>
-
-                  <Text style={styles.modelTextStyle}>
-                    {item.ad_title}
-                  </Text>
-                  <Text style={styles.brandTextStyle}>
-                    {item.ad_desc}
-                  </Text>
-                  {item.ad_location.address.length != 0 ?
-                    <View style={styles.locationRowContainer}>
-                      <Image
-                        style={[styles.locationImage, { tintColor: orderStore.color }]}
-                        source={require('../../../../res/images/location_red.png')}
-                      />
-                      <Text style={styles.locationTextStyle}>
-                        {item.ad_location.address}
-                      </Text>
-                    </View>
-                    : null}
-                  <View style={styles.milageRow} >
-
-                    <View style={styles.petrolContainer}>
-                      <Image
-                        source={require('../../../../res/images/petrol_pump_red.png')}
-                        style={[styles.petrolImageStyle, { tintColor: orderStore.color }]}
-                      />
-                      <Text
-                        style={styles.petrolTextStyle}>
-                        {item.ad_engine}
-                      </Text>
-                    </View>
-
-                    <View style={styles.mileageContainer}>
-                      <Image
-                        source={require('../../../../res/images/meter_red.png')}
-                        style={[styles.mileageImageStyle, { tintColor: orderStore.color }]}
-                      />
-                      <Text
-                        style={styles.mileageTextStyle}>
-                        {item.ad_milage}
-                      </Text>
-                    </View>
-
-
-                  </View>
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
 
 
 
-            }
-            keyExtractor={item => item.ad_id + "" + item.ad_title}
-          >
-          </FlatList>
+              }
+              keyExtractor={item => item.ad_id + "" + item.ad_title}
+            >
+            </FlatList>
 
 
-          <NoFeaturedAdsFound
-            message={this.state.noFeaturedAdsMessage}
-            visible={this.state.noFeaturedAdsVisibility}
-          />
+            <NoFeaturedAdsFound
+              message={this.state.noFeaturedAdsMessage}
+              visible={this.state.noFeaturedAdsVisibility}
+            />
 
 
 
-        </View>
+          </View>
 
 
 
 
-      </View>);
+        </View>);
 
       // }
     }
@@ -490,10 +535,10 @@ export default class SearchDetail extends Component<Props> {
   }
 
   showChatModal = async (item) => {
-    let { orderStore } = Store;
+    // let { orderStore } = Store;
 
-    const params = { ad_id: item.ad_id };
-    orderStore.adDetail = await Api.post('ad_post', params);
+    // const params = { ad_id: item.ad_id };
+    // orderStore.adDetail = await Api.post('ad_post', params);
 
     this.setState({ showChatModel: true, similar_ad: item });
   }
@@ -531,7 +576,6 @@ export default class SearchDetail extends Component<Props> {
 
     if (orderStore.profile.data) {
       favouriteAds = orderStore.profile.data.favourite_add.ads;
-      console.log(favouriteAds.length);
       for (let i in favouriteAds) {
         for (let j in listData) {
           if (listData[j].ad_id === favouriteAds[i].ad_id) {
@@ -577,7 +621,7 @@ export default class SearchDetail extends Component<Props> {
             this.handleScroll(nativeEvent);
           }}
           scrollEventThrottle={400}>
-          {this.renderFeaturedAds}
+          {this.renderFeaturedAds()}
 
           <View style={styles.container}>
 
@@ -864,8 +908,8 @@ export default class SearchDetail extends Component<Props> {
                   </View>
                   <View style={{ flex: 1, flexDirection: "column" }}>
                     <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>
-                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text>
-                    <Text style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
+                    {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
                   </View>
                   <TouchableOpacity onPress={() => this.onCallClick(this.state.similar_ad.ad_id)} style={{ width: 20, height: 30 }}>
                     <Image

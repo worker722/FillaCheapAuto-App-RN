@@ -110,7 +110,9 @@ export default class AdDetailTabManager extends React.Component {
     orderStore.setAdDetailComponentMounted(false);
   }
   componentWillMount = async () => {
+    console.log("mount")
     let { orderStore } = Store;
+    orderStore.setEditTopTab(true);
 
     const params = { ad_id: this.props.navigation.state.params.adId };
     // console.warn('ad id is',JSON.stringify(params));
@@ -237,7 +239,6 @@ export default class AdDetailTabManager extends React.Component {
         return <Overview
           callBackFunc={async (item) => {
 
-
             this.setState({ showSpinner: true });
 
             let { orderStore } = Store;
@@ -265,10 +266,11 @@ export default class AdDetailTabManager extends React.Component {
 
                 if (profile.id == data.profile_detail.id) {
                   orderStore.setAdDetailComponentMounted(true);
-
+                  orderStore.setEditTopTab(true);
                 }
                 else {
                   orderStore.setAdDetailComponentMounted(false);
+                  orderStore.setEditTopTab(false);
                 }
               }
               this.setState({ descriptionTitle: descriptionTitleClone, mapTitle: mapTitleClone });

@@ -57,6 +57,9 @@ class orderStore {
     @observable isCallAdvance = false;
     @observable banner = { isShow: false, position: '', banner_id: '' }
     @observable inter = { isShow: false, interval: '', banner_id: '' }
+    @observable canEditAds = true;
+    @observable chat_image_split = "#p^image^p#";
+    @observable chat_audio_split = "#p^audio^p#";
     @observable detailToolbarModel = {
         reportText: '',
         favouriteText: '',
@@ -168,6 +171,10 @@ class orderStore {
     @action
     setAppColor(appColor) {
         this.appColor = appColor;
+    }
+    @action
+    setEditTopTab(isEdit) {
+        this.canEditAds = isEdit;
     }
 }
 

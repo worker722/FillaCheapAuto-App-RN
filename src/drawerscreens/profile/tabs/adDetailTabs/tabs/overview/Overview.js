@@ -39,6 +39,7 @@ import HTMLView from 'react-native-htmlview';
 import { WebView } from 'react-native-webview';
 import { observer } from 'mobx-react'
 import { log } from 'react-native-reanimated';
+import { object } from 'prop-types';
 
 @observer class Overview extends Component<Props> {
 
@@ -75,7 +76,7 @@ import { log } from 'react-native-reanimated';
       clicktoViewPhoneNoText: '',
       isAboslute: false,
       showChatModel: false,
-      similar_ad_id: 0,
+      similar_ad: null,
       dealer_ads: [],
 
       //custom
@@ -289,8 +290,10 @@ import { log } from 'react-native-reanimated';
   }
   getdata = async () => {
     let { orderStore } = Store;
+    orderStore.profile = await Api.get('profile');
     let params = { user_id: orderStore.adDetail.data.profile_detail.id, page_number: '' };
     let response = await Api.post('profile/public/inventory', params);
+
     if (response.success === true) {
       this.setState({ dealer_ads: response.data.ads })
     }
@@ -316,19 +319,37 @@ import { log } from 'react-native-reanimated';
     this.setState({ showMessageProgress: false, showMessageModal: false });
   }
 
+  showChatModal = async (item) => {
+    // let { orderStore } = Store;
+
+    // const params = { ad_id: item.ad_id };
+    // orderStore.adDetail = await Api.post('ad_post', params);
+
+    item = Object.assign(item, { ad_images: item.images });
+    this.setState({ showChatModel: true, similar_ad: item });
+  }
+
   sendChatMessage = async () => {
     this.setState({ showMessageProgress: true });
-    const params = { ad_id: this.state.similar_ad_id, message: this.state.popupMessage };
+    const params = { ad_id: this.state.similar_ad.ad_id, message: this.state.popupMessage };
 
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
     Toast.show(response.message);
     this.setState({ showMessageProgress: false, showChatModel: false });
   }
-  addFav() {
-    let { orderStore } = Store
-    if (orderStore.profile.data) {
 
+  addFav = async (item) => {
+    let { orderStore } = Store
+    if (orderStore.name != "Guest") {
+
+      const params = { ad_id: item.ad_id };
+      let response = await Api.post('ad_post/favourite', params);
+      if (response.success === true)
+        this.getdata();
+
+      if (response.message.length != 0)
+        Toast.show(response.message);
     }
     else {
       alert('Please login into account')
@@ -336,16 +357,21 @@ import { log } from 'react-native-reanimated';
 
   }
   deleteItem = async (item) => {
-    this.setState({ showSpinner: true });
+    let { orderStore } = Store
+    if (orderStore.name != "Guest") {
 
-    const params = { ad_id: item.ad_id, }
-    let response = await Api.post('ad/favourite/remove', params);
-    if (response.success === true) {
-      this.start()
+      const params = { ad_id: item.ad_id }
+      let response = await Api.post('ad/favourite/remove', params);
+      if (response.success === true) {
+        this.getdata()
+      }
+
+      if (response.message.length != 0)
+        Toast.show(response.message);
     }
-
-    if (response.message.length != 0)
-      Toast.show(response.message);
+    else {
+      alert('Please login into account')
+    }
   }
 
   onCallClick = async (id) => {
@@ -426,7 +452,21 @@ import { log } from 'react-native-reanimated';
 
     //  const financeCalculator = data.static_text.finacne_calc;
     //  const financeFields = financeCalculator.fields;
-    const relatedAds = data.related_ads;
+    let tempRelactedAds = data.related_ads;
+    let favouriteAds = []
+
+    if (orderStore.profile.data) {
+      favouriteAds = orderStore.profile.data.favourite_add.ads;
+      for (let i in favouriteAds) {
+        for (let j in tempRelactedAds.ads) {
+          if (tempRelactedAds.ads[j].ad_id === favouriteAds[i].ad_id) {
+            tempRelactedAds.ads[j].added_fav = true;
+          }
+        }
+      }
+    }
+
+    const relatedAds = tempRelactedAds;
     const beforAd = data.banners.before;
     const afterAd = data.banners.after;
     const customStyle = "<style>* {width: 98%;}</style>";
@@ -699,6 +739,24 @@ import { log } from 'react-native-reanimated';
           <View style={styles.modalContainer}>
 
             <View style={styles.modalContentContainer}>
+              {this.state.similar_ad != null ?
+                <View style={{ height: 70, width: "100%", flexDirection: "row" }}>
+                  <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                    <Image source={{ uri: this.state.similar_ad.ad_images[0].thumb }} style={{ width: 70, height: 70 }}></Image>
+                  </View>
+                  <View style={{ flex: 1, flexDirection: "column" }}>
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>
+                    {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => this.onCallClick(this.state.similar_ad.ad_id)} style={{ width: 20, height: 30 }}>
+                    <Image
+                      source={require('../../../../../../../res/images/contact.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl]}
+                    />
+                  </TouchableOpacity>
+                </View>
+                : null}
               <ScrollView
                 keyboardShouldPersistTaps='always'
               >
@@ -763,173 +821,6 @@ import { log } from 'react-native-reanimated';
 
         </Modal>
 
-        {/*         
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.showCalculator}
-          onRequestClose={() => {
-          }}>
-
-          <View style={styles.modalContainer}>
-                
-              <View style = {styles.modalContentContainer}>
-                  <ScrollView
-                  keyboardShouldPersistTaps='always'
-                  >
-                      <View style = {styles.modalHeaderContainer}>
-                          <Text style = {styles.modalHeaderText}>{financeCalculator.title}</Text>
-                          <TouchableOpacity 
-                          onPress = {()=>{
-                            this.setState({showCalculator:false});
-                          }}
-                          >
-                              <Image
-                                style = {styles.modalHeadingImage}
-                                source = {require('../../../../../../../res/images/cross_white.png')}  
-                              />
-                          </TouchableOpacity>
-                      </View>
-                      
-
-                      <View style = {{marginTop:5}}>
-                      
-                          <Text style = {styles.modalHeadingText}>
-                          
-                              {financeFields[0].field_name}
-                          
-                          </Text>      
-                          
-                          <TextInput 
-                          placeholder = {''}
-                          keyboardType="numeric"
-                          value = {this.state.vehiclePrice}
-                          underlineColorAndroid="transparent"
-                          textAlign = {Appearences.Rtl.enabled ? 'right' : 'left'}
-                          onChangeText = {(text)=>{
-                            this.setState({vehiclePrice:text});
-                          }}
-                          style = {styles.modalTextInput}>
-                            
-                          </TextInput>
-
-                          <Text style = {styles.modalHeadingText}>
-                          
-                          {financeFields[1].field_name}
-                          
-                          </Text>      
-                          
-                          <TextInput 
-                          placeholder = {''}
-                          underlineColorAndroid="transparent"
-                          textAlign = {Appearences.Rtl.enabled ? 'right' : 'left'}
-                          value = {this.state.interestRate}
-                          keyboardType="numeric"
-                          onChangeText = {(text)=>{
-                            this.setState({interestRate:text});
-                          }}
-                          style = {styles.modalTextInput}>
-                            
-                          </TextInput>
-
-                          <Text style = {styles.modalHeadingText}>
-                          
-                          {financeFields[2].field_name}
-                          
-                          </Text>      
-                          
-                          <TextInput 
-                          placeholder = {''}
-                          underlineColorAndroid="transparent"
-                          value = {this.state.period}
-                          textAlign = {Appearences.Rtl.enabled ? 'right' : 'left'}
-                          keyboardType="numeric"
-                          onChangeText = {(text)=>{
-                            this.setState({period:text});
-                          }}
-                          style = {styles.modalTextInput}>
-                            
-                          </TextInput>
-
-                          
-
-                          <Text style = {styles.modalHeadingText}>
-                          
-                          {financeFields[3].field_name}
-                      
-                          </Text>      
-                      
-                          <TextInput 
-                          placeholder = {''}
-                          underlineColorAndroid="transparent"
-                          value = {this.state.downPayment}
-                          textAlign = {Appearences.Rtl.enabled ? 'right' : 'left'}
-                          keyboardType="numeric"
-                          onChangeText = {(text)=>{
-                            this.setState({downPayment:text});
-                          }}
-                          style = {styles.modalTextInput}>
-                            
-                          </TextInput>
-
-                
-                      {this.state.showCalculatedSection 
-                      ?  
-                        <View style = {{
-                            backgroundColor:'rgba(0, 131, 201, 0.2)',
-                            marginTop:5,
-                        }}>
-                          <View style = {styles.calculationReusltContainer}>
-                                <Text style = {styles.calculatedText}>{financeCalculator.monthly_pay}</Text>
-                                <Text style = {styles.calculatedAmount}>{this.state.monthlyInstallment}</Text>
-                          </View>  
-                          <View style = {styles.calculatorSeperator}/>
-
-                          <View style = {styles.calculationReusltContainer}>
-                                <Text style = {styles.calculatedText}>{financeCalculator.total_rate}</Text>
-                                <Text style = {styles.calculatedAmount}>{this.state.totalInterest}</Text>
-                          </View>  
-                          <View style = {styles.calculatorSeperator}/>
-
-                          <View style = {styles.calculationReusltContainer}>
-                                <Text style = {styles.calculatedText}>{financeCalculator.total_pay}</Text>
-                                <Text style = {styles.calculatedAmount}>{this.state.amountToPay}</Text>
-                          </View>  
-
-                        </View>
-                          :null
-                        }
-
-                        <View style = {styles.calculatorButtonRowContainer}>
-
-                        <TouchableOpacity 
-                        onPress = {()=>{
-                          this.onClickCalculate();
-                        }}
-                        style = {[styles.calculatorButtonContainer,{backgroundColor:orderStore.color}]}>
-                            <Text style = {styles.buttonTextWhite}>{financeCalculator.btn_submit}</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity 
-                        onPress = {()=>{
-                          this.onClickReset()
-                        }}
-                        style = {[styles.calculatorButtonContainer,{backgroundColor:orderStore.color}]}>
-                            <Text style = {styles.buttonTextWhite}>{financeCalculator.btn_reset}</Text>
-                        </TouchableOpacity>
-
-                        </View>  
-
-                      </View>
-                        
-
-                  </ScrollView>  
-              </View>
-          </View>
-
-          </Modal>
-
-                            */}
         <ScrollView
           key={this.state.reRender}
           contentContainerStyle={{ backgroundColor: Appearences.Colors.appBackgroundColor }}
@@ -1068,7 +959,7 @@ import { log } from 'react-native-reanimated';
                 : null}
               {contactInfo.message.is_show ?
                 <TouchableOpacity
-                  onPress={() => this.setState({ showMessageModal: true })}
+                  onPress={() => this.showChatModal(adDetail)}
                   style={[styles.functionContainer, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}>
                   <Image
                     style={styles.functionImageAppColor}
@@ -1443,7 +1334,7 @@ import { log } from 'react-native-reanimated';
                         }
                         {
                           !item.added_fav &&
-                          <TouchableOpacity onPress={() => this.addFav()}>
+                          <TouchableOpacity onPress={() => this.addFav(item)}>
                             <Image
                               source={require('../../../../../../../res/images/heart.png')}
                               style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
@@ -1745,7 +1636,7 @@ import { log } from 'react-native-reanimated';
                           <View style={FeaturedGridStyle.featureAdsBottom}>
                             <TouchableOpacity
                               style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
-                              onPress={() => this.setState({ showChatModel: true, similar_ad_id: item.ad_id })}>
+                              onPress={() => this.showChatModal(item)}>
                               <Image
                                 source={require('../../../../../../../res/images/message_grey.png')}
                                 style={[FeaturedGridStyle.bottomImgStyl]}
@@ -1872,7 +1763,7 @@ import { log } from 'react-native-reanimated';
                   : null}
                 {contactInfo.message.is_show ?
                   <TouchableOpacity
-                    onPress={() => this.setState({ showMessageModal: true })}
+                    onPress={() => this.showChatModal(adDetail)}
                     style={[styles.functionContainer, {}]}>
                     <Image
                       style={styles.functionImageAppColor}

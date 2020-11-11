@@ -4,13 +4,14 @@ import {
   AppState,
   Text,
   View,
-  Image,
+  PermissionsAndroid,
   TextInput,
   TouchableOpacity,
   ScrollView,
   FlatList,
   RefreshControl,
   Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { HeaderBackButton } from 'react-navigation-stack';
 import Icon from 'react-native-vector-icons//FontAwesome5'
@@ -23,14 +24,14 @@ import Api from '../../../network/Api';
 import Visibility from '../../../components/Visibility';
 import Appearences from '../../../config/Appearences'
 // Optional flow type
-import type { RemoteMessage } from 'react-native-firebase';
 import firebase from 'react-native-firebase';
-import { Avatar } from 'react-native-elements';
+import { Avatar, Image } from 'react-native-elements';
 import * as Progress from 'react-native-progress';
 import Loader from '../../../components/Loader';
 import stores from '../../../Stores/orderStore';
+import AudioRecord from 'react-native-audio-record';
 
-export default class Chat extends Component<Props> {
+export default class Chat extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('otherParam', stores.screenTitles.chats),
     headerStyle: {
@@ -112,8 +113,11 @@ export default class Chat extends Component<Props> {
       isComment: true,
       message: '',
       hideArrowButton: false,
-      attachedFileUri: "",
-      hideAttachFileButton: false,
+      chatImageName: "",
+      chatImage: null,
+      hideChatImageButton: false,
+      isRecording: false,
+      recordTime: 0,
     }
     this.removeBadge = true;
   }
@@ -248,66 +252,85 @@ export default class Chat extends Component<Props> {
           </ScrollView>
           <View style={styles.lastRowContainer}>
             <View style={styles.lastRow}>
-              {!this.state.hideAttachFileButton ?
-                <TouchableOpacity onPress={() => this.ActionSheet.show()} activeOpacity={0.8} style={{ width: "10%", height: 50, borderRadius: 100, marginRight: 3, alignItems: "center", justifyContent: "center" }}>
-                  <Icon name="paperclip" size={20} color={stores.color} />
-                </TouchableOpacity>
+              {!this.state.isRecording ?
+                <>
+                  {!this.state.hideChatImageButton ?
+                    <TouchableOpacity onPress={() => this.ActionSheet.show()} style={{ width: "10%", height: 50, borderRadius: 100, marginRight: 3, alignItems: "center", justifyContent: "center" }}>
+                      <Icon name="paperclip" size={20} color={stores.color} />
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity
+                      style={[styles.searchButton, { width: "10%", height: 50 }]}>
+                      <Progress.Circle
+                        size={Appearences.Fonts.headingFontSize}
+                        indeterminate={true}
+                        color={stores.color}
+                      />
+                    </TouchableOpacity>
+                  }
+                </>
                 :
-                <TouchableOpacity
-                  style={[styles.searchButton, { width: "10%", height: 50 }]}>
-                  <Progress.Circle
-                    size={Appearences.Fonts.headingFontSize}
-                    indeterminate={true}
-                    color={stores.color}
-                  />
+                <TouchableOpacity onPress={() => this.recordCancel()} style={{ width: "10%", height: 50, borderRadius: 100, marginRight: 3, alignItems: "center", justifyContent: "center" }}>
+                  <Icon name="times" size={20} color={stores.color} />
                 </TouchableOpacity>
               }
 
-              <TouchableOpacity activeOpacity={0.8} style={{ width: "10%", height: 50, borderRadius: 100, alignItems: "center", justifyContent: "center" }}>
-                <Icon name="microphone" size={20} color={stores.color} />
-              </TouchableOpacity>
-              <TextInput
-                style={styles.TextInput}
-                onChangeText={(text) => {
-                  this.setState({ message: text });
-                }}
-                value={this.state.message}
-                underlineColorAndroid='transparent'
-                placeholderTextColor={Appearences.Colors.headingGrey}
-                placeholder={"Start typing..."}
-                textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-                multiline={true}
-              />
-              <Visibility
-                hide={this.state.hideArrowButton}
-                style={{ height: 50, width: "10%" }}>
-                <TouchableOpacity
-                  onPress={this.postMessage}
-                  activeOpacity={0.8}
-                  style={[styles.searchButton]}>
-                  <Icon name="location-arrow" size={20} color={stores.color} />
-                </TouchableOpacity>
-              </Visibility>
-
-              <Visibility
-                hide={!this.state.hideArrowButton}
-                style={{ height: '100%', width: '10%', }}>
-                <TouchableOpacity
-
-                  style={styles.searchButton}>
-                  <Progress.Circle
-                    size={Appearences.Fonts.headingFontSize}
-                    indeterminate={true}
-                    color={stores.color}
+              {this.state.isRecording ?
+                <>
+                  <TouchableOpacity onPress={() => this.recordStop()} style={{ width: "10%", height: 50, borderRadius: 100, alignItems: "center", justifyContent: "center" }}>
+                    <Icon name="stop" size={18} color={stores.color} />
+                  </TouchableOpacity>
+                  <Text style={{ width: "70%", height: "100%", textAlignVertical: "center", backgroundColor: "#fff", fontSize: 18, color: "#000", paddingLeft: 20 }}>{this.getTimeFromSec(this.state.recordTime)}</Text>
+                </>
+                :
+                <>
+                  <TouchableOpacity onPress={() => this.recordStart()} style={{ width: "10%", height: 50, borderRadius: 100, alignItems: "center", justifyContent: "center" }}>
+                    <Icon name="microphone" size={20} color={stores.color} />
+                  </TouchableOpacity>
+                  <TextInput
+                    style={styles.TextInput}
+                    onChangeText={(text) => {
+                      this.setState({ message: text });
+                    }}
+                    value={this.state.message}
+                    underlineColorAndroid='transparent'
+                    placeholderTextColor={Appearences.Colors.headingGrey}
+                    placeholder={"Start typing..."}
+                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                    multiline={true}
                   />
-                </TouchableOpacity>
-              </Visibility>
+                  <Visibility
+                    hide={this.state.hideArrowButton}
+                    style={{ height: 50, width: "10%" }}>
+                    <TouchableOpacity
+                      onPress={this.postMessage}
+
+                      style={[styles.searchButton]}>
+                      <Icon name="location-arrow" size={20} color={stores.color} />
+                    </TouchableOpacity>
+                  </Visibility>
+
+                  <Visibility
+                    hide={!this.state.hideArrowButton}
+                    style={{ height: '100%', width: '10%', }}>
+                    <TouchableOpacity
+
+                      style={styles.searchButton}>
+                      <Progress.Circle
+                        size={Appearences.Fonts.headingFontSize}
+                        indeterminate={true}
+                        color={stores.color}
+                      />
+                    </TouchableOpacity>
+                  </Visibility>
+                </>
+              }
             </View>
           </View>
-          {this.state.attachedFileUri != '' ?
+          {this.state.chatImageName != '' ?
             <View style={{ height: 50, width: "100%", flexDirection: "row", justifyContent: "center", alignItems: "center", paddingHorizontal: 15 }}>
-              <Text numberOfLines={1} style={{ fontSize: 15, marginLeft: 20, flex: 1 }}>{this.state.attachedFileUri}</Text>
-              <TouchableOpacity onPress={() => this.setState({ attachedFileUri: "" })} style={{ width: 50, height: 50, justifyContent: "center", position: "absolute", right: 0 }}>
+              <Text numberOfLines={1} style={{ fontSize: 15, marginLeft: 20, flex: 1 }}>{this.state.chatImageName}</Text>
+              <TouchableOpacity onPress={() => this.setState({ chatImageName: "", chatImage: null })} style={{ width: 50, height: 50, justifyContent: "center", position: "absolute", right: 0 }}>
                 <Icon name="times" size={20} color={"#000"} />
               </TouchableOpacity>
             </View> : <></>
@@ -327,16 +350,16 @@ export default class Chat extends Component<Props> {
                   height: 500,
                   includeExif: true
                 }).then(images => {
-                  this.setState({ hideAttachFileButton: true })
-                  this.uploadMultipleImages(images);
+                  this.setState({ hideChatImageButton: true })
+                  this.selectChatImage(images);
                 });
               }
               if (index == 1) {
                 ImagePicker.openPicker({
                   multiple: true
                 }).then(images => {
-                  this.setState({ hideAttachFileButton: true })
-                  this.uploadMultipleImages(images);
+                  this.setState({ hideChatImageButton: true })
+                  this.selectChatImage(images);
                 });
               }
               // console.log('index',index)
@@ -382,19 +405,87 @@ export default class Chat extends Component<Props> {
     this.setState({ refreshing: false });
   }
 
-  uploadMultipleImages = (image) => {
-    this.setState({ attachedFileUri: "image" });
-    this.setState({ hideAttachFileButton: false })
+  selectChatImage = (image) => {
+    let temp = image[0].path.split("/");
+    this.setState({
+      hideChatImageButton: false,
+      chatImageName: temp[temp.length - 1],
+      chatImage: image[0]
+    });
+  }
+
+  recordStart = async () => {
+
+    try {
+      const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.warn("Permission OK");
+        this.setState({ isRecording: true });
+        this.recordTimer = setInterval(() => {
+          let time = this.state.recordTime;
+          if (!time) time = 0;
+          time++;
+          this.setState({ recordTime: time })
+        }, 1000);
+      } else {
+        console.log('record error')
+        return;
+      }
+
+      // init audio record
+      const options = {
+        sampleRate: 16000,  // default 44100
+        channels: 1,        // 1 or 2, default 1
+        bitsPerSample: 16,  // 8 or 16, default 16
+        audioSource: 1,     // android only (see below)
+        wavFile: `${(new Date).getTime()}.wav` // default 'audio.wav'
+      };
+
+      AudioRecord.init(options);
+      AudioRecord.start();
+    } catch (error) {
+      console.log("recore error:", error);
+    }
+  }
+
+  recordStop = async () => {
+    clearInterval(this.recordTimer);
+    const audioFile = await AudioRecord.stop();
+    console.log(audioFile);
+    // this.setSenderMsg({ audio: `file://${audioFile}` });
+  }
+
+  recordCancel = () => {
+
+  }
+
+  getTimeFromSec(sec) {
+    let time = '00:00';
+    if (!sec) return time;
+    if (sec < 10) time = `00:0${sec}`;
+    else if (sec < 60) time = `00:${sec}`;
+    else time = `${parseInt(sec / 60)}:${parseInt(sec % 60)}`;
+    return time;
   }
 
   postMessage = async () => {
-    this.setState({ hideArrowButton: true });
-    const data = this.props.navigation.state.params.data;
+    if (this.state.message == "" && this.state.chatImageName == "")
+      return;
+
     let { orderStore } = Store;
-    const params = { ad_id: data.adId, sender_id: data.senderId, receiver_id: data.receiverId, type: data.type, message: this.state.message };
+    this.setState({ hideArrowButton: true });
+
+    let chatMessage = this.state.message;
+    if (this.state.chatImageName != '') {
+      let response = await Api.postImage("profile/image", "chat_img", this.state.chatImage, 'type', 'chatImage');
+      chatMessage += orderStore.chat_image_split + response.data + "";
+    }
+
+    const data = this.props.navigation.state.params.data;
+    const params = { ad_id: data.adId, sender_id: data.senderId, receiver_id: data.receiverId, type: data.type, message: chatMessage };
     orderStore.innerResponse = await Api.post('message/chat/post', params);
     if (orderStore.innerResponse.success === true)
-      this.setState({ messages: orderStore.innerResponse.data.chat.reverse(), message: "" });
+      this.setState({ messages: orderStore.innerResponse.data.chat.reverse(), message: "", chatImageName: "", chatImage: null });
     else if (this.state.messages.length === 0) {
       this.setState({ visibilityHidden: false });
     }
@@ -407,7 +498,9 @@ export default class Chat extends Component<Props> {
 
 
   renderComment = ({ index, item }) => {
-
+    let { orderStore } = Store;
+    let messageWithImage = item.text.split(orderStore.chat_image_split);
+    let messageWithAudio = item.text.split(orderStore.chat_audio_split);
     if (item.type === 'reply') {
       return (
         <View
@@ -433,9 +526,27 @@ export default class Chat extends Component<Props> {
 
           <View style={styles.triangle} />
           <View style={styles.talkBubble}>
-            <View style={styles.talkBubbleSquare}>
-              <Text style={styles.comment}>{item.text}</Text>
-            </View>
+            {messageWithImage.length > 1 &&
+              <>
+                <Image source={{ uri: messageWithImage[1] }} style={{ width: "50%", height: 100 }} placeholderStyle={{ backgroundColor: "transparent" }} PlaceholderContent={<ActivityIndicator color={orderStore.color} size="small" />} ></Image>
+                {messageWithImage[0] != '' &&
+                  <View style={styles.talkBubbleSquare}>
+                    <Text style={styles.comment}>{messageWithImage[0]}</Text>
+                  </View>
+                }
+              </>
+            }
+            {messageWithAudio.length > 1 &&
+              <>
+                <View></View>
+              </>
+            }
+            {messageWithAudio.length < 2 && messageWithImage.length < 2 &&
+              <View style={styles.talkBubbleSquare}>
+                <Text style={styles.comment}>{item.text}</Text>
+              </View>
+            }
+
           </View>
 
         </View>);
@@ -447,9 +558,27 @@ export default class Chat extends Component<Props> {
           style={styles.replyRowContainer}>
 
           <View style={styles.talkBubble}>
-            <View style={styles.replyTalkBubbleSquare}>
-              <Text style={styles.comment}>{item.text}</Text>
-            </View>
+            {messageWithImage.length > 1 &&
+              <>
+                <Image source={{ uri: messageWithImage[1] }} style={{ width: "50%", height: 100 }} placeholderStyle={{ backgroundColor: "transparent" }} PlaceholderContent={<ActivityIndicator color={orderStore.color} size="small" />} ></Image>
+                {messageWithImage[0] != '' &&
+                  <View style={styles.replyTalkBubbleSquare}>
+                    <Text style={styles.comment}>{messageWithImage[0]}</Text>
+                  </View>
+                }
+              </>
+            }
+            {messageWithAudio.length > 1 &&
+              <>
+                <View></View>
+              </>
+            }
+            {messageWithAudio.length < 2 && messageWithImage.length < 2 &&
+              <View style={styles.replyTalkBubbleSquare}>
+                <Text style={styles.comment}>{item.text}</Text>
+              </View>
+            }
+
           </View>
           <View style={styles.triangleReply} />
 

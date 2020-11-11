@@ -55,7 +55,9 @@ export default class TabManager extends React.Component {
     }
 
     props.navigation.addListener("willFocus", (event) => {
-      this.componentWillMount();
+      this.setState({ showSpinner: true, refreshing: false, index: 0 }, () => {
+        this.componentWillMount();
+      })
     });
   }
   componentWillMount = async () => {

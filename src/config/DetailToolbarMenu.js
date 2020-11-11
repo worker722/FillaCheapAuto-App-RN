@@ -32,14 +32,14 @@ class DetailToolbarMenu extends Component<Props>  {
       hidePostReportProgress: false,
       showEditOption: false,
       showEditOption1: false,
-      showMenuConfirmDialogue:false
+      showMenuConfirmDialogue: false
     }
   }
 
 
   render() {
     let { orderStore } = Store;
-    const {fnc } = this.props
+    const { fnc } = this.props
     // let statusText = orderStore.profile.extra_text.status_text;
     // const { ad_data } = this.props
     if (orderStore.adDetailComponentMounted) {
@@ -74,20 +74,22 @@ class DetailToolbarMenu extends Component<Props>  {
               //     source={require('../../res/images/edit_white.png')} />
               // </TouchableOpacity>
               <Menu>
-
-                <MenuTrigger>
-                  {/* <View style={{ paddingStart: 5, paddingEnd: 5, paddingTop: 5, paddingBottom: 20 }}> */}
+                {orderStore.canEditAds &&
+                  <MenuTrigger>
+                    {/* <View style={{ paddingStart: 5, paddingEnd: 5, paddingTop: 5, paddingBottom: 20 }}> */}
                     <Image
                       source={require('../../res/images/edit_white.png')}
                       style={Styles.icons}
                     />
-                  {/* </View> */}
-                </MenuTrigger>
+                    {/* </View> */}
+                  </MenuTrigger>
+                }
 
-                <MenuOptions optionsContainerStyle={{width:100,marginTop:25}}>
+
+                <MenuOptions optionsContainerStyle={{ width: 100, marginTop: 25 }}>
                   <MenuOption onSelect={() => {
-                     fnc('active',orderStore.adDetail.data.ad_detail.ad_id)
-                     orderStore.setOnClickActiveListner(true,orderStore.adDetail.data.ad_detail,'Active');
+                    fnc('active', orderStore.adDetail.data.ad_detail.ad_id)
+                    orderStore.setOnClickActiveListner(true, orderStore.adDetail.data.ad_detail, 'Active');
                     // this.item = ad_data;
                     // this.option = statusText.status_dropdown_value[0];
                     // this.text = statusText.status_dropdown_value[0];
@@ -96,7 +98,7 @@ class DetailToolbarMenu extends Component<Props>  {
                   }}>
                     <View style={styles.menuItemContainer}>
                       <Text style={styles.menuTextStyle}>
-                       Active
+                        Active
                       </Text>
 
                     </View>
@@ -104,7 +106,7 @@ class DetailToolbarMenu extends Component<Props>  {
 
                   <MenuOption onSelect={() => {
                     fnc('expire')
-                    orderStore.setOnClickActiveListner(true,orderStore.adDetail.data.ad_detail,'Expired');
+                    orderStore.setOnClickActiveListner(true, orderStore.adDetail.data.ad_detail, 'Expired');
                     // this.item = item;
                     // this.option = statusText.status_dropdown_value[1];
                     // this.text = statusText.status_dropdown_value[1];
@@ -113,15 +115,15 @@ class DetailToolbarMenu extends Component<Props>  {
                   }}>
                     <View style={styles.menuItemContainer}>
                       <Text style={styles.menuTextStyle}>
-                       Expired
+                        Expired
                       </Text>
 
                     </View>
                   </MenuOption>
 
                   <MenuOption onSelect={() => {
-                     fnc('sold')
-                     orderStore.setOnClickActiveListner(true,orderStore.adDetail.data.ad_detail,'Sold');
+                    fnc('sold')
+                    orderStore.setOnClickActiveListner(true, orderStore.adDetail.data.ad_detail, 'Sold');
                     // this.item = item;
                     // this.option = statusText.status_dropdown_value[2];
                     // this.text = statusText.status_dropdown_value[2];
@@ -142,11 +144,11 @@ class DetailToolbarMenu extends Component<Props>  {
                     // deleteIndex = index;
                     // deleteItem = item;
                     fnc('delete')
-                    orderStore.setOnClickActiveListner(true,orderStore.adDetail.data.ad_detail,'Delete');
+                    orderStore.setOnClickActiveListner(true, orderStore.adDetail.data.ad_detail, 'Delete');
                   }}>
                     <View style={styles.menuItemContainer}>
                       <Text style={styles.menuTextStyle}>
-                      Delete
+                        Delete
                       </Text>
 
                     </View>
@@ -154,13 +156,13 @@ class DetailToolbarMenu extends Component<Props>  {
 
 
                   <MenuOption onSelect={() => {
-                   
+
                     fnc('edit')
-                    orderStore.setOnClickActiveListner(true,orderStore.adDetail.data.ad_detail,'Edit');
+                    orderStore.setOnClickActiveListner(true, orderStore.adDetail.data.ad_detail, 'Edit');
                   }}>
                     <View style={styles.menuItemContainer}>
                       <Text style={styles.menuTextStyle}>
-                     Edit
+                        Edit
                       </Text>
 
                     </View>
@@ -222,7 +224,7 @@ class DetailToolbarMenu extends Component<Props>  {
           </Menu>
 
         </View>
-        </View>
+      </View>
     );
 
 
