@@ -97,6 +97,7 @@ export default class Chat extends Component {
 
   componentWillUnmount() {
     clearInterval(this.getDataInterval);
+    clearInterval(this.recordAudioTimer);
     this.messageListener && this.messageListener();
     AppState.removeEventListener('change', this.handleAppStateChange);
   }
@@ -114,7 +115,9 @@ export default class Chat extends Component {
       message: '',
       hideArrowButton: false,
       chatImageName: "",
+      chatAudioName: "",
       chatImage: null,
+      chatAudio: null,
       hideChatImageButton: false,
       isRecording: false,
       recordTime: 0,
@@ -124,9 +127,9 @@ export default class Chat extends Component {
 
   componentWillMount = async () => {
     await this.getAllChatData();
-    this.getDataInterval = setInterval(() => {
-      this.getAllChatData();
-    }, 10000);
+    // this.getDataInterval = setInterval(() => {
+    //   this.getAllChatData();
+    // }, 10000);
 
     props.navigation.addListener("willBlur", (event) => {
       this.removeBadge = false;
@@ -327,13 +330,26 @@ export default class Chat extends Component {
               }
             </View>
           </View>
-          {this.state.chatImageName != '' ?
-            <View style={{ height: 50, width: "100%", flexDirection: "row", justifyContent: "center", alignItems: "center", paddingHorizontal: 15 }}>
-              <Text numberOfLines={1} style={{ fontSize: 15, marginLeft: 20, flex: 1 }}>{this.state.chatImageName}</Text>
-              <TouchableOpacity onPress={() => this.setState({ chatImageName: "", chatImage: null })} style={{ width: 50, height: 50, justifyContent: "center", position: "absolute", right: 0 }}>
-                <Icon name="times" size={20} color={"#000"} />
-              </TouchableOpacity>
-            </View> : <></>
+          {!this.state.isRecording &&
+            <>
+              {this.state.chatImageName != '' &&
+                <View style={{ height: 50, width: "100%", flexDirection: "row", justifyContent: "center", alignItems: "center", paddingHorizontal: 15 }}>
+                  <Text numberOfLines={1} style={{ fontSize: 15, marginLeft: 20, flex: 1, marginRight: 40 }}>{this.state.chatImageName}</Text>
+                  <TouchableOpacity onPress={() => this.setState({ chatImageName: "", chatImage: null, chatAudio: null, chatAudioName: '' })} style={{ width: 50, height: 50, justifyContent: "center", position: "absolute", right: 0 }}>
+                    <Icon name="times" size={20} color={"#000"} />
+                  </TouchableOpacity>
+                </View>
+              }
+
+              {this.state.chatAudioName != '' &&
+                <View style={{ height: 50, width: "100%", flexDirection: "row", justifyContent: "center", alignItems: "center", paddingHorizontal: 15 }}>
+                  <Text numberOfLines={1} style={{ fontSize: 15, marginLeft: 20, flex: 1, marginRight: 40 }}>{this.state.chatAudioName}</Text>
+                  <TouchableOpacity onPress={() => this.setState({ chatImageName: "", chatImage: null, chatAudio: null, chatAudioName: '' })} style={{ width: 50, height: 50, justifyContent: "center", position: "absolute", right: 0 }}>
+                    <Icon name="times" size={20} color={"#000"} />
+                  </TouchableOpacity>
+                </View>
+              }
+            </>
           }
 
           <ActionSheet
@@ -410,7 +426,9 @@ export default class Chat extends Component {
     this.setState({
       hideChatImageButton: false,
       chatImageName: temp[temp.length - 1],
-      chatImage: image[0]
+      chatImage: image[0],
+      chatAudio: null,
+      chatAudioName: ''
     });
   }
 
@@ -421,7 +439,8 @@ export default class Chat extends Component {
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         console.warn("Permission OK");
         this.setState({ isRecording: true });
-        this.recordTimer = setInterval(() => {
+        clearInterval(this.recordAudioTimer);
+        this.recordAudioTimer = setInterval(() => {
           let time = this.state.recordTime;
           if (!time) time = 0;
           time++;
@@ -449,9 +468,20 @@ export default class Chat extends Component {
   }
 
   recordStop = async () => {
-    clearInterval(this.recordTimer);
+    clearInterval(this.recordAudioTimer);
     const audioFile = await AudioRecord.stop();
+    let tempName = audioFile.split("/");
+    let tempArr = [];
+    tempArr.push(audioFile);
     console.log(audioFile);
+    this.setState({
+      hideChatImageButton: false,
+      chatImageName: '',
+      chatImage: null,
+      chatAudio: tempArr,
+      isRecording: false,
+      chatAudioName: tempName[tempName.length - 1]
+    });
     // this.setSenderMsg({ audio: `file://${audioFile}` });
   }
 
