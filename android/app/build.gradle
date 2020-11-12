@@ -195,6 +195,7 @@ def useIntlJsc = false
 
 
 dependencies {
+    implementation project(':react-native-audio-record')
     implementation project(':react-native-version-check')
     implementation project(':react-native-restart')
     implementation project(':react-native-firebase')

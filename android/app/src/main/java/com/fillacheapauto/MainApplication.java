@@ -3,6 +3,7 @@ package com.fillacheapauto;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.goodatlas.audiorecord.RNAudioRecordPackage;
 import io.xogus.reactnative.versioncheck.RNVersionCheckPackage;
 import com.avishayil.rnrestart.ReactNativeRestartPackage;
 import io.invertase.firebase.RNFirebasePackage;
@@ -69,6 +70,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
+            new RNAudioRecordPackage(),
             new RNVersionCheckPackage(),
             new ReactNativeRestartPackage(),
             new VectorIconsPackage(),

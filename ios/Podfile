@@ -91,6 +91,8 @@ target 'carsport' do
 
   pod 'react-native-version-check', :path => '../node_modules/react-native-version-check'
 
+  pod 'RNAudioRecord', :path => '../node_modules/react-native-audio-record'
+
 end
 
 post_install do |installer|
