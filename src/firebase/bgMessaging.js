@@ -6,8 +6,6 @@ import Store from '../Stores';
 
 export default async (message: RemoteMessage) => {
   // handle your message
-  console.log("remote psuh")
-
   let { orderStore } = Store;
   orderStore.setNotificationCount(orderStore.notificationCount + 1);
 

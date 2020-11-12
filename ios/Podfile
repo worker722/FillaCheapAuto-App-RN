@@ -93,6 +93,8 @@ target 'carsport' do
 
   pod 'RNAudioRecord', :path => '../node_modules/react-native-audio-record'
 
+  pod 'RNSound', :path => '../node_modules/react-native-sound'
+
 end
 
 post_install do |installer|

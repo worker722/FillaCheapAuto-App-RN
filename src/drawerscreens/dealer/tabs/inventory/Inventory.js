@@ -218,7 +218,6 @@ class Inventory extends Component<Props> {
 
     if (orderStore.profile.data) {
       favouriteAds = orderStore.profile.data.favourite_add.ads;
-      console.log(favouriteAds.length)
       for (let i in favouriteAds) {
         for (let j in tempIntentoryData) {
           if (tempIntentoryData[j].ad_id === favouriteAds[i].ad_id) {

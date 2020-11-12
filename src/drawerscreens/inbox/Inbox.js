@@ -220,13 +220,13 @@ export default class Inbox extends Component<Props> {
           </Text>
           {messageWithImage.length > 1 &&
             <View style={{ width: "100%", flexDirection: "row", height: 30 }}>
-              <Icon name={"image"} size={20} color={"grey"} style={{ marginRight: 10 }}></Icon>
+              <Icon name={"image"} size={20} color={"#b9b9b9"} style={{ marginRight: 10 }}></Icon>
               <Text style={styles.listMessageText} numberOfLines={1}>Photo</Text>
             </View>
           }
           {messageWithAudio.length > 1 &&
             <View style={{ width: "100%", flexDirection: "row", height: 30 }}>
-              <Icon name={"play"} size={18} color={"grey"} style={{ marginRight: 10 }}></Icon>
+              <Icon name={"play"} size={18} color={"#b9b9b9"} style={{ marginRight: 10 }}></Icon>
               <Text style={styles.listMessageText} numberOfLines={1}>Audio</Text>
             </View>
           }

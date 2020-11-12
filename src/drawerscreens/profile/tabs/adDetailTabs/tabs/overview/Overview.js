@@ -843,7 +843,6 @@ import { object } from 'prop-types';
                 onPress={async () => {
                   const params = { ad_id: adDetail.ad_id, custom_type: "bump" };
                   let response = await Api.post('ad_post/featured', params);
-                  console.log(response);
                 }}
                 style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1, marginRight: 10 }]}>
                 <Text style={styles.headingTextWhite}>Bump It Up</Text>
