@@ -432,7 +432,6 @@ export default class Chat extends Component {
       chatAudio: null,
       chatAudioName: ''
     });
-    console.log(image[0])
   }
 
   recordStart = async () => {
@@ -512,7 +511,6 @@ export default class Chat extends Component {
     }
     else if (this.state.chatAudioName != '') {
       let response = await Api.postChatAttachFile("profile/image", "chat_audio", this.state.chatAudio, 'chatAudio', 'audio');
-      console.log(response);
       chatMessage += orderStore.chat_audio_split + response.data + "";
     }
 

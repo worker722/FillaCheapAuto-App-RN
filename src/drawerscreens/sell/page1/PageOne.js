@@ -472,7 +472,6 @@ export default class PageOne extends Component<Props> {
               this.setState({ categoryId: '', showCategoryError: true });
               const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
               this.setState({ selectedItems: items });
-              console.log("remove category")
             }}
             itemStyle={styles.searchableDropdown}
             itemTextStyle={styles.dropDownTextStyle}

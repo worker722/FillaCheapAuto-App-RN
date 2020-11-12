@@ -334,10 +334,9 @@ export default class Home extends Component<Props> {
     let { orderStore } = Store;
     orderStore.setIsCallAdvance(false);
     navigate('SearchDetail', { params: params });
-
   };
+  
   onFeaturedGridClick = async (item) => {
-    console.log(item.ad_images[0].thumb);
     const { navigate } = this.props.navigation;
     await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
 

@@ -32,14 +32,11 @@ export default class App extends Component<Props> {
   }
 
   handleAppStateChange = (nextAppState) => {
-    console.log("state");
-    console.log(nextAppState);
     if (nextAppState === 'inactive') {
     }
   }
 
   componentDidUpdate() {
-
     let { orderStore } = Store;
     if (orderStore.banner.isShow == 'true') {
       orderStore.banner.isShow = false;
@@ -74,7 +71,6 @@ export default class App extends Component<Props> {
         if (enabled) {
           firebase.messaging().getToken().then(token => {
             orderStore.DEVICE_TOKEN = token
-            console.warn("device_token: ", token);
           })
 
           if (Platform.OS === 'ios') {
@@ -95,8 +91,6 @@ export default class App extends Component<Props> {
           } else {
             this.notificationListenerANDROID = firebase.notifications().onNotification(notification => {
               //Showing local notification Android
-              console.log("app push");
-
               let { orderStore } = Store;
               orderStore.setNotificationCount(orderStore.notificationCount + 1);
 
@@ -142,7 +136,6 @@ export default class App extends Component<Props> {
   }
 
   componentWillUnmount = async () => {
-    console.log("remove app listneer");
     AppState.removeEventListener('change', this.handleAppStateChange);
     if (Platform.OS === 'ios')
       this.notificationListenerIOS && this.notificationListenerIOS();
@@ -150,11 +143,6 @@ export default class App extends Component<Props> {
       this.notificationListenerANDROID && this.notificationListenerANDROID();
 
     AdMobInterstitial.removeAllListeners();
-    //this.getInitialNotification()
-    // let {orderStore} = Store;
-    // await LocalDb.saveProfile(null);
-    // await LocalDb.saveIsProfilePublic('1');
-    // orderStore.isPublicProfile = true;
   }
 
   async subToTopic() {
