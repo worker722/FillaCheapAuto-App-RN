@@ -90,22 +90,12 @@ class Api {
     let options = {};
 
     const extension = image.mime.substring(image.mime.indexOf("/") + 1, image.mime.length);
-
     const photo = {
-
       uri: image.path,
       type: image.mime,
       name: "test." + extension,
     };
-    // const photo = {
-
-    //   uri: image.uri,
-    //   type: image.type,
-    //   name: image.fileName,
-    // };
-
     formData.append(key, photo);
-
 
     if (orderStore.isSocailLogin) {
 
@@ -184,6 +174,103 @@ class Api {
     });
 
   }
+
+  static async postChatAttachFile(route, key, attachFile, paramValue, type) {
+    let { orderStore } = Store;
+    const url = `${host}/${route}`;
+    const formData = new FormData();
+    formData.append('type', paramValue + "");
+    let options = {};
+
+    if (type == 'photo') {
+      const extension = attachFile.mime.substring(attachFile.mime.indexOf("/") + 1, attachFile.mime.length);
+      const photo = {
+        uri: attachFile.path,
+        type: attachFile.mime,
+        name: "chatImage." + extension,
+      };
+      formData.append(key, photo);
+    }
+    else if (type == 'audio') {
+      const audio = {
+        uri: attachFile,
+        type: 'audio/wav',
+        name: 'chatAudio.wav'
+      }
+      formData.append(key, audio);
+    }
+
+    if (orderStore.isSocailLogin) {
+
+      if (Platform.OS === 'ios') {
+        options = {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Purchase-Code': PURCHASE_CODE,
+            'Custom-Security': CUSTOM_SECURITY,
+            'Carspot-Request-From': 'ios',
+            'CARSPOT-LOGIN-TYPE': 'social',
+          },
+        };
+      }
+      else
+        options = {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Purchase-Code': PURCHASE_CODE,
+            'Custom-Security': CUSTOM_SECURITY,
+            'Carspot-Request-From': 'android',
+            'CARSPOT-LOGIN-TYPE': 'social',
+          },
+        };
+    }
+
+    else {
+
+      if (Platform.OS === 'ios') {
+        options = {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Purchase-Code': PURCHASE_CODE,
+            'Custom-Security': CUSTOM_SECURITY,
+            'Carspot-Request-From': 'ios',
+          },
+        };
+      }
+      else
+        options = {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Purchase-Code': PURCHASE_CODE,
+            'Custom-Security': CUSTOM_SECURITY,
+            'Carspot-Request-From': 'android',
+          },
+        };
+    }
+
+    const data = await LocalDb.getUserProfile();
+
+    if (data != null) {
+      const username = data.email;
+      const password = data.password;
+      const hash = new Buffer(`${username}:${password}`).toString('base64');
+      options.headers['Authorization'] = `Basic ${hash}`;
+    }
+    return fetch(url, options).then(resp => {
+      let json = resp.json();
+      if (resp.ok) {
+        return json;
+      }
+      return json.then(err => { throw err });
+    }).then(json => {
+      return json;
+    });
+  }
+
 
   static async postImageMulti(route, key, image, paramKey, paramValue) {
     let { orderStore } = Store;

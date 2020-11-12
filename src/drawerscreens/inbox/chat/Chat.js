@@ -22,7 +22,8 @@ import Store from '../../../Stores';
 import Toast from 'react-native-simple-toast';
 import Api from '../../../network/Api';
 import Visibility from '../../../components/Visibility';
-import Appearences from '../../../config/Appearences'
+import ChatMessage from '../../../components/ChatMessage';
+import Appearences from '../../../config/Appearences';
 // Optional flow type
 import firebase from 'react-native-firebase';
 import { Avatar, Image } from 'react-native-elements';
@@ -249,8 +250,8 @@ export default class Chat extends Component {
                 data={this.state.messages}
                 horizontal={false}
                 showsVerticalScrollIndicator={false}
-                renderItem={this.renderComment}
-                keyExtractor={this._keyExtractor}>
+                renderItem={(item, index) => <ChatMessage messageItem={item} />}
+                keyExtractor={(item, index) => index + ''}>
               </FlatList>
             </View>
           </ScrollView>
@@ -431,6 +432,7 @@ export default class Chat extends Component {
       chatAudio: null,
       chatAudioName: ''
     });
+    console.log(image[0])
   }
 
   recordStart = async () => {
@@ -472,22 +474,19 @@ export default class Chat extends Component {
     clearInterval(this.recordAudioTimer);
     const audioFile = await AudioRecord.stop();
     let tempName = audioFile.split("/");
-    let tempArr = [];
-    tempArr.push(audioFile);
-    console.log(audioFile);
     this.setState({
       hideChatImageButton: false,
       chatImageName: '',
       chatImage: null,
-      chatAudio: tempArr,
+      chatAudio: `file://${audioFile}`,
       isRecording: false,
-      chatAudioName: tempName[tempName.length - 1]
+      chatAudioName: tempName[tempName.length - 1],
+      recordTime: 0,
     });
-    // this.setSenderMsg({ audio: `file://${audioFile}` });
   }
 
   recordCancel = () => {
-
+    this.setState({ isRecording: false, chatAudio: null, chatAudioName: "", recordTime: 0 });
   }
 
   getTimeFromSec(sec) {
@@ -500,7 +499,7 @@ export default class Chat extends Component {
   }
 
   postMessage = async () => {
-    if (this.state.message == "" && this.state.chatImageName == "")
+    if (this.state.message == "" && this.state.chatImageName == "" && this.chatAudioName == "")
       return;
 
     let { orderStore } = Store;
@@ -508,8 +507,13 @@ export default class Chat extends Component {
 
     let chatMessage = this.state.message;
     if (this.state.chatImageName != '') {
-      let response = await Api.postImage("profile/image", "chat_img", this.state.chatImage, 'type', 'chatImage');
+      let response = await Api.postChatAttachFile("profile/image", "chat_img", this.state.chatImage, 'chatImage', 'photo');
       chatMessage += orderStore.chat_image_split + response.data + "";
+    }
+    else if (this.state.chatAudioName != '') {
+      let response = await Api.postChatAttachFile("profile/image", "chat_audio", this.state.chatAudio, 'chatAudio', 'audio');
+      console.log(response);
+      chatMessage += orderStore.chat_audio_split + response.data + "";
     }
 
     const data = this.props.navigation.state.params.data;
@@ -523,115 +527,5 @@ export default class Chat extends Component {
     if (orderStore.innerResponse.message.length != 0)
       Toast.show(orderStore.innerResponse.message);
     this.setState({ hideArrowButton: false });
-  }
-
-  _keyExtractor = (item, index) => index + '';
-
-
-  renderComment = ({ index, item }) => {
-    let { orderStore } = Store;
-    let messageWithImage = item.text.split(orderStore.chat_image_split);
-    let messageWithAudio = item.text.split(orderStore.chat_audio_split);
-    if (item.type === 'reply') {
-      return (
-        <View
-          style={styles.commentRowContainer}>
-          <View>
-            <View style={styles.listImageContainer}>
-
-              <Avatar
-                size='medium'
-                rounded
-                source={{ uri: item.img }}
-                onPress={() => console.log("Works!")}
-                activeOpacity={0.7}
-                placeholderStyle={{ backgroundColor: "transparent" }}
-                containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
-              />
-
-            </View>
-            <Text style={[styles.timeText, { color: stores.color }]}>
-              {item.date}
-            </Text>
-          </View>
-
-          <View style={styles.triangle} />
-          <View style={styles.talkBubble}>
-            {messageWithImage.length > 1 &&
-              <>
-                <Image source={{ uri: messageWithImage[1] }} style={{ width: "50%", height: 100 }} placeholderStyle={{ backgroundColor: "transparent" }} PlaceholderContent={<ActivityIndicator color={orderStore.color} size="small" />} ></Image>
-                {messageWithImage[0] != '' &&
-                  <View style={styles.talkBubbleSquare}>
-                    <Text style={styles.comment}>{messageWithImage[0]}</Text>
-                  </View>
-                }
-              </>
-            }
-            {messageWithAudio.length > 1 &&
-              <>
-                <View></View>
-              </>
-            }
-            {messageWithAudio.length < 2 && messageWithImage.length < 2 &&
-              <View style={styles.talkBubbleSquare}>
-                <Text style={styles.comment}>{item.text}</Text>
-              </View>
-            }
-
-          </View>
-
-        </View>);
-    }
-
-    else {
-      return (
-        <View
-          style={styles.replyRowContainer}>
-
-          <View style={styles.talkBubble}>
-            {messageWithImage.length > 1 &&
-              <>
-                <Image source={{ uri: messageWithImage[1] }} style={{ width: "50%", height: 100 }} placeholderStyle={{ backgroundColor: "transparent" }} PlaceholderContent={<ActivityIndicator color={orderStore.color} size="small" />} ></Image>
-                {messageWithImage[0] != '' &&
-                  <View style={styles.replyTalkBubbleSquare}>
-                    <Text style={styles.comment}>{messageWithImage[0]}</Text>
-                  </View>
-                }
-              </>
-            }
-            {messageWithAudio.length > 1 &&
-              <>
-                <View></View>
-              </>
-            }
-            {messageWithAudio.length < 2 && messageWithImage.length < 2 &&
-              <View style={styles.replyTalkBubbleSquare}>
-                <Text style={styles.comment}>{item.text}</Text>
-              </View>
-            }
-
-          </View>
-          <View style={styles.triangleReply} />
-
-          <View>
-            <View style={styles.listImageContainer}>
-              <Avatar
-                size='medium'
-                rounded
-                source={{ uri: item.img }}
-                onPress={() => console.log("Works!")}
-                activeOpacity={0.7}
-                placeholderStyle={{ backgroundColor: "transparent" }}
-                containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
-              />
-
-            </View>
-            <Text style={[styles.timeText, { color: stores.color }]}>
-              {item.date}
-            </Text>
-          </View>
-        </View>
-      );
-    }
   }
 }
