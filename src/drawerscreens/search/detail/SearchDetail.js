@@ -309,8 +309,23 @@ export default class SearchDetail extends Component<Props> {
 
   renderFeaturedAds = () => {
     let { orderStore } = Store;
-    // if (true) {
-    if (orderStore.innerResponse.extra.is_show_featured === true) {
+
+    let featuredGridData = this.state.featuredGridData;
+    let favouriteAds = [];
+
+    if (orderStore.profile.data) {
+      favouriteAds = orderStore.profile.data.favourite_add.ads;
+      for (let i in favouriteAds) {
+        for (let j in featuredGridData) {
+          if (featuredGridData[j].ad_id === favouriteAds[i].ad_id) {
+            featuredGridData[j].added_fav = true
+          }
+        }
+      }
+    }
+
+    if (true) {
+      // if (orderStore.innerResponse.extra.is_show_featured === true) {
       return (
         <View style={[styles.container, { paddingBottom: 25, paddingTop: 15 }]}>
 
@@ -324,36 +339,35 @@ export default class SearchDetail extends Component<Props> {
 
             <FlatList
               ref={(ref) => { this.flFeaturedAdsRef = ref; }}
-              data={this.state.featuredGridData}
+              data={featuredGridData}
+              getItemLayout={this.getItemLayout}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item, index }) =>
+
+
                 <TouchableOpacity
-                  style={[styles.containerFeatured, {
+                  activeOpacity={2}
+                  style={[FeaturedGridStyle.container, {
                     elevation: 5,
                     shadowColor: 'rgb(24, 81, 70)',
                     shadowOffset: { width: 3, height: 3 },
                     shadowOpacity: 0.9,
                     shadowRadius: 3,
-                    marginBottom: 10,
-                  }]}
-                  onPress={() => {
-                    const { navigate } = this.props.navigation;
-                    navigate('AdDetailTabManager', { adId: item.ad_id });
-
-                  }}
-
+                  }
+                  ]}
+                  onPress={() => this.onFeaturedGridClick(item)}
                 >
 
-                  <View style={styles.imageContainer}>
+                  <View style={FeaturedGridStyle.imageContainer}>
 
                     <Image
-                      style={styles.image}
+                      style={FeaturedGridStyle.image}
                       source={{ uri: item.ad_images[0].thumb }} />
                     <View
-                      style={styles.imageContainerOverlay}>
-                      <View style={styles.topRowContainer}>
-                        <View style={styles.topRightContent}>
+                      style={FeaturedGridStyle.imageContainerOverlay}>
+                      <View style={FeaturedGridStyle.topRowContainer}>
+                        <View style={FeaturedGridStyle.topRightContent}>
                           <View
                             style={
 
@@ -369,7 +383,6 @@ export default class SearchDetail extends Component<Props> {
                                 borderTopLeftRadius: Appearences.Radius.radius,
                                 transform: [
                                   { rotate: I18nManager.isRTL ? '360deg' : '90deg' },
-
                                   { scaleX: I18nManager.isRTL ? -1 : 1 }
                                 ]
                               }
@@ -384,18 +397,16 @@ export default class SearchDetail extends Component<Props> {
 
                         </View>
                       </View>
-                      <View style={styles.bottomRowContainer}>
-                        <View style={[styles.bottomLeftContent, { backgroundColor: orderStore.color }]}>
-                          <Text style={styles.headingFontWhite}>{item.ad_price.price}
-                            <Text style={styles.buttonTextStyle}>
-                              {' (' + item.ad_price.price_type + ')'}
-                            </Text>
+                      <View style={FeaturedGridStyle.bottomRowContainer}>
+                        <View style={[FeaturedGridStyle.bottomLeftContent, { backgroundColor: orderStore.color }]}>
+                          <Text style={[styles.buttonTextStyle, { fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>{item.ad_price.price}
+                            <Text style={styles.buttonTextStyle}>{' (' + item.ad_price.price_type + ')'}</Text>
                           </Text>
                         </View>
 
-                        <View style={[styles.bottomRightContent, { backgroundColor: orderStore.color }]}>
+                        <View style={[FeaturedGridStyle.bottomRightContent, { backgroundColor: orderStore.color }]}>
                           <Image
-                            style={styles.bottomRightContentImage}
+                            style={FeaturedGridStyle.bottomRightContentImage}
                             source={require('../../../../res/images/play.png')} />
                         </View>
                       </View>
@@ -403,58 +414,101 @@ export default class SearchDetail extends Component<Props> {
 
                   </View>
 
-                  <View style={styles.textContainer}>
-
-                    <Text style={styles.modelTextStyle}>
-                      {item.ad_title}
+                  <View style={FeaturedGridStyle.textContainer}>
+                    <Text
+                      style={FeaturedGridStyle.petrolTextStyle}>
+                      {item.ad_cats_name}
                     </Text>
-                    <Text style={styles.brandTextStyle}>
+
+                    <View style={[PopularCarsStyle.textContainer, { flexDirection: 'row', }]}>
+                      <Text style={FeaturedGridStyle.brandTextStyle}>
+                        {item.ad_title}
+                      </Text>
+
+                      {
+                        item.added_fav &&
+                        <TouchableOpacity onPress={() => this.deleteItem(item)}>
+                          <Image
+                            source={require('../../../../res/images/heart_filled.png')}
+                            style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                          />
+                        </TouchableOpacity>
+                      }
+                      {
+                        !item.added_fav &&
+                        <TouchableOpacity onPress={() => this.addFav(item)}>
+                          <Image
+                            source={require('../../../../res/images/heart.png')}
+                            style={[FeaturedGridStyle.bottomImgStyl, { marginHorizontal: 5 }]}
+                          />
+                        </TouchableOpacity>
+                      }
+                    </View>
+
+                    <Text
+                      style={PopularCarsStyle.modelTextStyle}>
                       {item.ad_desc}
                     </Text>
-                    {item.ad_location.address.length != 0 ?
-                      <View style={styles.locationRowContainer}>
-                        <Image
-                          style={[styles.locationImage, { tintColor: orderStore.color }]}
-                          source={require('../../../../res/images/location_red.png')}
-                        />
-                        <Text style={styles.locationTextStyle}>
-                          {item.ad_location.address}
-                        </Text>
-                      </View>
-                      : null}
-                    <View style={styles.milageRow} >
-
-                      <View style={styles.petrolContainer}>
-                        <Image
-                          source={require('../../../../res/images/petrol_pump_red.png')}
-                          style={[styles.petrolImageStyle, { tintColor: orderStore.color }]}
-                        />
-                        <Text
-                          style={styles.petrolTextStyle}>
-                          {item.ad_engine}
-                        </Text>
-                      </View>
-
-                      <View style={styles.mileageContainer}>
-                        <Image
-                          source={require('../../../../res/images/meter_red.png')}
-                          style={[styles.mileageImageStyle, { tintColor: orderStore.color }]}
-                        />
-                        <Text
-                          style={styles.mileageTextStyle}>
-                          {item.ad_milage}
-                        </Text>
-                      </View>
+                    <Text
+                      style={PopularCarsStyle.brandTextStyle}>
+                      {item.ad_engine + ' | ' + item.ad_milage}
+                    </Text>
+                    {/* <Text
+                      style={[PopularCarsStyle.priceTextStyle, { color: orderStore.color, fontSize: Appearences.Fonts.headingFontSize, fontWeight: Appearences.Fonts.headingFontWieght }]}>
+                      {item.ad_price.price}
+                      {item.ad_price.price_type.length != 0 ? <Text style={PopularCarsStyle.priceTextStyle}>{' (' + item.ad_price.price_type + ')'} </Text> : null}
+                    </Text> */}
+                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', flexWrap: 'wrap' }]}>
+                      <Image
+                        source={require('../../../../res/images/calender_grey.png')}
+                        style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                      />
+                      <Text
+                        style={PopularCarsStyle.modelTextStyle}>
+                        {item.ad_date}
+                      </Text>
+                    </View>
+                    <View numberOfLines={1} style={[PopularCarsStyle.textContainer1, { flexDirection: 'row', }]}>
+                      <Image
+                        source={require('../../../../res/images/location.png')}
+                        style={[FeaturedGridStyle.bottomImgStyl1, { marginHorizontal: 5 }]}
+                      />
+                      <Text
+                        style={PopularCarsStyle.modelTextStyle}>
+                        {item.ad_location.address}
+                      </Text>
 
 
                     </View>
                   </View>
+                  <View style={[FeaturedGridStyle.featureAdsBottom, {
+                    marginBottom: -2
+                  }]}>
+                    <TouchableOpacity
+                      style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'blue' }]}
+                      onPress={() => this.showChatModal(item)}>
+                      <Image
+                        source={require('../../../../res/images/message_grey.png')}
+                        style={[FeaturedGridStyle.bottomImgStyl]}
+                      />
+                      <Text style={FeaturedGridStyle.featureAdsBtntxt}>Chat</Text>
+
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
+                      onPress={() => this.onCallClick(item.ad_id)}>
+                      <Image
+                        source={require('../../../../res/images/contact.png')}
+                        style={[FeaturedGridStyle.bottomImgStyl]}
+                      />
+                      <Text style={FeaturedGridStyle.featureAdsBtntxt}>Call</Text>
+                    </TouchableOpacity>
+                  </View>
                 </TouchableOpacity>
 
 
-
               }
-              keyExtractor={item => item.ad_id + "" + item.ad_title}
+              keyExtractor={item => item.ad_id + ''}
             >
             </FlatList>
 

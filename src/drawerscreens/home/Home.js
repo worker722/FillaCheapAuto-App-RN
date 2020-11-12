@@ -149,7 +149,7 @@ export default class Home extends Component<Props> {
     this.setState({ renderInterval });
 
     props.navigation.addListener("willFocus", (event) => {
-      
+
       this.featuredAdsIndex = 2;
       clearInterval(this.state.renderInterval);
       const renderInterval = setInterval(() => {
@@ -484,6 +484,20 @@ export default class Home extends Component<Props> {
       return null;
     const data = orderStore.home.featured_ads;
 
+    let featuredGridData = data.ads;
+    let favouriteAds = [];
+
+    if (orderStore.profile.data) {
+      favouriteAds = orderStore.profile.data.favourite_add.ads;
+      for (let i in favouriteAds) {
+        for (let j in featuredGridData) {
+          if (featuredGridData[j].ad_id === favouriteAds[i].ad_id) {
+            featuredGridData[j].added_fav = true
+          }
+        }
+      }
+    }
+
     return (
 
       <View>
@@ -521,12 +535,10 @@ export default class Home extends Component<Props> {
             initialScrollIndex={0}
             getItemLayout={this.getItemLayout}
             initialNumToRender={5}
-            data={data.ads}
+            data={featuredGridData}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-
             renderItem={({ item, index }) =>
-
 
               <TouchableOpacity
                 activeOpacity={2}

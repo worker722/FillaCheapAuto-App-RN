@@ -51,6 +51,7 @@ export default class Chat extends Component {
       onPress={() => {
         navigation.goBack(null);
         clearInterval(this.getDataInterval);
+        clearInterval(this.recordAudioTimer);
         this.messageListener && this.messageListener();
         AppState.removeEventListener('change', this.handleAppStateChange);
       }} tintColor={'#fff'} />

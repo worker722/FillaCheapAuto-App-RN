@@ -324,8 +324,8 @@ import { object } from 'prop-types';
 
     // const params = { ad_id: item.ad_id };
     // orderStore.adDetail = await Api.post('ad_post', params);
-
-    item = Object.assign(item, { ad_images: item.images });
+    if (!item.ad_images)
+      item = Object.assign(item, { ad_images: item.images });
     this.setState({ showChatModel: true, similar_ad: item });
   }
 
