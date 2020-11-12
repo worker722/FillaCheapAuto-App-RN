@@ -20,6 +20,7 @@ import Loader from '../../components/Loader';
 import * as Progress from 'react-native-progress';
 import Appearences from '../../config/Appearences';
 import stores from '../../Stores/orderStore';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 let currentOffers = new Array();
 let allOffers = new Array();
@@ -177,6 +178,76 @@ export default class Inbox extends Component<Props> {
       contentSize.height - paddingToBottom;
   };
 
+  renderItem = ({ index, item }) => {
+    let { orderStore } = Store;
+    let messageWithImage = item.chat_latest[item.chat_latest.length - 1].text.split(orderStore.chat_image_split);
+    let messageWithAudio = item.chat_latest[item.chat_latest.length - 1].text.split(orderStore.chat_audio_split);
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          if (!item.message_read_status)
+            orderStore.setNotificationCount(orderStore.notificationCount - 1);
+
+          const { navigate } = this.props.navigation;
+          const params = { adId: item.ad_id, senderId: item.message_sender_id, receiverId: item.message_receiver_id, type: item.message_type }
+          navigate('Chat', { data: params });
+        }}
+        style={[styles.listItemContainer]}>
+        <View style={{ width: 10, height: 10, borderRadius: 100, backgroundColor: item.message_read_status ? "transparent" : Appearences.Colors.green }}></View>
+        <View style={[styles.listImageContainer, { flex: 0.7 }]}>
+          <Avatar
+            size='large'
+            rounded
+            source={{ uri: item.message_ad_img[0].thumb ? item.message_ad_img[0].thumb : item.message_ad_img }}
+            activeOpacity={0.7}
+            placeholderStyle={{ backgroundColor: "transparent" }}
+            containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
+          />
+        </View>
+        <View style={[styles.listTextContainer]}>
+          {item.message_read_status ?
+            <Text style={styles.listTitleText} numberOfLines={1}>
+              {item.message_author_name}
+            </Text>
+            :
+            <Text style={[styles.listTitleText, { fontWeight: "bold", fontSize: 16 }]} numberOfLines={1}>
+              {item.message_author_name}
+            </Text>
+          }
+
+          <Text style={styles.listNameText} numberOfLines={1}>
+            {item.message_ad_title}
+          </Text>
+          {messageWithImage.length > 1 &&
+            <View style={{ width: "100%", flexDirection: "row", height: 30 }}>
+              <Icon name={"image"} size={20} color={"grey"} style={{ marginRight: 10 }}></Icon>
+              <Text style={styles.listMessageText} numberOfLines={1}>Photo</Text>
+            </View>
+          }
+          {messageWithAudio.length > 1 &&
+            <View style={{ width: "100%", flexDirection: "row", height: 30 }}>
+              <Icon name={"play"} size={18} color={"grey"} style={{ marginRight: 10 }}></Icon>
+              <Text style={styles.listMessageText} numberOfLines={1}>Audio</Text>
+            </View>
+          }
+          {messageWithImage.length < 2 && messageWithAudio.length < 2 &&
+            <Text style={styles.listMessageText} numberOfLines={1}>
+              {item.chat_latest ? item.chat_latest[item.chat_latest.length - 1].text : ''}
+            </Text>
+          }
+
+        </View>
+
+        <View style={[styles.timeView]} numberOfLines={1}>
+          {!_.isUndefined(item.chat_latest[item.chat_latest.length - 1].date) && !_.isEmpty(item.chat_latest[item.chat_latest.length - 1].date) ?
+            <Text style={styles.listTimeText}>
+              {item.chat_latest[item.chat_latest.length - 1].date}
+            </Text> : null}
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
   render() {
     if (this.state.showSpinner)
       return (<Loader />);
@@ -213,55 +284,7 @@ export default class Inbox extends Component<Props> {
               data={this.state.offers}
               horizontal={false}
               showsVerticalScrollIndicator={false}
-              renderItem={({ item, index }) =>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (!item.message_read_status)
-                      orderStore.setNotificationCount(orderStore.notificationCount - 1);
-
-                    const { navigate } = this.props.navigation;
-                    const params = { adId: item.ad_id, senderId: item.message_sender_id, receiverId: item.message_receiver_id, type: item.message_type }
-                    navigate('Chat', { data: params });
-                  }}
-                  style={[styles.listItemContainer]}>
-                  <View style={{ width: 10, height: 10, borderRadius: 100, backgroundColor: item.message_read_status ? "transparent" : Appearences.Colors.green }}></View>
-                  <View style={[styles.listImageContainer, { flex: 0.7 }]}>
-                    <Avatar
-                      size='large'
-                      rounded
-                      source={{ uri: item.message_ad_img[0].thumb ? item.message_ad_img[0].thumb : item.message_ad_img }}
-                      activeOpacity={0.7}
-                      placeholderStyle={{ backgroundColor: "transparent" }}
-                      containerStyle={{ alignSelf: 'center', marginVertical: 20, marginHorizontal: 10 }}
-                    />
-                  </View>
-                  <View style={[styles.listTextContainer]}>
-                    {item.message_read_status ?
-                      <Text style={styles.listTitleText} numberOfLines={1}>
-                        {item.message_author_name}
-                      </Text>
-                      :
-                      <Text style={[styles.listTitleText, { fontWeight: "bold", fontSize: 16 }]} numberOfLines={1}>
-                        {item.message_author_name}
-                      </Text>
-                    }
-
-                    <Text style={styles.listNameText} numberOfLines={1}>
-                      {item.message_ad_title}
-                    </Text>
-                    <Text style={styles.listMessageText} numberOfLines={1}>
-                      {item.chat_latest ? item.chat_latest[item.chat_latest.length - 1].text : ''}
-                    </Text>
-                  </View>
-
-                  <View style={[styles.timeView]} numberOfLines={1}>
-                    {!_.isUndefined(item.chat_latest[item.chat_latest.length - 1].date) && !_.isEmpty(item.chat_latest[item.chat_latest.length - 1].date) ?
-                      <Text style={styles.listTimeText}>
-                        {item.chat_latest[item.chat_latest.length - 1].date}
-                      </Text> : null}
-                  </View>
-                </TouchableOpacity>
-              }
+              renderItem={this.renderItem}
               keyExtractor={item => item.ad_id + ''}
             />
 
