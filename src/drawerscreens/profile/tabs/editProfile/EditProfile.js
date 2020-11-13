@@ -67,6 +67,13 @@ export default class EditProfile extends Component<Props> {
     let { orderStore } = Store;
     super(props);
 
+    let multiPhones = [];
+    multiPhones.push(orderStore.profile.data.phone)
+    multiPhones.push(orderStore.profile.data.phone2)
+    multiPhones.push(orderStore.profile.data.phone3)
+    multiPhones.push(orderStore.profile.data.phone4)
+    multiPhones.push(orderStore.profile.data.phone5)
+
     this.state = {
       modalVisible: false,
       hideForgotPasswordProgress: true,
@@ -74,7 +81,6 @@ export default class EditProfile extends Component<Props> {
       newPassword: '',
       confirmPassword: '',
       name: orderStore.profile.data.display_name.value,
-      phone: orderStore.profile.data.phone.value,
 
       refreshing: false,
       reRender: false,
@@ -91,6 +97,8 @@ export default class EditProfile extends Component<Props> {
       longitude: "0",
       uploadingDealerProfile: false,
       profileImageUri: "",
+
+      multiPhones: multiPhones
     }
   }
   componentWillMount() {
@@ -130,6 +138,7 @@ export default class EditProfile extends Component<Props> {
   }
   updateProfile = async (isShow, sIsShow) => {
     this.setState({ uploadingDealerProfile: true });
+    let phone_keys = Object.keys(this.state.multiPhones);
     let params;
     // let goog=""
     if (isShow) {
@@ -144,7 +153,11 @@ export default class EditProfile extends Component<Props> {
           sb_user_address_long: this.state.longitude,
           sb_user_about: this.state.companyAbout,
           user_name: this.state.name,
-          phone_number: this.state.phone,
+          phone_number: this.state.multiPhones[0].value,
+          phone_number2: this.state.multiPhones[1].value,
+          phone_number3: this.state.multiPhones[2].value,
+          phone_number4: this.state.multiPhones[3].value,
+          phone_number5: this.state.multiPhones[4].value,
           sb_user_facebook: this.state.fb,
           sb_user_twitter: this.state.twitter,
           sb_user_linkedin: this.state.linkedin,
@@ -162,7 +175,11 @@ export default class EditProfile extends Component<Props> {
           sb_user_address_long: this.state.longitude,
           sb_user_about: this.state.companyAbout,
           user_name: this.state.name,
-          phone_number: this.state.phone,
+          phone_number: this.state.multiPhones[0].value,
+          phone_number2: this.state.multiPhones[1].value,
+          phone_number3: this.state.multiPhones[2].value,
+          phone_number4: this.state.multiPhones[3].value,
+          phone_number5: this.state.multiPhones[4].value,
         };
       }
 
@@ -171,7 +188,11 @@ export default class EditProfile extends Component<Props> {
     else {
       params = {
         user_name: this.state.name,
-        phone_number: this.state.phone,
+        phone_number: this.state.multiPhones[0].value,
+        phone_number2: this.state.multiPhones[1].value,
+        phone_number3: this.state.multiPhones[2].value,
+        phone_number4: this.state.multiPhones[3].value,
+        phone_number5: this.state.multiPhones[4].value,
       };
     }
     let { orderStore } = Store;
@@ -265,12 +286,21 @@ export default class EditProfile extends Component<Props> {
     }, 1000);
 
   }
+
+  setMultiPhoneNumber = (index, value) => {
+    let multiPhones = this.state.multiPhones;
+    multiPhones[index].value = value;
+    this.setState({
+      multiPhones: multiPhones
+    })
+  }
+
   render() {
     let { orderStore } = Store;
     let data = orderStore.profile.data;
-    // console.log('data deealer details', JSON.stringify(data))
     let extraText = orderStore.profile.extra_text;
     let profileExtra = orderStore.profile.data.profile_extra;
+
     return (
       <View style={{
         height: '100%',
@@ -394,18 +424,22 @@ export default class EditProfile extends Component<Props> {
               >
               </TextInput>
 
-              <Text style={styles.headingTextBlack}>{data.phone.key}</Text>
-              <TextInput style={styles.TextInput}
-                underlineColorAndroid='transparent'
-                keyboardType='phone-pad'
-                textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-                value={this.state.phone}
-                onChangeText={(text) => {
-                  this.setState({ phone: text });
-                }}
-                placeholderTextColor={Appearences.Colors.headingGrey}
-                placeholder={data.phone.placeholder}>
-              </TextInput>
+              {this.state.multiPhones.map((item, key) => (
+                <>
+                  <Text style={styles.headingTextBlack}>{item.key}</Text>
+                  <TextInput style={styles.TextInput}
+                    underlineColorAndroid='transparent'
+                    keyboardType='phone-pad'
+                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                    value={item.value}
+                    onChangeText={(text) => {
+                      this.setMultiPhoneNumber(key, text);
+                    }}
+                    placeholderTextColor={Appearences.Colors.headingGrey}
+                    placeholder={item.placeholder}>
+                  </TextInput>
+                </>
+              ))}
 
               {data.dealer_details_is_show ? null :
 
