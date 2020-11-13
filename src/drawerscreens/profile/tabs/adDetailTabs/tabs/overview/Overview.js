@@ -454,7 +454,6 @@ import { object } from 'prop-types';
     const carFeatures = adDetail.car_features;
     // console.log("ad details are",JSON.stringify(adDetail))
     const contactInfo = data.static_text.contact_info;
-    console.log(contactInfo)
     const profileDetail = data.profile_detail;
 
     //  const financeCalculator = data.static_text.finacne_calc;

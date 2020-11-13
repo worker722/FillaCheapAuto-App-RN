@@ -233,7 +233,6 @@ class Sell extends React.Component {
   onPreviousClick = () => {
     let { orderStore } = Store;
     orderStore.setOnPreviousPageChangeListener(true);
-    console.log("ddd");
     switch (this.state.index) {
 
       case 2:
