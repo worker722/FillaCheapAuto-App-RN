@@ -17,6 +17,7 @@ import {
   I18nManager,
 } from 'react-native';
 import AdDetailHeader from '../../../../../../components/AdDetailHeader';
+import ConfirmDialogue from '../../../../../../components/ConfirmDialogue';
 import styles from './Styles';
 import Store from '../../../../../../Stores';
 import Db from '../../../../../../storage/LocalDb';
@@ -81,6 +82,11 @@ import { object } from 'prop-types';
 
       //custom
       ownAds: false,
+
+      showConfirmDialogue: false,
+      titleText: '',
+      okText: 'Confirm',
+      cancelText: 'Cancel',
     }
   }
 
@@ -448,6 +454,7 @@ import { object } from 'prop-types';
     const carFeatures = adDetail.car_features;
     // console.log("ad details are",JSON.stringify(adDetail))
     const contactInfo = data.static_text.contact_info;
+    console.log(contactInfo)
     const profileDetail = data.profile_detail;
 
     //  const financeCalculator = data.static_text.finacne_calc;
@@ -841,8 +848,7 @@ import { object } from 'prop-types';
             <View style={[styles.panel, { marginTop: 0, flexDirection: "row" }]}>
               <TouchableOpacity
                 onPress={async () => {
-                  const params = { ad_id: adDetail.ad_id, custom_type: "bump" };
-                  let response = await Api.post('ad_post/featured', params);
+                  this.setState({ titleText: 'Are you sure you want to bumup this ad.', custom_type: "bump", showConfirmDialogue: true });
                 }}
                 style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1, marginRight: 10 }]}>
                 <Text style={styles.headingTextWhite}>Bump It Up</Text>
@@ -850,10 +856,7 @@ import { object } from 'prop-types';
               {adDetail.is_feature ? <View style={{ flex: 1 }}></View> :
                 <TouchableOpacity
                   onPress={async () => {
-                    const params = { ad_id: adDetail.ad_id, custom_type: "feature" };
-                    let response = await Api.post('ad_post/featured', params);
-                    if (response.success)
-                      this._onRefresh();
+                    this.setState({ titleText: 'Are you sure you want to make this ad featured.', custom_type: "feature", showConfirmDialogue: true });
                   }}
                   style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1 }]}>
                   <Text style={styles.headingTextWhite}>Featured Ads Make</Text>
@@ -1812,12 +1815,21 @@ import { object } from 'prop-types';
         {/* Absolute view end */}
 
 
-
-
-
-
-
-
+        <ConfirmDialogue
+          visible={this.state.showConfirmDialogue}
+          title={this.state.titleText}
+          okText={this.state.okText}
+          cancelText={this.state.cancelText}
+          onConfirm={async () => {
+            this.setState({ showConfirmDialogue: false })
+            const params = { ad_id: adDetail.ad_id, custom_type: this.state.custom_type };
+            let response = await Api.post('ad_post/featured', params);
+            Toast.show(response.message)
+            if (response.success && params.custom_type == 'feature')
+              this._onRefresh();
+          }}
+          onCancel={() => { this.setState({ showConfirmDialogue: false }) }}
+        />
 
 
       </View>);
@@ -2009,7 +2021,6 @@ const s = StyleSheet.create({
   },
   carInfoRowRightTextContainer: {
     height: Appearences.Fonts.trianagleHeight * 2,
-    //paddingBottom:Appearences.Fonts.headingFontSize,
     paddingStart: 10,
     paddingEnd: 10,
     justifyContent: 'center',
@@ -2036,7 +2047,6 @@ const s = StyleSheet.create({
     width: '100%',
     elevation: 5,
     shadowOpacity: 0.5,
-    // paddingBottom: 5,
   },
   imageViewHeaderContainer: {
     alignSelf: 'flex-end',
@@ -2056,9 +2066,5 @@ const s = StyleSheet.create({
     tintColor: Appearences.Colors.grey,
   },
 });
+
 export default withNavigation(Overview)
-
-
-
-
-

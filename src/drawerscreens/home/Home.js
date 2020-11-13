@@ -136,6 +136,7 @@ export default class Home extends Component<Props> {
       searchText: '',
       showChatModel: false,
       similar_ad: null,
+      featuredShowNum: 5
     };
 
     const renderInterval = setInterval(() => {
@@ -263,6 +264,9 @@ export default class Home extends Component<Props> {
       orderStore.home.featured_ads.ads[currentIndex] = orderStore.home.featured_ads.ads[randomIndex];
       orderStore.home.featured_ads.ads[randomIndex] = temporaryValue;
     }
+
+    if (orderStore.home.featured_ads.ads.length.length < 5)
+      this.setState({ featuredShowNum: orderStore.home.featured_ads.ads.length.length })
   }
 
   start = async () => {
@@ -335,7 +339,7 @@ export default class Home extends Component<Props> {
     orderStore.setIsCallAdvance(false);
     navigate('SearchDetail', { params: params });
   };
-  
+
   onFeaturedGridClick = async (item) => {
     const { navigate } = this.props.navigation;
     await BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
@@ -474,7 +478,7 @@ export default class Home extends Component<Props> {
   }
 
   getItemLayout = (data, index) => (
-    { length: 5, offset: index * featuredItemWidth, index }
+    { length: this.state.featuredShowNum, offset: index * featuredItemWidth, index }
   )
 
   renderFeaturedAdsGrid = () => {

@@ -51,7 +51,6 @@ class PageFour extends Component<Props> {
 
 
   nameText = "";
-  phoneText = "";
   isLatitudeRequired = false;
   isLongitudeRequired = false;
   isLocationReqired = false;
@@ -90,7 +89,6 @@ class PageFour extends Component<Props> {
       showProgress: false,
 
       nameText: '',
-      phoneText: '',
 
 
       showCategorySpinner: false,
@@ -130,6 +128,7 @@ class PageFour extends Component<Props> {
       titleText: '',
 
       subcategoryShownOnce: false,
+      multiPhones: []
 
     }
     this.editor = null;
@@ -168,29 +167,30 @@ class PageFour extends Component<Props> {
     this.setState({ showAdOnSpinner: false });
   }
 
-
-
-
-
-
   componentWillMount() {
     let { orderStore } = Store;
-    const map = orderStore.sell.data.profile.map;
+    const profile = orderStore.sell.data.profile;
     if (orderStore.pricing.is_show &&
       orderStore.pricing.category_based.is_show) {
       this.setState({ adOns: orderStore.pricing.category_based.pricing });
     }
 
-    // console.log('location',orderStore.sell.data.profile.location.values)
-    this.setState({
-      nameText: orderStore.sell.data.profile.name.values,
-      phoneText: orderStore.sell.data.profile.phone.values
-      , latitude: map.location_lat.field_val,
-      longitude: map.location_long.field_val,
-      location: orderStore.sell.data.profile.location.values
-    })
+    let multiPhones = [];
+    multiPhones.push(profile.phone);
+    multiPhones.push(profile.phone2);
+    multiPhones.push(profile.phone3);
+    multiPhones.push(profile.phone4);
+    multiPhones.push(profile.phone5);
 
+    this.setState({
+      nameText: profile.name.values,
+      latitude: profile.map.location_lat.field_val,
+      longitude: profile.map.location_long.field_val,
+      location: profile.location.values,
+      multiPhones: multiPhones
+    })
   }
+  
   renderCountry = (item) => {
 
     return (
@@ -292,7 +292,7 @@ class PageFour extends Component<Props> {
     const API_KEY = GoogleApiKey;  //old play4team
     fetch('https://maps.googleapis.com/maps/api/place/autocomplete/json?input=' + text + '&key=' + API_KEY)
       .then((response) => response.json())
-      .then(func = async (responseJson) => {
+      .then(async (responseJson) => {
         // console.log('result Places AutoComplete===>>', responseJson);
         if (responseJson.status === 'OK') {
           await this.setState({ predictions: responseJson.predictions, focus: true, updateLocation: false })
@@ -374,16 +374,26 @@ class PageFour extends Component<Props> {
       this.setState({ showNameError: true });
       this.isNameClear = false;
     }
-    if (this.state.phoneText.length != 0) {
-      const data = { ad_phone: this.state.phoneText };
+
+    if (this.state.multiPhones[0].values.length != 0) {
+
+      const data = {
+        ad_phone: this.state.multiPhones[0].values,
+        ad_phone2: this.state.multiPhones[1].values,
+        ad_phone3: this.state.multiPhones[2].values,
+        ad_phone4: this.state.multiPhones[3].values,
+        ad_phone5: this.state.multiPhones[4].values,
+      };
+
       orderStore.postAdObject = Object.assign(orderStore.postAdObject, data);
       this.setState({ showPhoneError: false });
       this.isPhoneClear = true;
     }
-    else if (this.state.phoneText.length === 0 && this.isPhoneRequired) {
+    else if (this.state.multiPhones[0].values.length === 0 && this.isPhoneRequired) {
       this.setState({ showPhoneError: true });
       this.isPhoneClear = false;
     }
+
     if (this.state.location.length != 0) {
       const data = { ad_location: this.state.location }
       orderStore.postAdObject = Object.assign(orderStore.postAdObject, data);
@@ -514,9 +524,16 @@ class PageFour extends Component<Props> {
 
   }
 
+  setMultiPhoneNumber = (index, value) => {
+    let multiPhones = this.state.multiPhones;
+    multiPhones[index].values = value;
+    this.setState({
+      multiPhones: multiPhones
+    })
+  }
+
   render() {
     let { orderStore } = Store;
-    // console.log('orderStore in page4', JSON.stringify(orderStore.pricing.package_based));
     if (orderStore.onPostClick) {
       this.constructDynamicObject();
       this.checkPageClear();
@@ -660,25 +677,28 @@ class PageFour extends Component<Props> {
               >
               </TextInput>
 
-              <View style={styles.headingTextContainer}>
-                <Text style={styles.subHeading}>{profile.phone.title + " * "}</Text>
-              </View>
+              {this.state.multiPhones.map((item, key) => (
+                <>
+                  <View style={styles.headingTextContainer}>
+                    <Text style={styles.subHeading}>{item.title}{key == 0 && ' * '}</Text>
+                  </View>
 
+                  <TextInput style={this.state.showPhoneError ? styles.TextInputError : styles.TextInput}
+                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                    underlineColorAndroid='transparent'
+                    onChangeText={(message) => {
+                      if (message.length != 0)
+                        this.setState({ showPhoneError: false });
+                      this.setMultiPhoneNumber(key, message);
+                    }}
+                    placeholderTextColor={Appearences.Registration.textColor}
+                    returnKeyType="done"
+                    value={item.values}
+                    keyboardType='phone-pad'>
+                  </TextInput>
+                </>
+              ))}
 
-              <TextInput style={this.state.showPhoneError ? styles.TextInputError : styles.TextInput}
-                textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-                underlineColorAndroid='transparent'
-                onChangeText={(message) => {
-                  if (message.length != 0)
-                    this.setState({ showPhoneError: false });
-                  this.setState({ phoneText: message });
-                }}
-                placeholderTextColor={Appearences.Registration.textColor}
-                returnKeyType="done"
-                value={profile.phone.values}
-
-                keyboardType='phone-pad'>
-              </TextInput>
 
               <View style={styles.headingTextContainer}>
                 <Text style={styles.subHeading}>{profile.location.title + " * "}</Text>
@@ -1008,9 +1028,3 @@ class PageFour extends Component<Props> {
 }
 
 export default withNavigation(PageFour)
-
-
-
-
-
-
