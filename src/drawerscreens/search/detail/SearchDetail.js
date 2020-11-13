@@ -101,6 +101,10 @@ export default class SearchDetail extends Component<Props> {
       else
         this.setState({ noAdsVisibility: false });
 
+      if (orderStore.innerResponse.data.ads.length === 0 && orderStore.innerResponse.data.featured_ads.ads.length === 0) {
+        this.setState({ noAdsVisibility: true, noFeaturedAdsVisibility: false });
+      }
+
       orderStore.profile = await Api.get('profile');
 
       this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads }, () => {
@@ -126,8 +130,17 @@ export default class SearchDetail extends Component<Props> {
       if (orderStore.innerResponse.data.featured_ads.ads.length === 0) {
         this.setState({ noFeaturedAdsVisibility: true });
       }
+      else {
+        this.setState({ noFeaturedAdsVisibility: false });
+      }
       if (orderStore.innerResponse.data.ads.length === 0) {
         this.setState({ noAdsVisibility: true });
+      }
+      else
+        this.setState({ noAdsVisibility: false });
+
+      if (orderStore.innerResponse.data.ads.length === 0 && orderStore.innerResponse.data.featured_ads.ads.length === 0) {
+        this.setState({ noAdsVisibility: true, noFeaturedAdsVisibility: false });
       }
 
       orderStore.profile = await Api.get('profile');
@@ -135,6 +148,20 @@ export default class SearchDetail extends Component<Props> {
       this.adsPaginationDefaultValue = orderStore.innerResponse.pagination;
       this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads, noAdsMessage: extra.no_ads_found, noFeaturedAdsMessage: extra.no_ads_found }, () => {
         this.setRandomFeaturedAds();
+
+        if (this.state.featuredGridData.length > 0) {
+          this.featuredAdsIndex = 2;
+          const renderInterval = setInterval(() => {
+            if (this.flFeaturedAdsRef != null) {
+              if (this.featuredAdsIndex == 3)
+                this.featuredAdsIndex = -1;
+              this.featuredAdsIndex++;
+              this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
+            }
+          }, 2000);
+          this.setState({ renderInterval });
+        }
+
       });
       const sortOptionsArray = orderStore.innerResponse.topbar.sort_arr;
       for (var i = 0; i < sortOptionsArray.length; i++) {
@@ -171,9 +198,26 @@ export default class SearchDetail extends Component<Props> {
         else
           this.setState({ noAdsVisibility: false });
 
+        if (orderStore.innerResponse.data.ads.length === 0 && orderStore.innerResponse.data.featured_ads.ads.length === 0) {
+          this.setState({ noAdsVisibility: true, noFeaturedAdsVisibility: false });
+        }
+
         orderStore.profile = await Api.get('profile');
         this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads }, () => {
           this.setRandomFeaturedAds();
+
+          if (this.state.featuredGridData.length > 0) {
+            this.featuredAdsIndex = 2;
+            const renderInterval = setInterval(() => {
+              if (this.flFeaturedAdsRef != null) {
+                if (this.featuredAdsIndex == 3)
+                  this.featuredAdsIndex = -1;
+                this.featuredAdsIndex++;
+                this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
+              }
+            }, 2000);
+            this.setState({ renderInterval });
+          }
         });
 
       }
@@ -275,17 +319,6 @@ export default class SearchDetail extends Component<Props> {
       featuredShowNum: 5,
     }
 
-    this.featuredAdsIndex = 2;
-    const renderInterval = setInterval(() => {
-      if (this.flFeaturedAdsRef != null) {
-        if (this.featuredAdsIndex == 3)
-          this.featuredAdsIndex = -1;
-        this.featuredAdsIndex++;
-        this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
-      }
-    }, 2000);
-    this.setState({ renderInterval });
-
     instance = this;
   }
 
@@ -296,6 +329,7 @@ export default class SearchDetail extends Component<Props> {
 
   setRandomFeaturedAds = () => {
     let tempData = this.state.featuredGridData;
+    console.log(tempData.length)
 
     var currentIndex = tempData.length, temporaryValue, randomIndex;
     while (0 !== currentIndex) {
@@ -310,6 +344,9 @@ export default class SearchDetail extends Component<Props> {
     this.setState({ featuredGridData: tempData });
     if (tempData.length < 5)
       this.setState({ featuredShowNum: tempData.length })
+
+    if (tempData.length == 0)
+      clearInterval(this.renderInterval);
   }
 
   renderFeaturedAds = () => {
