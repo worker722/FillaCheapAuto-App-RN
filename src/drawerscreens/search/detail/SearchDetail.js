@@ -172,7 +172,9 @@ export default class SearchDetail extends Component<Props> {
           this.setState({ noAdsVisibility: false });
 
         orderStore.profile = await Api.get('profile');
-        this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads });
+        this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads }, () => {
+          this.setRandomFeaturedAds();
+        });
 
       }
 
