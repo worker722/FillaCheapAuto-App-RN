@@ -21,10 +21,10 @@ import styles from './Styles';
 import ProfileHeader from '../../../../components/ProfileHeader';
 import { DocumentPicker, DocumentPickerUtil } from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
+import Loader from '../../../../components/Loader';
 
 import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
-
 
 import Appearences from '../../../../config/Appearences'
 
@@ -64,15 +64,7 @@ export default class EditProfile extends Component<Props> {
   }
 
   constructor(props) {
-    let { orderStore } = Store;
     super(props);
-
-    let multiPhones = [];
-    multiPhones.push(orderStore.profile.data.phone)
-    multiPhones.push(orderStore.profile.data.phone2)
-    multiPhones.push(orderStore.profile.data.phone3)
-    multiPhones.push(orderStore.profile.data.phone4)
-    multiPhones.push(orderStore.profile.data.phone5)
 
     this.state = {
       modalVisible: false,
@@ -80,7 +72,7 @@ export default class EditProfile extends Component<Props> {
       oldPassword: '',
       newPassword: '',
       confirmPassword: '',
-      name: orderStore.profile.data.display_name.value,
+      name: '',
 
       refreshing: false,
       reRender: false,
@@ -98,11 +90,25 @@ export default class EditProfile extends Component<Props> {
       uploadingDealerProfile: false,
       profileImageUri: "",
 
-      multiPhones: multiPhones
+      multiPhones: []
     }
   }
-  componentWillMount() {
+  componentWillMount = async () => {
+
     let { orderStore } = Store;
+
+    let multiPhones = [];
+    multiPhones.push(orderStore.profile.data.phone)
+    multiPhones.push(orderStore.profile.data.phone2)
+    multiPhones.push(orderStore.profile.data.phone3)
+    multiPhones.push(orderStore.profile.data.phone4)
+    multiPhones.push(orderStore.profile.data.phone5)
+
+    this.setState({
+      name: orderStore.profile.data.display_name.value,
+      multiPhones: multiPhones
+    })
+
     let dealerDetails = orderStore.profile.data.dealer_details;
 
     if (orderStore.profile.data.dealer_details_is_show) {
@@ -135,6 +141,7 @@ export default class EditProfile extends Component<Props> {
         google: dealerDetails.social.youtube.value
       })
     }
+    this.setState({ showSpinner: false });
   }
   updateProfile = async (isShow, sIsShow) => {
     this.setState({ uploadingDealerProfile: true });
@@ -287,8 +294,22 @@ export default class EditProfile extends Component<Props> {
 
   }
 
+  verifyPhoneNumber = async (index, number) => {
+    if (number == '')
+      return;
+
+    let res = await Api.get('profile/phone_number');
+    Toast.show(res.message);
+  }
+
+  matchPhoneVerifyCode = (index, number) => {
+
+  }
+
   setMultiPhoneNumber = (index, value) => {
     let multiPhones = this.state.multiPhones;
+    multiPhones[index].value = value;
+    multiPhones[index].is_verify = '0';
     multiPhones[index].value = value;
     this.setState({
       multiPhones: multiPhones
@@ -296,6 +317,13 @@ export default class EditProfile extends Component<Props> {
   }
 
   render() {
+
+    if (this.state.showSpinner)
+      return (
+        <Loader />
+
+      );
+
     let { orderStore } = Store;
     let data = orderStore.profile.data;
     let extraText = orderStore.profile.extra_text;
@@ -426,7 +454,25 @@ export default class EditProfile extends Component<Props> {
 
               {this.state.multiPhones.map((item, key) => (
                 <>
-                  <Text style={styles.headingTextBlack}>{item.key}</Text>
+                  <View style={{ width: "100%", flexDirection: "row" }}>
+                    <Text style={[styles.headingTextBlack, { flex: 1 }]}>{item.key}{key == 0 && ' * '}</Text>
+                    {item.is_verify != '1' ?
+                      <TouchableOpacity onPress={() => { this.verifyPhoneNumber(key, item.value) }} style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: orderStore.color,
+                        borderRadius: 5,
+                        paddingHorizontal: 10
+                      }}>
+                        <Text style={{ color: "#fff" }}>Verify</Text>
+                      </TouchableOpacity>
+                      :
+                      <>
+                        <Text style={{ color: orderStore.color, textAlignVertical: "center" }}>Verified</Text>
+                      </>
+                    }
+
+                  </View>
                   <TextInput style={styles.TextInput}
                     underlineColorAndroid='transparent'
                     keyboardType='phone-pad'

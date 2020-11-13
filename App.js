@@ -76,7 +76,6 @@ export default class App extends Component<Props> {
           if (Platform.OS === 'ios') {
             this.notificationListenerIOS = firebase.messaging().onMessage(notification => {
               // console.warn('notification===>>>',notification);
-              let { orderStore } = Store;
               orderStore.setNotificationCount(orderStore.notificationCount + 1);
               //Showing Local notification IOS
               const localNotification = new firebase.notifications.Notification()
@@ -91,7 +90,6 @@ export default class App extends Component<Props> {
           } else {
             this.notificationListenerANDROID = firebase.notifications().onNotification(notification => {
               //Showing local notification Android
-              let { orderStore } = Store;
               orderStore.setNotificationCount(orderStore.notificationCount + 1);
 
               const localNotification = new firebase.notifications.Notification({

@@ -110,7 +110,6 @@ export default class AdDetailTabManager extends React.Component {
     orderStore.setAdDetailComponentMounted(false);
   }
   componentWillMount = async () => {
-    console.log("mount")
     let { orderStore } = Store;
     orderStore.setEditTopTab(true);
 

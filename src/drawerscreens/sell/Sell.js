@@ -139,15 +139,6 @@ class Sell extends React.Component {
       Toast.show(response.message);
     }
 
-    // const navigateAction = NavigationActions.navigate({
-    //   routeName: "Package"
-    // });
-    // this.props.navigation.setParams({ otherParam: "Packages" });
-    // this.props.navigation.dispatch(navigateAction);
-
-    // this.props.navigation.navigate('DrawerNav', {otherParam:'Package'}, NavigationActions.navigate({ routeName: 'Package' }))
-
-    //  this.props.navigation.replace('Packagess')
     await this.setState({ showSpinner: false });
   }
 

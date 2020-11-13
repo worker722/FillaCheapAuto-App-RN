@@ -48,7 +48,7 @@ class SideMenu extends Component {
   constructor(props) {
     super(props);
     let { orderStore } = Store;
-    console.warn(orderStore.drawerMenu);
+    // console.warn(orderStore.drawerMenu);
     this.state = {
 
       selecetedItemName: "Home",

@@ -272,6 +272,7 @@ export default class SearchDetail extends Component<Props> {
       firstModalCurrentIndex: 0,
       showChatModel: false,
       similar_ad: null,
+      featuredShowNum: 5,
     }
 
     this.featuredAdsIndex = 2;
@@ -289,7 +290,7 @@ export default class SearchDetail extends Component<Props> {
   }
 
   getItemLayout = (data, index) => (
-    { length: 5, offset: index * featuredItemWidth, index }
+    { length: this.state.featuredShowNum, offset: index * featuredItemWidth, index }
   )
 
 
@@ -307,6 +308,8 @@ export default class SearchDetail extends Component<Props> {
     }
 
     this.setState({ featuredGridData: tempData });
+    if (tempData.length < 5)
+      this.setState({ featuredShowNum: tempData.length })
   }
 
   renderFeaturedAds = () => {

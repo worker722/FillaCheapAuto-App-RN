@@ -72,7 +72,6 @@ class PageFour extends Component<Props> {
     this.state = {
 
       nameText: "",
-      phoneText: "",
       showPriceOnly: true,
 
       showNameError: false,
@@ -141,7 +140,9 @@ class PageFour extends Component<Props> {
 
       subcategoryShownOnce: false,
       subcategoryShownTwice: false,
-      count: 0
+      count: 0,
+
+      multiPhones: []
     };
     this.editor = null;
 
@@ -743,14 +744,22 @@ class PageFour extends Component<Props> {
   componentWillMount() {
     let { orderStore } = Store;
     const profile = orderStore.settings.data.profile;
+
+    let multiPhones = [];
+    multiPhones.push(profile.phone);
+    multiPhones.push(profile.phone2);
+    multiPhones.push(profile.phone3);
+    multiPhones.push(profile.phone4);
+    multiPhones.push(profile.phone5);
+
     this.setState({
       latitude: profile.map.location_lat.field_val == "" ? 0 : profile.map.location_lat.field_val,
       longitude: profile.map.location_long.field_val == "" ? 0 : profile.map.location_long.field_val,
 
       adsByValue: profile.ad_country != undefined ? profile.ad_country.values != undefined ? profile.ad_country.values[0].name : null : null,
       nameText: profile.name.field_val,
-      phoneText: profile.phone.field_val,
-      location: profile.location.field_val
+      location: profile.location.field_val,
+      multiPhones: multiPhones
 
     })
     if (profile._ad_country_show && profile.ad_country.values != undefined) {
@@ -950,13 +959,21 @@ class PageFour extends Component<Props> {
       this.setState({ showNameError: true });
       this.isNameClear = false;
     }
-    if (this.state.phoneText.length != 0) {
-      const data = { ad_phone: this.state.phoneText };
+    if (this.state.multiPhones[0].values.length != 0) {
+
+      const data = {
+        ad_phone: this.state.multiPhones[0].values,
+        ad_phone2: this.state.multiPhones[1].values,
+        ad_phone3: this.state.multiPhones[2].values,
+        ad_phone4: this.state.multiPhones[3].values,
+        ad_phone5: this.state.multiPhones[4].values,
+      };
+
       orderStore.postAdObject = Object.assign(orderStore.postAdObject, data);
       this.setState({ showPhoneError: false });
       this.isPhoneClear = true;
     }
-    else if (this.state.phoneText.length === 0 && this.isPhoneRequired) {
+    else if (this.state.multiPhones[0].values.length === 0 && this.isPhoneRequired) {
       this.setState({ showPhoneError: true });
       this.isPhoneClear = false;
     }
@@ -1388,7 +1405,14 @@ class PageFour extends Component<Props> {
 
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  setMultiPhoneNumber = (index, value) => {
+    let multiPhones = this.state.multiPhones;
+    multiPhones[index].values = value;
+    this.setState({
+      multiPhones: multiPhones
+    })
+  }
+
   render() {
     let { orderStore } = Store;
 
@@ -1537,24 +1561,27 @@ class PageFour extends Component<Props> {
               >
               </TextInput>
 
-              <View style={styles.headingTextContainer}>
-                <Text style={styles.subHeading}>{profile.phone.title + " * "}</Text>
-              </View>
+              {this.state.multiPhones.map((item, key) => (
+                <>
+                  <View style={styles.headingTextContainer}>
+                    <Text style={styles.subHeading}>{item.title}{key == 0 && ' * '}</Text>
+                  </View>
 
-
-              <TextInput style={this.state.showPhoneError ? styles.TextInputError : styles.TextInput}
-                textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-                underlineColorAndroid='transparent'
-                value={this.state.phoneText}
-                onChangeText={(message) => {
-                  if (message.length != 0)
-                    this.setState({ showPhoneError: false });
-                  this.setState({ phoneText: message });
-                }}
-                placeholderTextColor={Appearences.Registration.textColor}
-                returnKeyType="done"
-                keyboardType='phone-pad'>
-              </TextInput>
+                  <TextInput style={this.state.showPhoneError ? styles.TextInputError : styles.TextInput}
+                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                    underlineColorAndroid='transparent'
+                    onChangeText={(message) => {
+                      if (message.length != 0)
+                        this.setState({ showPhoneError: false });
+                      this.setMultiPhoneNumber(key, message);
+                    }}
+                    placeholderTextColor={Appearences.Registration.textColor}
+                    returnKeyType="done"
+                    value={item.values}
+                    keyboardType='phone-pad'>
+                  </TextInput>
+                </>
+              ))}
 
               <View style={styles.headingTextContainer}>
                 <Text style={styles.subHeading}>{profile.location.title + " * "}</Text>
