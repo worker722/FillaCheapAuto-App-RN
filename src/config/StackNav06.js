@@ -281,9 +281,10 @@ const StackNav = createStackNavigator({
       headerTintColor: "#fff",
       headerRight: <Toolbar />,
       headerLeft: <HeaderBackButton onPress={() => {
-        
+
         //console.log('navigation obj',navigation)
-        navigation.replace('DrawerNav') }} tintColor={'#fff'} />
+        navigation.replace('DrawerNav')
+      }} tintColor={'#fff'} />
 
     })
 

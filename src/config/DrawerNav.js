@@ -224,7 +224,7 @@ const ProfileStack = createStackNavigator({
   Profile: {
     screen: Profile,
     header: null
-  },
+  }
 
 }, {
   initialRouteName: 'Profile',

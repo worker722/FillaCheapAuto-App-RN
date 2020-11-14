@@ -22,11 +22,13 @@ import ProfileHeader from '../../../../components/ProfileHeader';
 import { DocumentPicker, DocumentPickerUtil } from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import Loader from '../../../../components/Loader';
-
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
 
 import Appearences from '../../../../config/Appearences'
+import { App } from 'react-native-firebase';
+import { upperFirst } from 'lodash';
 
 export default class EditProfile extends Component<Props> {
   static navigationOptions = {
@@ -90,28 +92,42 @@ export default class EditProfile extends Component<Props> {
       uploadingDealerProfile: false,
       profileImageUri: "",
 
-      multiPhones: []
+      multiPhones: [],
+      addPhoneModal: false,
+      currentPhoneIndex: -1,
+      isEnterPinCode: false,
+      phone_number: '',
+      verify_code: '',
+      isBtnLoading: false
     }
   }
   componentWillMount = async () => {
 
-    let { orderStore } = Store;
+    const { orderStore } = Store;
+    const profile = orderStore.profile.data;
 
     let multiPhones = [];
-    multiPhones.push(orderStore.profile.data.phone)
-    multiPhones.push(orderStore.profile.data.phone2)
-    multiPhones.push(orderStore.profile.data.phone3)
-    multiPhones.push(orderStore.profile.data.phone4)
-    multiPhones.push(orderStore.profile.data.phone5)
+    multiPhones.push(profile.phone);
+    multiPhones.push(profile.phone2);
+    multiPhones.push(profile.phone3);
+    multiPhones.push(profile.phone4);
+    multiPhones.push(profile.phone5);
 
-    this.setState({
-      name: orderStore.profile.data.display_name.value,
-      multiPhones: multiPhones
+    console.log(multiPhones)
+
+    let realPhones = multiPhones.filter((item) => {
+      return item.value != '';
     })
 
-    let dealerDetails = orderStore.profile.data.dealer_details;
+    this.setState({
+      name: profile.display_name.value,
+      multiPhones: multiPhones,
+      currentPhoneIndex: (realPhones.length - 1)
+    })
 
-    if (orderStore.profile.data.dealer_details_is_show) {
+    let dealerDetails = profile.dealer_details;
+
+    if (profile.dealer_details_is_show) {
       this.setState({
         companyName: dealerDetails.company_name.value,
         companyUrl: dealerDetails.user_web_url.value,
@@ -133,7 +149,7 @@ export default class EditProfile extends Component<Props> {
 
     }
 
-    if (orderStore.profile.data.is_show_social == true) {
+    if (profile.is_show_social == true) {
       this.setState({
         fb: dealerDetails.social.facebook.value,
         twitter: dealerDetails.social.twitter.value,
@@ -141,13 +157,12 @@ export default class EditProfile extends Component<Props> {
         google: dealerDetails.social.youtube.value
       })
     }
-    this.setState({ showSpinner: false });
   }
+
   updateProfile = async (isShow, sIsShow) => {
+    console.log(this.state.multiPhones)
     this.setState({ uploadingDealerProfile: true });
-    let phone_keys = Object.keys(this.state.multiPhones);
     let params;
-    // let goog=""
     if (isShow) {
       if (sIsShow) {
         params = {
@@ -291,19 +306,6 @@ export default class EditProfile extends Component<Props> {
       this.setState({ refreshing: false, reRender: !this.state.reRender });
 
     }, 1000);
-
-  }
-
-  verifyPhoneNumber = async (index, number) => {
-    if (number == '')
-      return;
-
-    let res = await Api.get('profile/phone_number');
-    Toast.show(res.message);
-  }
-
-  matchPhoneVerifyCode = (index, number) => {
-
   }
 
   setMultiPhoneNumber = (index, value) => {
@@ -316,6 +318,83 @@ export default class EditProfile extends Component<Props> {
     })
   }
 
+  removePhoneNumber = (index) => {
+    let multiPhones = this.state.multiPhones;
+    multiPhones[index].value = '';
+    multiPhones[index].is_verify = '0';
+
+    let realPhones = multiPhones.filter((item) => {
+      return item.value != '';
+    })
+    for (let i = 0; i < multiPhones.length; i++) {
+      if (i < realPhones.length) {
+        multiPhones[i].value = realPhones[i].value;
+        multiPhones[i].is_verify = realPhones[i].is_verify;
+      }
+      else {
+        multiPhones[i].value = '';
+        multiPhones[i].is_verify = '0';
+      }
+      multiPhones[i].field_name = i;
+    }
+    this.setState({ multiPhones: multiPhones, currentPhoneIndex: (realPhones.length - 1) });
+  }
+
+  addPhoneNumber = async () => {
+    console.log(this.state.multiPhones)
+    if (this.state.phone_number == '')
+      return;
+
+    this.setState({ isBtnLoading: true })
+    const param = {
+      index: this.state.currentPhoneIndex + 1,
+      phone_number: this.state.phone_number,
+      type: 'phone_verify'
+    }
+    const response = await Api.post('profile', param);
+    console.log(response);
+    if (response.data.length == 0) {
+      Toast.show(response.message);
+      this.setState({ isBtnLoading: false })
+      return;
+    }
+    this.setState({ isEnterPinCode: true, isBtnLoading: false, verify_code: '' + response.data });
+  }
+
+  verifyPinCode = async () => {
+    if (this.state.verify_code == '' || this.state.verify_code.length != 6)
+      return;
+
+    this.setState({ isBtnLoading: true })
+    const param = {
+      index: this.state.currentPhoneIndex + 1,
+      verify_code: this.state.verify_code,
+      type: 'match_pin'
+    }
+    const response = await Api.post('profile', param);
+    console.log(response);
+    Toast.show(response.message);
+    if (response.success) {
+      this.setState({ addPhoneModal: false });
+      let multiPhones = this.state.multiPhones;
+      multiPhones[this.state.currentPhoneIndex + 1].value = this.state.phone_number;
+      multiPhones[this.state.currentPhoneIndex + 1].is_verify = '1';
+      this.setState({
+        multiPhones: multiPhones,
+        phone_number: '',
+        verify_code: '',
+        isEnterPinCode: false
+      })
+      if (multiPhones.length <= 5) {
+        this.setState({
+          currentPhoneIndex: (this.state.currentPhoneIndex + 1)
+        })
+      }
+    }
+    this.setState({ isBtnLoading: false });
+    console.log(this.state.multiPhones)
+  }
+
   render() {
 
     if (this.state.showSpinner)
@@ -324,7 +403,7 @@ export default class EditProfile extends Component<Props> {
 
       );
 
-    let { orderStore } = Store;
+    const { orderStore } = Store;
     let data = orderStore.profile.data;
     let extraText = orderStore.profile.extra_text;
     let profileExtra = orderStore.profile.data.profile_extra;
@@ -410,6 +489,97 @@ export default class EditProfile extends Component<Props> {
           </View>
         </Modal>
 
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.addPhoneModal}
+          onRequestClose={() => {
+          }}>
+
+          <View style={styles.modalContainer}>
+            <View style={[styles.modalInnerContainer, { justifyContent: "center", padding: 15, paddingTop: 40, alignItems: "center" }]}>
+              <TouchableOpacity style={{ position: "absolute", top: 0, right: 0, padding: 10 }} onPress={() => this.setState({ addPhoneModal: false, phone_number: '', verify_code: '', isEnterPinCode: false, isBtnLoading: false })}>
+                <Icon name={"times-circle"} size={25} color={orderStore.color}></Icon>
+              </TouchableOpacity>
+              {!this.state.isEnterPinCode ?
+                <>
+                  <Text style={{ fontSize: 20, color: "#000", marginBottom: 20 }}>Please enter your phone number</Text>
+                  <Text style={{ paddingHorizontal: 10 }}>If you have not verified it before, we will send you an SMS with a PIN code to make sure that we can get in touch with you.</Text>
+                  <TextInput style={styles.TextInput}
+                    underlineColorAndroid='transparent'
+                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                    placeholderTextColor={Appearences.Colors.headingGrey}
+                    placeholder={"eg, +1234567689"}
+                    value={this.state.phone_number}
+                    onChangeText={(text) => this.setState({ phone_number: text })}
+                  >
+                  </TextInput>
+                  {!this.state.isBtnLoading ?
+                    <TouchableOpacity style={styles.buttonRow} onPress={() => this.addPhoneNumber()}>
+                      <View
+                        style={[styles.button, { backgroundColor: orderStore.color }]}>
+                        <Text style={styles.buttonTextStyle}>Add phone number</Text>
+                      </View>
+                    </TouchableOpacity>
+                    :
+                    <View style={styles.buttonRow}>
+                      <Progress.Circle
+                        color={orderStore.color}
+                        indeterminate={true}
+                        style={{
+                          height: Appearences.Registration.itemHeight - 10,
+                        }}
+                        size={Appearences.Fonts.headingFontSize} />
+                    </View>
+                  }
+                </>
+                :
+                <>
+                  <Text style={{ fontSize: 20, color: "#000", marginBottom: 20 }}>Please enter your pin code</Text>
+                  <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                    <Text>SMS sent to:</Text>
+                    <Text style={{ color: orderStore.color, fontSize: 18, paddingLeft: 10 }}>{this.state.phone_number}</Text>
+                  </View>
+                  <Text>Please note, it may take a few minutes to arrive.</Text>
+                  <TextInput style={styles.TextInput}
+                    underlineColorAndroid='transparent'
+                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
+                    placeholderTextColor={Appearences.Colors.headingGrey}
+                    placeholder={"6 Digits"}
+                    value={this.state.verify_code}
+                    onChangeText={(text) => this.setState({ verify_code: text })}
+                  >
+                  </TextInput>
+                  {!this.state.isBtnLoading ?
+                    <TouchableOpacity style={styles.buttonRow} onPress={() => this.verifyPinCode()}>
+                      <View
+                        style={[styles.button, { backgroundColor: orderStore.color }]}>
+                        <Text style={styles.buttonTextStyle}>Verify</Text>
+                      </View>
+                    </TouchableOpacity>
+                    :
+                    <View style={styles.buttonRow}>
+                      <Progress.Circle
+                        color={orderStore.color}
+                        indeterminate={true}
+                        style={{
+                          height: Appearences.Registration.itemHeight - 10,
+                        }}
+                        size={Appearences.Fonts.headingFontSize} />
+                    </View>
+                  }
+
+                  <TouchableOpacity style={{ paddingVertical: 10 }} onPress={() => this.setState({ isEnterPinCode: false })}>
+                    <Text style={{ color: orderStore.color }}>{'Check your phone and try again >'}</Text>
+                  </TouchableOpacity>
+                </>
+              }
+
+            </View>
+          </View>
+
+        </Modal>
+
 
 
 
@@ -454,42 +624,46 @@ export default class EditProfile extends Component<Props> {
 
               {this.state.multiPhones.map((item, key) => (
                 <>
-                  <View style={{ width: "100%", flexDirection: "row" }}>
-                    <Text style={[styles.headingTextBlack, { flex: 1 }]}>{item.key}{key == 0 && ' * '}</Text>
-                    {item.is_verify != '1' ?
-                      <TouchableOpacity onPress={() => { this.verifyPhoneNumber(key, item.value) }} style={{
+                  {item.value != '' &&
+                    <View style={[styles.TextInput], { flexDirection: "row", backgroundColor: Appearences.Registration.boxColor, marginTop: 5, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}>
+                      <Text style={{
+                        fontSize: Appearences.Fonts.headingFontSize,
+                        fontWeight: Appearences.Fonts.headingFontWieght,
+                        color: Appearences.Colors.black,
+                      }}>{item.value}</Text>
+                      <>
+                        {item.is_verify &&
+                          <View style={{ flexDirection: "row", marginLeft: 10, justifyContent: "center", alignItems: "center" }}>
+                            <Icon name={"check-circle"} size={15} color={orderStore.color}></Icon>
+                            <Text style={{ color: orderStore.color, fontSize: 10, marginLeft: 5 }}>VERIFIED</Text>
+                          </View>
+                        }
+                      </>
+
+                      <View style={{ flex: 1 }} />
+                      <TouchableOpacity onPress={() => this.removePhoneNumber(key)} style={{
                         justifyContent: "center",
                         alignItems: "center",
-                        backgroundColor: orderStore.color,
-                        borderRadius: 5,
-                        paddingHorizontal: 10
+                        backgroundColor: "#c92e48",
+                        borderRadius: 100,
+                        width: 25,
+                        height: 25,
+                        paddingHorizontal: 5,
                       }}>
-                        <Text style={{ color: "#fff" }}>Verify</Text>
+                        <Icon name={"minus"} size={15} color={"#fff"}></Icon>
                       </TouchableOpacity>
-                      :
-                      <>
-                        <Text style={{ color: orderStore.color, textAlignVertical: "center" }}>Verified</Text>
-                      </>
-                    }
-
-                  </View>
-                  <TextInput style={styles.TextInput}
-                    underlineColorAndroid='transparent'
-                    keyboardType='phone-pad'
-                    textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
-                    value={item.value}
-                    onChangeText={(text) => {
-                      this.setMultiPhoneNumber(key, text);
-                    }}
-                    placeholderTextColor={Appearences.Colors.headingGrey}
-                    placeholder={item.placeholder}>
-                  </TextInput>
+                    </View>
+                  }
                 </>
               ))}
+              {this.state.currentPhoneIndex < 4 &&
+                <TouchableOpacity onPress={() => this.setState({ addPhoneModal: true })} style={{ width: "100%", flexDirection: "row", paddingVertical: 10, paddingHorizontal: 20, justifyContent: "center", alignItems: "center" }}>
+                  <Icon name={"plus-circle"} size={25} color={orderStore.color}></Icon>
+                  <Text style={{ textAlign: "center", marginLeft: 10 }}>Add another phone number</Text>
+                </TouchableOpacity>
+              }
 
               {data.dealer_details_is_show ? null :
-
-
                 <View>
                   <TouchableOpacity onPress={() => {
                     this.setModalVisible(!this.state.modalVisible);

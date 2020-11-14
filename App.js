@@ -70,7 +70,8 @@ export default class App extends Component<Props> {
       .then(enabled => {
         if (enabled) {
           firebase.messaging().getToken().then(token => {
-            orderStore.DEVICE_TOKEN = token
+            orderStore.DEVICE_TOKEN = token;
+            console.log(token)
           })
 
           if (Platform.OS === 'ios') {
