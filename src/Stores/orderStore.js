@@ -60,6 +60,9 @@ class orderStore {
     @observable canEditAds = true;
     @observable chat_image_split = "#p^image^p#";
     @observable chat_audio_split = "#p^audio^p#";
+
+    @observable phone_verify_codes = [{ index: 0, code: '' }, { index: 1, code: '' }, { index: 2, code: '' }, { index: 3, code: '' }, { index: 4, code: '' }];
+
     @observable detailToolbarModel = {
         reportText: '',
         favouriteText: '',
@@ -175,6 +178,10 @@ class orderStore {
     @action
     setEditTopTab(isEdit) {
         this.canEditAds = isEdit;
+    }
+    @action
+    setPhoneVerifyCode(index, code) {
+        this.phone_verify_codes[index].code = code;
     }
 }
 

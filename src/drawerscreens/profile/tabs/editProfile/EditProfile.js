@@ -308,16 +308,6 @@ export default class EditProfile extends Component<Props> {
     }, 1000);
   }
 
-  setMultiPhoneNumber = (index, value) => {
-    let multiPhones = this.state.multiPhones;
-    multiPhones[index].value = value;
-    multiPhones[index].is_verify = '0';
-    multiPhones[index].value = value;
-    this.setState({
-      multiPhones: multiPhones
-    })
-  }
-
   removePhoneNumber = (index) => {
     let multiPhones = this.state.multiPhones;
     multiPhones[index].value = '';
