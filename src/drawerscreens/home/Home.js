@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import {
   Platform,
-  StyleSheet,
-  DeviceEventEmitter,
   Text,
   View,
   Image,
@@ -39,17 +37,15 @@ let { height } = Dimensions.get('window');
 import { I18nManager } from 'react-native'
 import firebase from 'react-native-firebase';
 import { observer } from 'mobx-react';
-import Banner from '../../components/adMob/Banner';
 import DrawerButton from '../../config/DrawerButton';
 import DrawerRightIcons from '../../config/DrawerRightIcons';
-import { NavigationActions, StackActions } from 'react-navigation';
-import { toUint8Array } from 'js-base64';
+import { NavigationActions } from 'react-navigation';
 
 
 const featuredItemWidth = Dimensions.get("screen").width * 47 / 100;
 
 @observer
-export default class Home extends Component<Props> {
+export default class Home extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('otherParam', store.screenTitles.home),
     headerStyle: {
@@ -134,9 +130,11 @@ export default class Home extends Component<Props> {
       backClickCount: 0,
       refreshing: false,
       searchText: '',
-      showChatModel: false,
+      visibleChatModal: false,
       similar_ad: null,
-      featuredShowNum: 5
+      featuredShowNum: 5,
+      multiPhones: [],
+      visibleCallModal: false,
     };
 
     const renderInterval = setInterval(() => {
@@ -157,7 +155,7 @@ export default class Home extends Component<Props> {
         backClickCount: 0,
         refreshing: false,
         searchText: '',
-        showChatModel: false,
+        visibleChatModal: false,
         similar_ad: null,
       }, () => {
         this.componentWillMount();
@@ -214,9 +212,6 @@ export default class Home extends Component<Props> {
 
 
   };
-
-
-
 
   managePostions = (itemAtPosition) => {
 
@@ -428,23 +423,13 @@ export default class Home extends Component<Props> {
       }
 
 
-
-
-
-
-
-
     </View>);
-
   }
 
   showChatModal = async (item) => {
-    // let { orderStore } = Store;
-
-    // const params = { ad_id: item.ad_id };
-    // orderStore.adDetail = await Api.post('ad_post', params);
-
-    this.setState({ showChatModel: true, similar_ad: item });
+    this.setState({ visibleCallModal: false }, () => {
+      this.setState({ visibleChatModal: true, similar_ad: item });
+    })
   }
 
   sendChatMessage = async () => {
@@ -455,28 +440,38 @@ export default class Home extends Component<Props> {
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
     Toast.show(response.message);
-    this.setState({ showMessageProgress: false, showChatModel: false });
+    this.setState({ showMessageProgress: false, visibleChatModal: false });
   }
 
-  onCallClick = async (id) => {
-    this.setState({ showSpinner: true });
-    const params = { ad_id: id };
+  showCallModal = async (item) => {
+    this.setState({ showSpinner: true, similar_ad: item });
+    const params = { ad_id: item.ad_id };
 
     const adDetail = await Api.post('ad_post', params);
+    const contact_info = adDetail.data.static_text.contact_info;
     this.setState({ showSpinner: false });
 
-    // const data = adDetail.data;
-    // const contactInfo = data.static_text.contact_info;
-    let phoneNumber = '';
+    let multiPhones = [];
+    multiPhones.push(contact_info.phone.number);
+    multiPhones.push(contact_info.phone2.number);
+    multiPhones.push(contact_info.phone3.number);
+    multiPhones.push(contact_info.phone4.number);
+    multiPhones.push(contact_info.phone5.number);
+    this.setState({
+      multiPhones: multiPhones,
+      visibleCallModal: true,
+      visibleChatModal: false
+    })
+  }
 
+  onCallClick = (number) => {
+    let phoneNumber = 'telprompt:' + number;
     if (Platform.OS === 'android') {
-      phoneNumber = 'tel:' + adDetail.data.static_text.contact_info.phone.number;
-    }
-    else {
-      phoneNumber = 'telprompt:' + contactInfo.phone.number;
+      phoneNumber = 'tel:' + number;
     }
 
     Linking.openURL(phoneNumber);
+    this.setState({ visibleCallModal: false })
   }
 
   getItemLayout = (data, index) => (
@@ -695,7 +690,7 @@ export default class Home extends Component<Props> {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
-                    onPress={() => this.onCallClick(item.ad_id)}>
+                    onPress={() => this.showCallModal(item)}>
                     <Image
                       source={require('../../../res/images/contact.png')}
                       style={[FeaturedGridStyle.bottomImgStyl]}
@@ -1029,7 +1024,7 @@ export default class Home extends Component<Props> {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
-                    onPress={() => this.onCallClick(item.ad_id)}>
+                    onPress={() => this.showCallModal(item)}>
                     <Image
                       source={require('../../../res/images/contact.png')}
                       style={[FeaturedGridStyle.bottomImgStyl]}
@@ -1572,7 +1567,7 @@ export default class Home extends Component<Props> {
             <Modal
               animationType="slide"
               transparent={true}
-              visible={this.state.showChatModel}
+              visible={this.state.visibleChatModal}
               onRequestClose={() => {
               }}>
 
@@ -1589,7 +1584,7 @@ export default class Home extends Component<Props> {
                         {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
                         <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
                       </View>
-                      <TouchableOpacity onPress={() => this.onCallClick(this.state.similar_ad.ad_id)} style={{ width: 20, height: 30 }}>
+                      <TouchableOpacity onPress={() => this.showCallModal(this.state.similar_ad)} style={{ width: 20, height: 30 }}>
                         <Image
                           source={require('../../../res/images/contact.png')}
                           style={[FeaturedGridStyle.bottomImgStyl]}
@@ -1632,7 +1627,7 @@ export default class Home extends Component<Props> {
 
                             <TouchableOpacity
                               onPress={() => {
-                                this.setState({ showChatModel: false });
+                                this.setState({ visibleChatModal: false });
                               }}
                               style={[styles.messageMoalButton, { borderColor: Appearences.Colors.grey, borderWidth: 1 }]}>
                               <Text style={styles.buttonTextBlack}>Cancel</Text>
@@ -1656,6 +1651,50 @@ export default class Home extends Component<Props> {
 
 
                   </ScrollView>
+                </View>
+              </View>
+
+            </Modal>
+
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={this.state.visibleCallModal}
+              onRequestClose={() => {
+              }}>
+
+              <View style={styles.modalContainer}>
+
+                <View style={styles.modalContentContainer}>
+                  {this.state.similar_ad != null ?
+                    <View style={{ height: 70, width: "100%", flexDirection: "row", marginBottom: 50 }}>
+                      <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                        <Image source={{ uri: this.state.similar_ad.ad_images[0].thumb }} style={{ width: 70, height: 70 }}></Image>
+                      </View>
+                      <View style={{ flex: 1, flexDirection: "column" }}>
+                        <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>
+                        {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
+                        <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
+                      </View>
+                      <TouchableOpacity onPress={() => this.showChatModal(this.state.similar_ad)} style={{ width: 20, height: 30 }}>
+                        <Image
+                          source={require('../../../res/images/message_grey.png')}
+                          style={[FeaturedGridStyle.bottomImgStyl]}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    : null}
+                  {this.state.multiPhones.map((item, key) => (
+                    <>
+                      {item != '' &&
+                        <TouchableOpacity
+                          onPress={() => this.onCallClick(item)}
+                          style={[styles.button, { backgroundColor: orderStore.color }]}>
+                          <Text style={styles.buttonTextStyle}>{item}</Text>
+                        </TouchableOpacity>
+                      }
+                    </>
+                  ))}
                 </View>
               </View>
 
