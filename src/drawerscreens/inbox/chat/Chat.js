@@ -59,6 +59,7 @@ export default class Chat extends Component {
   });
 
   onMessageRecieve = async (remoteMessage) => {
+    console.log(remoteMessage)
     const data = remoteMessage.data;
     const chat = JSON.parse(data.chat);
     const message = {

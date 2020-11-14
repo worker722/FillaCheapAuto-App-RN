@@ -81,12 +81,14 @@ import { object } from 'prop-types';
       dealer_ads: [],
 
       //custom
-      ownAds: false,
-
       showConfirmDialogue: false,
       titleText: '',
       okText: 'Confirm',
       cancelText: 'Cancel',
+
+      bump_remain: '',
+      featured_remain: '',
+      profile: null
     }
   }
 
@@ -286,10 +288,7 @@ import { object } from 'prop-types';
     let { orderStore } = Store;
 
     const profile = await Db.getUserProfile();
-    if (profile != null && profile.id == orderStore.adDetail.data.profile_detail.id) {
-      this.setState({ ownAds: true });
-    }
-
+    this.setState({ profile: profile });
     // console.log('adDetail is',orderStore.adDetail.fieldsData)
     this.setState({ clicktoViewPhoneNoText: orderStore.adDetail.data.static_text.contact_info.phone.text });
     this.getdata()
@@ -300,9 +299,21 @@ import { object } from 'prop-types';
     let params = { user_id: orderStore.adDetail.data.profile_detail.id, page_number: '' };
     let response = await Api.post('profile/public/inventory', params);
 
+    let remain_response = await Api.post('profile/public/inventory', { type: 'remain_bump_featured' });
+    if (remain_response.success) {
+      this.setState({
+        bump_remain: remain_response.data.bump,
+        featured_remain: remain_response.data.featured
+      })
+    }
+
     if (response.success === true) {
       this.setState({ dealer_ads: response.data.ads })
     }
+  }
+
+  getRemainBumbFeatured = async () => {
+    let response = await Api.post('')
   }
 
   openURLx = (url) => {
@@ -443,10 +454,15 @@ import { object } from 'prop-types';
 
     // }, 1000);
   }
-  render() {
+  render = () => {
 
     let { orderStore } = Store;
     const data = orderStore.adDetail.data;
+
+    let ownAds = false;
+    if (this.state.profile != null && this.state.profile.id == data.profile_detail.id) {
+      ownAds = true;
+    }
 
     const adDetail = data.ad_detail;
 
@@ -843,31 +859,73 @@ import { object } from 'prop-types';
         >
           <AdDetailHeader />
 
-          {this.state.ownAds ?
+          {ownAds ?
             <View style={[styles.panel, { marginTop: 0, flexDirection: "row" }]}>
               <TouchableOpacity
                 onPress={async () => {
-                  this.setState({ titleText: 'Are you sure you want to bumup this ad.', custom_type: "bump", showConfirmDialogue: true });
+                  if (this.state.bump_remain != '')
+                    this.setState({ titleText: 'Are you sure you want to bumup this ad.', custom_type: "bump", showConfirmDialogue: true });
                 }}
-                style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1, marginRight: 10 }]}>
+                style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1, marginRight: 10, flexDirection: "row" }]}>
                 <Text style={styles.headingTextWhite}>Bump It Up</Text>
+
               </TouchableOpacity>
-              {adDetail.is_feature ? <View style={{ flex: 1 }}></View> :
+
+              {adDetail.is_feature ?
+                <View style={{ flex: 1 }} />
+                :
                 <TouchableOpacity
                   onPress={async () => {
-                    this.setState({ titleText: 'Are you sure you want to make this ad featured.', custom_type: "feature", showConfirmDialogue: true });
+                    if (this.state.featured_remain != '')
+                      this.setState({ titleText: 'Are you sure you want to make this ad featured.', custom_type: "feature", showConfirmDialogue: true });
                   }}
                   style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1 }]}>
                   <Text style={styles.headingTextWhite}>Featured Ads Make</Text>
                 </TouchableOpacity>
               }
-
             </View>
             :
             <></>
           }
+          <View style={{ marginTop: 0, flexDirection: "row", width: "100%", justifyContent: "center", alignItems: "center" }}>
+            {this.state.bump_remain != '' ?
+              <>
+                <Text style={{ flex: 1, textAlign: "center" }}>{this.state.bump_remain}</Text>
+                <>
+                  {adDetail.is_feature ?
+                    <View style={{ flex: 1 }}></View>
+                    :
+                    <Text style={{ flex: 1, textAlign: "center" }}>{this.state.bump_remain}</Text>
+                  }
+                </>
+              </>
+              :
+              <>
+                <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                  <Progress.Circle
+                    size={Appearences.Fonts.headingFontSize}
+                    indeterminate={true}
+                    color={orderStore.color}
+                  />
+                </View>
+                <>
+                  {adDetail.is_feature ?
+                    <View style={{ flex: 1 }}></View>
+                    :
+                    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                      <Progress.Circle
+                        size={Appearences.Fonts.headingFontSize}
+                        indeterminate={true}
+                        color={orderStore.color}
+                      />
+                    </View>
+                  }
+                </>
+              </>
+            }
 
 
+          </View>
           <View
             style={s.triangleRowcontainer}>
             <View
@@ -1698,27 +1756,6 @@ import { object } from 'prop-types';
             animation={this.state.isAboslute ? "fadeInDown" : "fadeOut"} iterationCount={1} direction="normal"
             style={s.triangleRowcontainerAbsolute}>
 
-            {/* <View
-              style={s.carInfoRow}>
-              <View style={{ width: '60%' }}>
-                <Text style={s.carInfoRowLeftDetail}>{adDetail.ad_title}</Text>
-                <View style={s.row}>
-                  <Text style={s.carInfoRowLeftDate}>{Appearences.Rtl.enabled ? "   |   " + adDetail.ad_date : adDetail.ad_date + "   |   "}</Text>
-                  <Image style={s.eyeImage}
-                    source={require('../../../../../../../res/images/eye.png')} />
-                  <Text style={s.carInfoRowLeftDate}>{Appearences.Rtl.enabled ? adDetail.ad_view_count + "  " : "  " + adDetail.ad_view_count}</Text>
-                </View>
-              </View>
-              <View style={s.carInfoRowRightContainer}>
-                {adDetail.ad_price.price.length != undefined && adDetail.ad_price.price.length != 0 ? <View style={[s.triangle, { borderEndColor: orderStore.color }]} /> : null}
-                {adDetail.ad_price.price.length != undefined && adDetail.ad_price.price.length != 0 ?
-                  <View style={[s.carInfoRowRightTextContainer, { backgroundColor: orderStore.color }]}>
-                    <Text style={s.carInfoRowRightContainerPrice}>
-                      {adDetail.ad_price.price}
-                    </Text>
-                  </View> : null}
-              </View>
-            </View> */}
             <View
               style={[styles.panel, { marginTop: 0 }]}
             >

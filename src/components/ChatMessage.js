@@ -74,11 +74,21 @@ export default class ChatMessage extends Component {
         this.soundInstance.play((success) =>
           this.setState({ soundStatus: SOUND_STATE.PLAYING, isAudioPlaying: true }, () => {
             console.log("resume play")
+            this.soundAudioTimer = setInterval(() => {
+              let time = this.state.timeSeek;
+              if (time == this.state.duration) {
+                clearInterval(this.soundAudioTimer);
+                this.setState({ timeSeek: 0, isAudioPlaying: false, soundStatus: SOUND_STATE.INIT_SUCCESS })
+                return;
+              }
+              if (!time) time = 0;
+              time++;
+              this.setState({ timeSeek: time })
+            }, 1000);
           })
         );
       }
       else {
-        console.log("dsdsdsdsdsdsds")
         this.setState({ loading: true }, () => {
           this.soundInstance.stop(() => {
             this.soundInstance.play((success) =>
@@ -90,6 +100,7 @@ export default class ChatMessage extends Component {
                   let time = this.state.timeSeek;
                   if (time == this.state.duration) {
                     clearInterval(this.soundAudioTimer);
+                    console.log('finish play')
                     this.setState({ timeSeek: 0, isAudioPlaying: false, soundStatus: SOUND_STATE.INIT_SUCCESS })
                     return;
                   }
@@ -112,12 +123,12 @@ export default class ChatMessage extends Component {
     this.soundInstance.pause(() => {
       this.setState({ isAudioPlaying: false, soundStatus: SOUND_STATE.PAUSING });
       console.log("pause play")
+      clearInterval(this.soundAudioTimer);
     });
   }
 
   render = () => {
     const { orderStore } = Store;
-    const { soundStatus } = this.state;
     let messageWithImage = this.state.message.text.split(orderStore.chat_image_split);
     let messageWithAudio = this.state.message.text.split(orderStore.chat_audio_split);
     let duration = this.state.timeSeek != 0 ? this.state.timeSeek : this.state.duration;
