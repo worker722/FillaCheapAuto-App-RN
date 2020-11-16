@@ -18,7 +18,6 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as Progress from 'react-native-progress';
 
 import styles from './Styles';
-import profileEditStyle from '../../profile/tabs/editProfile/Styles';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Store from '../../../Stores';
 import Toast from 'react-native-simple-toast';
@@ -829,39 +828,6 @@ class PageFour extends Component<Props> {
             />
           </TouchableOpacity>
 
-          {/* <SearchableDropdown
-            defaultIndex={0}
-            items={itemCountry.values}
-            onItemSelect={(item, index) => {
-              this.onSelectCountry(item);
-            }}
-            containerStyle={{ paddingTop: 10 }}
-            onRemoveItem={(item, index) => {
-              this.setState({ categoryId: '', showCategoryError: true });
-              const items = this.state.selectedItems.filter((sitem) => sitem.id !== item.id);
-              this.setState({ selectedItems: items });
-            }}
-            itemStyle={styles.searchableDropdown}
-            itemTextStyle={styles.dropDownTextStyle}
-            itemsContainerStyle={{ maxHeight: 140, borderColor: Appearences.Colors.lightGrey, borderWidth: 1, borderRadius: 5 }}
-            resetValue={false}
-            textInputProps={
-              {
-                placeholder: `Search Location`,
-                underlineColorAndroid: 'transparent',
-                textAlign: Appearences.Rtl.enabled ? 'right' : 'left',
-                placeholderTextColor: Appearences.Registration.textColor,
-                style: this.state.showCountryError ? styles.pickerContainerError : styles.PopupViewContainer,
-                onTextChange: text => console.log(text)
-              }
-            }
-            listProps={
-              {
-                nestedScrollEnabled: true,
-              }
-            }
-          /> */}
-
         </View>
       </DismissKeyboard>
 
@@ -940,13 +906,7 @@ class PageFour extends Component<Props> {
       }
       if (response.message.length != 0)
         Toast.show(response.message);
-
-
-
     }
-
-
-
   }
   constructDynamicObject = () => {
     let { orderStore } = Store;
@@ -1560,8 +1520,8 @@ class PageFour extends Component<Props> {
             onRequestClose={() => {
             }}>
 
-            <View style={profileEditStyle.modalContainer}>
-              <View style={[profileEditStyle.modalInnerContainer, { justifyContent: "center", padding: 15, paddingTop: 40, alignItems: "center" }]}>
+            <View style={styles.phone_modalContainer}>
+              <View style={[styles.phone_modalInnerContainer, { justifyContent: "center", padding: 15, paddingTop: 40, alignItems: "center" }]}>
                 <TouchableOpacity style={{ position: "absolute", top: 0, right: 0, padding: 10 }} onPress={() => this.setState({ addPhoneModal: false, phone_number: '', verify_code: '', isEnterPinCode: false, isBtnLoading: false })}>
                   <Icon name={"times-circle"} size={25} color={orderStore.color}></Icon>
                 </TouchableOpacity>
@@ -1569,7 +1529,7 @@ class PageFour extends Component<Props> {
                   <>
                     <Text style={{ fontSize: 20, color: "#000", marginBottom: 20 }}>Please enter your phone number</Text>
                     <Text style={{ paddingHorizontal: 10 }}>If you have not verified it before, we will send you an SMS with a PIN code to make sure that we can get in touch with you.</Text>
-                    <TextInput style={profileEditStyle.TextInput}
+                    <TextInput style={styles.phone_TextInput}
                       underlineColorAndroid='transparent'
                       textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
                       placeholderTextColor={Appearences.Colors.headingGrey}
@@ -1579,14 +1539,14 @@ class PageFour extends Component<Props> {
                     >
                     </TextInput>
                     {!this.state.isBtnLoading ?
-                      <TouchableOpacity style={profileEditStyle.buttonRow} onPress={() => this.addPhoneNumber()}>
+                      <TouchableOpacity style={styles.phone_buttonRow} onPress={() => this.addPhoneNumber()}>
                         <View
-                          style={[profileEditStyle.button, { backgroundColor: orderStore.color }]}>
-                          <Text style={profileEditStyle.buttonTextStyle}>Add phone number</Text>
+                          style={[styles.phone_button, { backgroundColor: orderStore.color }]}>
+                          <Text style={styles.phone_buttonTextStyle}>Add phone number</Text>
                         </View>
                       </TouchableOpacity>
                       :
-                      <View style={profileEditStyle.buttonRow}>
+                      <View style={styles.phone_buttonRow}>
                         <Progress.Circle
                           color={orderStore.color}
                           indeterminate={true}
@@ -1605,7 +1565,7 @@ class PageFour extends Component<Props> {
                       <Text style={{ color: orderStore.color, fontSize: 18, paddingLeft: 10 }}>{this.state.phone_number}</Text>
                     </View>
                     <Text>Please note, it may take a few minutes to arrive.</Text>
-                    <TextInput style={profileEditStyle.TextInput}
+                    <TextInput style={styles.phone_TextInput}
                       underlineColorAndroid='transparent'
                       textAlign={Appearences.Rtl.enabled ? 'right' : 'left'}
                       placeholderTextColor={Appearences.Colors.headingGrey}
@@ -1615,14 +1575,14 @@ class PageFour extends Component<Props> {
                     >
                     </TextInput>
                     {!this.state.isBtnLoading ?
-                      <TouchableOpacity style={profileEditStyle.buttonRow} onPress={() => this.verifyPinCode()}>
+                      <TouchableOpacity style={styles.phone_buttonRow} onPress={() => this.verifyPinCode()}>
                         <View
-                          style={[profileEditStyle.button, { backgroundColor: orderStore.color }]}>
-                          <Text style={profileEditStyle.buttonTextStyle}>Verify</Text>
+                          style={[styles.phone_button, { backgroundColor: orderStore.color }]}>
+                          <Text style={styles.phone_buttonTextStyle}>Verify</Text>
                         </View>
                       </TouchableOpacity>
                       :
-                      <View style={profileEditStyle.buttonRow}>
+                      <View style={styles.phone_buttonRow}>
                         <Progress.Circle
                           color={orderStore.color}
                           indeterminate={true}
@@ -1758,7 +1718,7 @@ class PageFour extends Component<Props> {
               {this.state.multiPhones.map((item, key) => (
                 <>
                   {item.values != '' &&
-                    <View style={[profileEditStyle.TextInput], { flexDirection: "row", backgroundColor: Appearences.Registration.boxColor, marginTop: 5, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}>
+                    <View style={[styles.phone_TextInput], { flexDirection: "row", backgroundColor: Appearences.Registration.boxColor, marginTop: 5, paddingVertical: 10, alignItems: "center", justifyContent: "center" }}>
                       <Text style={{
                         fontSize: Appearences.Fonts.headingFontSize,
                         fontWeight: Appearences.Fonts.headingFontWieght,
