@@ -16,6 +16,7 @@ import {
   Modal,
 } from 'react-native';
 import StarRating from 'react-native-star-rating';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import * as Progress from 'react-native-progress';
 import Appearences from '../../config/Appearences';
 import styles from './Styles';
@@ -1666,6 +1667,9 @@ export default class Home extends Component {
               <View style={styles.modalContainer}>
 
                 <View style={styles.modalContentContainer}>
+                  <TouchableOpacity style={{ position: "absolute", top: 0, left: 0, padding: 3 }} onPress={() => this.setState({ visibleCallModal: false, similar_ad: null })}>
+                    <Icon name={"times-circle"} size={25} color={orderStore.color}></Icon>
+                  </TouchableOpacity>
                   {this.state.similar_ad != null ?
                     <View style={{ height: 70, width: "100%", flexDirection: "row", marginBottom: 50 }}>
                       <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
