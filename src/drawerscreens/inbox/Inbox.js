@@ -47,12 +47,12 @@ export default class Inbox extends Component<Props> {
 
   async createNotificationListeners() {
     this.messageListener = firebase.messaging().onMessage(async message => {
-      clearInterval(this.getDataInterval);
-      this.setState({ offers: [] }, async () => {
-        await this.getAllInboxData();
-        this.getDataInterval = setInterval(() => {
-          this.getAllInboxData();
-        }, 10000);
+      // clearInterval(this.getDataInterval);
+      this.setState({ offers: [] }, () => {
+        this.getAllInboxData();
+        // this.getDataInterval = setInterval(() => {
+        //   this.getAllInboxData();
+        // }, 10000);
       })
     });
   }
@@ -60,7 +60,7 @@ export default class Inbox extends Component<Props> {
   componentWillUnmount() {
     this.messageListener && this.messageListener();
     AppState.removeEventListener('change', this.handleAppStateChange);
-    clearInterval(this.getDataInterval);
+    // clearInterval(this.getDataInterval);
   }
 
   componentDidMount = async () => {
@@ -72,9 +72,9 @@ export default class Inbox extends Component<Props> {
 
   componentWillMount = async () => {
     await this.getAllInboxData();
-    this.getDataInterval = setInterval(() => {
-      this.getAllInboxData();
-    }, 10000);
+    // this.getDataInterval = setInterval(() => {
+    //   this.getAllInboxData();
+    // }, 10000);
   }
 
   getAllInboxData = async () => {
