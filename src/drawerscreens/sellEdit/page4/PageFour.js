@@ -15,9 +15,10 @@ import {
 } from 'react-native';
 import Appearences from '../../../config/Appearences';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import * as Progress from 'react-native-progress';
 
 import styles from './Styles';
-// import profileEditStyle from '../../profile/tabs/editProfile/Styles';
+import profileEditStyle from '../../profile/tabs/editProfile/Styles';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Store from '../../../Stores';
 import Toast from 'react-native-simple-toast';
@@ -1552,7 +1553,7 @@ class PageFour extends Component<Props> {
           {/*Ads By Location Modal Start*/}
 
 
-          {/* <Modal
+          <Modal
             animationType="slide"
             transparent={true}
             visible={this.state.addPhoneModal}
@@ -1641,7 +1642,7 @@ class PageFour extends Component<Props> {
               </View>
             </View>
 
-          </Modal> */}
+          </Modal>
 
 
           <ModalBox
@@ -1751,7 +1752,7 @@ class PageFour extends Component<Props> {
               >
               </TextInput>
 
-              {/* <View style={styles.headingTextContainer}>
+              <View style={styles.headingTextContainer}>
                 <Text style={styles.subHeading}>Phone Number *</Text>
               </View>
               {this.state.multiPhones.map((item, key) => (
@@ -1793,7 +1794,7 @@ class PageFour extends Component<Props> {
                   <Icon name={"plus-circle"} size={25} color={orderStore.color}></Icon>
                   <Text style={{ textAlign: "center", marginLeft: 10 }}>Add another phone number</Text>
                 </TouchableOpacity>
-              } */}
+              }
 
               <View style={styles.headingTextContainer}>
                 <Text style={styles.subHeading}>{profile.location.title + " * "}</Text>

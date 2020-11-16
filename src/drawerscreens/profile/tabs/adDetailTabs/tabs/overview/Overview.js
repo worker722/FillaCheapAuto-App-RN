@@ -9,7 +9,6 @@ import {
   Modal,
   TextInput,
   RefreshControl,
-
   Linking,
   Platform,
   Dimensions,
@@ -25,6 +24,7 @@ import { Avatar } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import DatePicker from 'react-native-datepicker'
 import * as Progress from 'react-native-progress';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import Appearences from '../../../../../../config/Appearences';
 import Api from '../../../../../../network/Api';
 import Toast from 'react-native-simple-toast';
@@ -76,7 +76,8 @@ import { object } from 'prop-types';
       showMessageProgress: false,
       clicktoViewPhoneNoText: '',
       isAboslute: false,
-      showChatModel: false,
+      visibleChatModal: false,
+      visibleCallModal: false,
       similar_ad: null,
       dealer_ads: [],
 
@@ -88,7 +89,8 @@ import { object } from 'prop-types';
 
       bump_remain: '',
       featured_remain: '',
-      profile: null
+      profile: null,
+      multiPhones: [],
     }
   }
 
@@ -299,13 +301,7 @@ import { object } from 'prop-types';
     let params = { user_id: orderStore.adDetail.data.profile_detail.id, page_number: '' };
     let response = await Api.post('profile/public/inventory', params);
 
-    let remain_response = await Api.post('profile/public/inventory', { type: 'remain_bump_featured' });
-    if (remain_response.success) {
-      this.setState({
-        bump_remain: remain_response.data.bump,
-        featured_remain: remain_response.data.featured
-      })
-    }
+    await this.getRemainBumbFeatured();
 
     if (response.success === true) {
       this.setState({ dealer_ads: response.data.ads })
@@ -313,7 +309,13 @@ import { object } from 'prop-types';
   }
 
   getRemainBumbFeatured = async () => {
-    let response = await Api.post('')
+    let response = await Api.post('profile/public/inventory', { type: 'remain_bump_featured' });
+    if (response.success) {
+      this.setState({
+        bump_remain: response.data.bump,
+        featured_remain: response.data.featured
+      })
+    }
   }
 
   openURLx = (url) => {
@@ -337,13 +339,45 @@ import { object } from 'prop-types';
   }
 
   showChatModal = async (item) => {
-    // let { orderStore } = Store;
-
-    // const params = { ad_id: item.ad_id };
-    // orderStore.adDetail = await Api.post('ad_post', params);
     if (!item.ad_images)
       item = Object.assign(item, { ad_images: item.images });
-    this.setState({ showChatModel: true, similar_ad: item });
+    this.setState({ visibleCallModal: false }, () => {
+      this.setState({ visibleChatModal: true, similar_ad: item });
+    })
+  }
+
+  showCallModal = async (item) => {
+    if (!item.ad_images)
+      item = Object.assign(item, { ad_images: item.images });
+
+    this.setState({ showSpinner: true, similar_ad: item });
+    const params = { ad_id: item.ad_id };
+
+    const adDetail = await Api.post('ad_post', params);
+    const contact_info = adDetail.data.static_text.contact_info;
+    this.setState({ showSpinner: false });
+
+    let multiPhones = [];
+    multiPhones.push(contact_info.phone.number);
+    multiPhones.push(contact_info.phone2.number);
+    multiPhones.push(contact_info.phone3.number);
+    multiPhones.push(contact_info.phone4.number);
+    multiPhones.push(contact_info.phone5.number);
+    this.setState({
+      multiPhones: multiPhones,
+      visibleCallModal: true,
+      visibleChatModal: false
+    })
+  }
+
+  onCallClick = (number) => {
+    let phoneNumber = 'telprompt:' + number;
+    if (Platform.OS === 'android') {
+      phoneNumber = 'tel:' + number;
+    }
+
+    Linking.openURL(phoneNumber);
+    this.setState({ visibleCallModal: false })
   }
 
   sendChatMessage = async () => {
@@ -353,7 +387,7 @@ import { object } from 'prop-types';
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
     Toast.show(response.message);
-    this.setState({ showMessageProgress: false, showChatModel: false });
+    this.setState({ showMessageProgress: false, visibleChatModal: false });
   }
 
   addFav = async (item) => {
@@ -389,24 +423,6 @@ import { object } from 'prop-types';
     else {
       alert('Please login into account')
     }
-  }
-
-  onCallClick = async (id) => {
-    const params = { ad_id: id };
-
-    const adDetail = await Api.post('ad_post', params);
-    const data = adDetail.data;
-    const contactInfo = data.static_text.contact_info;
-    let phoneNumber = '';
-
-    if (Platform.OS === 'android') {
-      phoneNumber = 'tel:' + contactInfo.phone.number;
-    }
-    else {
-      phoneNumber = 'telprompt:' + contactInfo.phone.number;
-    }
-
-    Linking.openURL(phoneNumber);
   }
 
   _onRefresh = async () => {
@@ -446,6 +462,8 @@ import { object } from 'prop-types';
         }
       }
     }
+
+    await this.getRemainBumbFeatured();
 
 
     // setTimeout(async () => {
@@ -754,13 +772,14 @@ import { object } from 'prop-types';
         <Modal
           animationType="slide"
           transparent={true}
-          visible={this.state.showChatModel}
+          visible={this.state.visibleChatModal}
           onRequestClose={() => {
           }}>
 
           <View style={styles.modalContainer}>
 
             <View style={styles.modalContentContainer}>
+
               {this.state.similar_ad != null ?
                 <View style={{ height: 70, width: "100%", flexDirection: "row" }}>
                   <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
@@ -771,7 +790,7 @@ import { object } from 'prop-types';
                     {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
                     <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
                   </View>
-                  <TouchableOpacity onPress={() => this.onCallClick(this.state.similar_ad.ad_id)} style={{ width: 20, height: 30 }}>
+                  <TouchableOpacity onPress={() => this.showCallModal(this.state.similar_ad)} style={{ width: 20, height: 30 }}>
                     <Image
                       source={require('../../../../../../../res/images/contact.png')}
                       style={[FeaturedGridStyle.bottomImgStyl]}
@@ -814,7 +833,7 @@ import { object } from 'prop-types';
 
                         <TouchableOpacity
                           onPress={() => {
-                            this.setState({ showChatModel: false });
+                            this.setState({ visibleChatModal: false });
                           }}
                           style={[styles.messageMoalButton, { borderColor: Appearences.Colors.grey, borderWidth: 1 }]}>
                           <Text style={styles.buttonTextBlack}>{popup.btn_cancel}</Text>
@@ -843,6 +862,53 @@ import { object } from 'prop-types';
 
         </Modal>
 
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.visibleCallModal}
+          onRequestClose={() => {
+          }}>
+
+          <View style={styles.modalContainer}>
+
+            <View style={styles.modalContentContainer}>
+              <TouchableOpacity style={{ position: "absolute", top: 0, left: 0, padding: 3 }} onPress={() => this.setState({ visibleCallModal: false, similar_ad: null })}>
+                <Icon name={"times-circle"} size={25} color={orderStore.color}></Icon>
+              </TouchableOpacity>
+              {this.state.similar_ad != null ?
+                <View style={{ height: 70, width: "100%", flexDirection: "row", marginBottom: 50 }}>
+                  <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                    <Image source={{ uri: this.state.similar_ad.ad_images[0].thumb }} style={{ width: 70, height: 70 }}></Image>
+                  </View>
+                  <View style={{ flex: 1, flexDirection: "column" }}>
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>
+                    {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => this.showChatModal(this.state.similar_ad)} style={{ width: 20, height: 30 }}>
+                    <Image
+                      source={require('../../../../../../../res/images/message_grey.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl]}
+                    />
+                  </TouchableOpacity>
+                </View>
+                : null}
+              {this.state.multiPhones.map((item, key) => (
+                <>
+                  {item != '' &&
+                    <TouchableOpacity
+                      onPress={() => this.onCallClick(item)}
+                      style={[styles.buttonRow, { backgroundColor: orderStore.color }]}>
+                      <Text style={styles.buttonTextStyle}>{item}</Text>
+                    </TouchableOpacity>
+                  }
+                </>
+              ))}
+            </View>
+          </View>
+
+        </Modal>
+
         <ScrollView
           key={this.state.reRender}
           contentContainerStyle={{ backgroundColor: Appearences.Colors.appBackgroundColor }}
@@ -860,58 +926,45 @@ import { object } from 'prop-types';
           <AdDetailHeader />
 
           {ownAds ?
-            <View style={[styles.panel, { marginTop: 0, flexDirection: "row" }]}>
-              <TouchableOpacity
-                onPress={async () => {
-                  if (this.state.bump_remain != '')
-                    this.setState({ titleText: 'Are you sure you want to bumup this ad.', custom_type: "bump", showConfirmDialogue: true });
-                }}
-                style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1, marginRight: 10, flexDirection: "row" }]}>
-                <Text style={styles.headingTextWhite}>Bump It Up</Text>
-
-              </TouchableOpacity>
-
-              {adDetail.is_feature ?
-                <View style={{ flex: 1 }} />
-                :
+            <>
+              <View style={[styles.panel, { marginTop: 0, flexDirection: "row" }]}>
                 <TouchableOpacity
                   onPress={async () => {
-                    if (this.state.featured_remain != '')
-                      this.setState({ titleText: 'Are you sure you want to make this ad featured.', custom_type: "feature", showConfirmDialogue: true });
+                    if (this.state.bump_remain != '')
+                      this.setState({ titleText: 'Are you sure you want to bumup this ad.', custom_type: "bump", showConfirmDialogue: true });
                   }}
-                  style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1 }]}>
-                  <Text style={styles.headingTextWhite}>Featured Ads Make</Text>
+                  style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1, marginRight: 10, flexDirection: "row" }]}>
+                  <Text style={styles.headingTextWhite}>Bump It Up</Text>
+
                 </TouchableOpacity>
-              }
-            </View>
-            :
-            <></>
-          }
-          <View style={{ marginTop: 0, flexDirection: "row", width: "100%", justifyContent: "center", alignItems: "center" }}>
-            {this.state.bump_remain != '' ?
-              <>
-                <Text style={{ flex: 1, textAlign: "center" }}>{this.state.bump_remain}</Text>
-                <>
-                  {adDetail.is_feature ?
-                    <View style={{ flex: 1 }}></View>
-                    :
+
+                {adDetail.is_feature ?
+                  <View style={{ flex: 1 }} />
+                  :
+                  <TouchableOpacity
+                    onPress={async () => {
+                      if (this.state.featured_remain != '')
+                        this.setState({ titleText: 'Are you sure you want to make this ad featured.', custom_type: "feature", showConfirmDialogue: true });
+                    }}
+                    style={[styles.buttonRow, { backgroundColor: orderStore.color, flex: 1 }]}>
+                    <Text style={styles.headingTextWhite}>Featured Ads Make</Text>
+                  </TouchableOpacity>
+                }
+              </View>
+              <View style={{ marginTop: 0, flexDirection: "row", width: "100%", justifyContent: "center", alignItems: "center" }}>
+                {this.state.bump_remain != '' ?
+                  <>
                     <Text style={{ flex: 1, textAlign: "center" }}>{this.state.bump_remain}</Text>
-                  }
-                </>
-              </>
-              :
-              <>
-                <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-                  <Progress.Circle
-                    size={Appearences.Fonts.headingFontSize}
-                    indeterminate={true}
-                    color={orderStore.color}
-                  />
-                </View>
-                <>
-                  {adDetail.is_feature ?
-                    <View style={{ flex: 1 }}></View>
-                    :
+                    <>
+                      {adDetail.is_feature ?
+                        <View style={{ flex: 1 }}></View>
+                        :
+                        <Text style={{ flex: 1, textAlign: "center" }}>{this.state.featured_remain}</Text>
+                      }
+                    </>
+                  </>
+                  :
+                  <>
                     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
                       <Progress.Circle
                         size={Appearences.Fonts.headingFontSize}
@@ -919,13 +972,27 @@ import { object } from 'prop-types';
                         color={orderStore.color}
                       />
                     </View>
-                  }
-                </>
-              </>
-            }
+                    <>
+                      {adDetail.is_feature ?
+                        <View style={{ flex: 1 }}></View>
+                        :
+                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                          <Progress.Circle
+                            size={Appearences.Fonts.headingFontSize}
+                            indeterminate={true}
+                            color={orderStore.color}
+                          />
+                        </View>
+                      }
+                    </>
+                  </>
+                }
+              </View>
+            </>
+            :
+            <></>
+          }
 
-
-          </View>
           <View
             style={s.triangleRowcontainer}>
             <View
@@ -957,56 +1024,19 @@ import { object } from 'prop-types';
           >
             {contactInfo.phone.is_show ?
               <TouchableOpacity
-                onPress={async () => {
-
-                  let phoneNumber = '';
-                  await this.setState({ clicktoViewPhoneNoText: contactInfo.phone.number })
-
-                  if (Platform.OS === 'android') {
-                    phoneNumber = 'tel:' + contactInfo.phone.number;
-                  }
-                  else {
-                    phoneNumber = 'telprompt:' + contactInfo.phone.number;
-                  }
-
-                  Linking.openURL(phoneNumber);
-
+                onPress={() => {
+                  this.showCallModal(adDetail);
                 }}
                 style={[styles.buttonRow, { backgroundColor: orderStore.color }]}>
                 <Text style={styles.headingTextWhite}>{this.state.clicktoViewPhoneNoText}</Text>
               </TouchableOpacity>
               : null}
 
-            {/* {financeCalculator.is_show ?
-              <TouchableOpacity 
-              onPress = { ()=>{
-
-                this.setState({showCalculator:true});
-
-              }}
-              style = {[styles.buttonRow,{backgroundColor:orderStore.color}]}>
-              <Text style = {styles.headingTextWhite}>{financeCalculator.title}</Text>
-              </TouchableOpacity>
-              :null} */}
-
-
             <View style={styles.functionsRowContainer}>
               {contactInfo.phone.is_show ?
                 <TouchableOpacity
                   onPress={async () => {
-
-                    let phoneNumber = '';
-                    await this.setState({ clicktoViewPhoneNoText: contactInfo.phone.number })
-
-                    if (Platform.OS === 'android') {
-                      phoneNumber = 'tel:' + contactInfo.phone.number;
-                    }
-                    else {
-                      phoneNumber = 'telprompt:' + contactInfo.phone.number;
-                    }
-
-                    Linking.openURL(phoneNumber);
-
+                    this.showCallModal(adDetail);
                   }}
                   style={[styles.functionContainer, { borderBottomWidth: 2, borderBottomColor: 'green', marginRight: 5 }]}>
                   <Image
@@ -1096,7 +1126,6 @@ import { object } from 'prop-types';
           <View style={styles.panel}>
 
             <Text style={styles.subHeadingText}>{adDetail.fieldsData_feature_txt}</Text>
-            {/* ///////////herer////////// */}
 
             <View style={styles.overViewRowContainer}>
               {
@@ -1705,7 +1734,7 @@ import { object } from 'prop-types';
                             </TouchableOpacity>
                             <TouchableOpacity
                               style={[FeaturedGridStyle.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: 'green' }]}
-                              onPress={() => this.onCallClick(item.ad_id)}>
+                              onPress={() => this.showCallModal(item)}>
                               <Image
                                 source={require('../../../../../../../res/images/contact.png')}
                                 style={[FeaturedGridStyle.bottomImgStyl]}
@@ -1759,37 +1788,11 @@ import { object } from 'prop-types';
             <View
               style={[styles.panel, { marginTop: 0 }]}
             >
-
-              {/* {financeCalculator.is_show ?
-              <TouchableOpacity 
-              onPress = { ()=>{
-
-                this.setState({showCalculator:true});
-
-              }}
-              style = {[styles.buttonRow,{backgroundColor:orderStore.color}]}>
-              <Text style = {styles.headingTextWhite}>{financeCalculator.title}</Text>
-              </TouchableOpacity>
-              :null} */}
-
-
               <View style={[styles.functionsRowContainer, { marginTop: 0 }]}>
                 {contactInfo.phone.is_show ?
                   <TouchableOpacity
-                    onPress={async () => {
-
-                      let phoneNumber = '';
-                      await this.setState({ clicktoViewPhoneNoText: contactInfo.phone.number })
-
-                      if (Platform.OS === 'android') {
-                        phoneNumber = 'tel:' + contactInfo.phone.number;
-                      }
-                      else {
-                        phoneNumber = 'telprompt:' + contactInfo.phone.number;
-                      }
-
-                      Linking.openURL(phoneNumber);
-
+                    onPress={() => {
+                      this.showCallModal(adDetail);
                     }}
                     style={[styles.functionContainer, {}]}>
                     <Image
@@ -1861,8 +1864,12 @@ import { object } from 'prop-types';
             const params = { ad_id: adDetail.ad_id, custom_type: this.state.custom_type };
             let response = await Api.post('ad_post/featured', params);
             Toast.show(response.message)
+            this.setState({ bump_remain: '', featured_remain: '' });
             if (response.success && params.custom_type == 'feature')
               this._onRefresh();
+            else
+              await this.getRemainBumbFeatured();
+
           }}
           onCancel={() => { this.setState({ showConfirmDialogue: false }) }}
         />
