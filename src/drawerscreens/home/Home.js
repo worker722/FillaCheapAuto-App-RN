@@ -138,16 +138,6 @@ export default class Home extends Component {
       visibleCallModal: false,
     };
 
-    const renderInterval = setInterval(() => {
-      if (this.flFeaturedAdsRef != null) {
-        if (this.featuredAdsIndex == 3)
-          this.featuredAdsIndex = -1;
-        this.featuredAdsIndex++;
-        this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
-      }
-    }, 2000);
-    this.setState({ renderInterval });
-
     props.navigation.addListener("willFocus", (event) => {
 
       this.setState({
@@ -249,10 +239,34 @@ export default class Home extends Component {
       orderStore.home.featured_ads.ads[randomIndex] = temporaryValue;
     }
 
-    console.log("featured length", orderStore.home.featured_ads.ads_count);
+    if (orderStore.home.featured_ads.ads.length < 5) {
+      this.setState({ featuredShowNum: orderStore.home.featured_ads.ads.length }, () => {
+        if (orderStore.home.featured_ads.ads.length != 0)
+          this.setRandomScroll();
+      })
+    }
+    else
+      this.setRandomScroll();
+  }
 
-    if (orderStore.home.featured_ads.ads.length < 5)
-      this.setState({ featuredShowNum: orderStore.home.featured_ads.ads.length })
+  setRandomScroll = () => {
+    let { orderStore } = Store;
+    if (orderStore.home.featured_ads.ads.length > 0) {
+      if (this.state.featuredShowNum > 2)
+        this.featuredAdsIndex = 2;
+      else
+        this.featuredAdsIndex = -1;
+      clearInterval(this.state.renderInterval);
+      const renderInterval = setInterval(() => {
+        if (this.flFeaturedAdsRef != null) {
+          if (this.featuredAdsIndex == (this.state.featuredShowNum - 1))
+            this.featuredAdsIndex = -1;
+          this.featuredAdsIndex++;
+          this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
+        }
+      }, 2000);
+      this.setState({ renderInterval });
+    }
   }
 
   start = async () => {
@@ -262,21 +276,8 @@ export default class Home extends Component {
       orderStore.home = response.data;
       this.jobsPositions = response.data.ads_position;
 
-      this.setRandomFeaturedAds();
-
-      if (orderStore.home.featured_ads.ads.length > 0) {
-        this.featuredAdsIndex = 2;
-        clearInterval(this.state.renderInterval);
-        const renderInterval = setInterval(() => {
-          if (this.flFeaturedAdsRef != null) {
-            if (this.featuredAdsIndex == 3)
-              this.featuredAdsIndex = -1;
-            this.featuredAdsIndex++;
-            this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
-          }
-        }, 2000);
-        this.setState({ renderInterval });
-      }
+      if (orderStore.home.is_show_featured)
+        this.setRandomFeaturedAds();
 
       orderStore.profile = await Api.get('profile');
     }
@@ -1402,7 +1403,8 @@ export default class Home extends Component {
         orderStore.home = response.data;
         this.jobsPositions = response.data.ads_position;
 
-        this.setRandomFeaturedAds();
+        if (orderStore.home.is_show_featured)
+          this.setRandomFeaturedAds();
       }
       if (response.message.length != 0)
         Toast.show(response.message);
