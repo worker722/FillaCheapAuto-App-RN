@@ -30,6 +30,7 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import { withNavigation } from 'react-navigation';
 import ConfirmDialogue from '../../../components/ConfirmDialogue';
 import ModalBox from 'react-native-modalbox';
+
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
     {children}
@@ -89,7 +90,6 @@ class PageFour extends Component<Props> {
       adsByValue: '',
       isAdsByModalDisabled: false,
       countryId: "",
-      showProgress: false,
 
 
 
@@ -1015,7 +1015,7 @@ class PageFour extends Component<Props> {
 
       const response = await Api.post('post_ad', orderStore.postAdObject);
       if (response.success === true) {
-        await this.setState({ showProgress: false });
+        // await this.setState({ showProgress: false });
         const { navigate } = this.props.navigation;
 
         orderStore.profile = await Api.get('profile');
@@ -1028,7 +1028,6 @@ class PageFour extends Component<Props> {
           this.tabsText = { profile: tabsText.profile, editProfile: tabsText.edit_profile, featuredAds: tabsText.featured_ads, inactiveAds: tabsText.inactive_ads, myAds: tabsText.my_ads, favouriteAds: tabsText.favorite_ads };
           // this.setState({showSpinner:false});
           // this.props.navigation.navigate('Profile');   
-
         }
 
         navigate('AdDetailTabManager', { adId: orderStore.settings.data.ad_id });

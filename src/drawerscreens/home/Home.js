@@ -249,6 +249,8 @@ export default class Home extends Component {
       orderStore.home.featured_ads.ads[randomIndex] = temporaryValue;
     }
 
+    console.log("featured length", orderStore.home.featured_ads.ads_count);
+
     if (orderStore.home.featured_ads.ads.length < 5)
       this.setState({ featuredShowNum: orderStore.home.featured_ads.ads.length })
   }

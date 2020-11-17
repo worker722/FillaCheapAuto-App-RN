@@ -463,9 +463,6 @@ import { object } from 'prop-types';
       }
     }
 
-    await this.getRemainBumbFeatured();
-
-
     // setTimeout(async () => {
 
     //   this.setState({ refreshing: false, reRender: !this.state.reRender });
@@ -1865,10 +1862,9 @@ import { object } from 'prop-types';
             let response = await Api.post('ad_post/featured', params);
             Toast.show(response.message)
             this.setState({ bump_remain: '', featured_remain: '' });
+            await this.getRemainBumbFeatured();
             if (response.success && params.custom_type == 'feature')
               this._onRefresh();
-            else
-              await this.getRemainBumbFeatured();
 
           }}
           onCancel={() => { this.setState({ showConfirmDialogue: false }) }}
