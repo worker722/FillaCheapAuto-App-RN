@@ -26,14 +26,12 @@ import Loader from '../../../components/Loader';
 import NoFeaturedAdsFound from '../../../components/NoDataFound';
 import NoAdsFound from '../../../components/NoDataFound';
 import stores from '../../../Stores/orderStore';
-import { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
+import { RadioButton, RadioButtonInput } from 'react-native-simple-radio-button';
 import ModalBox from 'react-native-modalbox';
 import { observer } from 'mobx-react';
 import * as Progress from 'react-native-progress';
 import ModalDropdown from 'react-native-modal-dropdown';
 import SearchDetailRightIcon from '../../../components/SearchDetailRightIcon';
-import * as Animatable from 'react-native-animatable';
-import { NavigationActions } from 'react-navigation';
 
 
 const sortOptions = [];
@@ -47,7 +45,8 @@ export default class SearchDetail extends Component<Props> {
       <View style={{ backgroundColor: stores.color, height: Appearences.Registration.itemHeight + 10, flexDirection: "row" }}>
         <HeaderBackButton
           onPress={() => {
-            navigation.goBack(null)
+            clearInterval(this.state.renderInterval);
+            navigation.goBack(null);
           }} tintColor={'#fff'} />
         <View style={[styles.headerSearchbarContainer]}>
           <TextInput
@@ -90,24 +89,25 @@ export default class SearchDetail extends Component<Props> {
     let { orderStore } = Store;
     orderStore.innerResponse = await Api.post('ad_post/search', params);
     const data = orderStore.innerResponse.data;
+    const extra = orderStore.innerResponse.extra;
 
     if (orderStore.innerResponse.success === true) {
-      if (orderStore.innerResponse.data.featured_ads.ads.length === 0)
+      if (data.featured_ads.ads.length === 0 && extra.is_show_featured)
         this.setState({ noFeaturedAdsVisibility: true });
       else
         this.setState({ noFeaturedAdsVisibility: false });
-      if (orderStore.innerResponse.data.ads.length === 0)
+      if (data.ads.length === 0)
         this.setState({ noAdsVisibility: true });
       else
         this.setState({ noAdsVisibility: false });
 
-      if (orderStore.innerResponse.data.ads.length === 0 && orderStore.innerResponse.data.featured_ads.ads.length === 0) {
+      if (data.ads.length === 0 && data.featured_ads.ads.length === 0) {
         this.setState({ noAdsVisibility: true, noFeaturedAdsVisibility: false });
       }
 
       orderStore.profile = await Api.get('profile');
 
-      this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads }, () => {
+      this.setState({ listData: data.ads, featuredGridData: data.featured_ads.ads }, () => {
         this.setRandomFeaturedAds();
       });
     }
@@ -127,7 +127,7 @@ export default class SearchDetail extends Component<Props> {
     const data = orderStore.innerResponse.data;
     const extra = orderStore.innerResponse.extra;
     if (orderStore.innerResponse.success === true) {
-      if (orderStore.innerResponse.data.featured_ads.ads.length === 0) {
+      if (orderStore.innerResponse.data.featured_ads.ads.length === 0 && extra.is_show_featured) {
         this.setState({ noFeaturedAdsVisibility: true });
       }
       else {
@@ -148,20 +148,6 @@ export default class SearchDetail extends Component<Props> {
       this.adsPaginationDefaultValue = orderStore.innerResponse.pagination;
       this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads, noAdsMessage: extra.no_ads_found, noFeaturedAdsMessage: extra.no_ads_found }, () => {
         this.setRandomFeaturedAds();
-
-        if (this.state.featuredGridData.length > 0) {
-          this.featuredAdsIndex = 2;
-          const renderInterval = setInterval(() => {
-            if (this.flFeaturedAdsRef != null) {
-              if (this.featuredAdsIndex == 3)
-                this.featuredAdsIndex = -1;
-              this.featuredAdsIndex++;
-              this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
-            }
-          }, 2000);
-          this.setState({ renderInterval });
-        }
-
       });
       const sortOptionsArray = orderStore.innerResponse.topbar.sort_arr;
       for (var i = 0; i < sortOptionsArray.length; i++) {
@@ -184,40 +170,28 @@ export default class SearchDetail extends Component<Props> {
       orderStore.innerResponse = await Api.post('ad_post/search', params);
 
       const data = orderStore.innerResponse.data;
+      const extra = orderStore.innerResponse.extra;
 
       if (orderStore.innerResponse.success === true) {
-        if (orderStore.innerResponse.data.featured_ads.ads.length === 0) {
+        if (data.featured_ads.ads.length === 0 && extra.is_show_featured) {
           this.setState({ noFeaturedAdsVisibility: true });
         }
         else {
           this.setState({ noFeaturedAdsVisibility: false });
         }
-        if (orderStore.innerResponse.data.ads.length === 0) {
+        if (data.ads.length === 0) {
           this.setState({ noAdsVisibility: true });
         }
         else
           this.setState({ noAdsVisibility: false });
 
-        if (orderStore.innerResponse.data.ads.length === 0 && orderStore.innerResponse.data.featured_ads.ads.length === 0) {
+        if (data.ads.length === 0 && data.featured_ads.ads.length === 0) {
           this.setState({ noAdsVisibility: true, noFeaturedAdsVisibility: false });
         }
 
         orderStore.profile = await Api.get('profile');
-        this.setState({ listData: orderStore.innerResponse.data.ads, featuredGridData: orderStore.innerResponse.data.featured_ads.ads }, () => {
+        this.setState({ listData: data.ads, featuredGridData: data.featured_ads.ads }, () => {
           this.setRandomFeaturedAds();
-
-          if (this.state.featuredGridData.length > 0) {
-            this.featuredAdsIndex = 2;
-            const renderInterval = setInterval(() => {
-              if (this.flFeaturedAdsRef != null) {
-                if (this.featuredAdsIndex == 3)
-                  this.featuredAdsIndex = -1;
-                this.featuredAdsIndex++;
-                this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
-              }
-            }, 2000);
-            this.setState({ renderInterval });
-          }
         });
 
       }
@@ -329,7 +303,6 @@ export default class SearchDetail extends Component<Props> {
 
   setRandomFeaturedAds = () => {
     let tempData = this.state.featuredGridData;
-    console.log(tempData.length)
 
     var currentIndex = tempData.length, temporaryValue, randomIndex;
     while (0 !== currentIndex) {
@@ -341,13 +314,39 @@ export default class SearchDetail extends Component<Props> {
       tempData[randomIndex] = temporaryValue;
     }
 
-    this.setState({ featuredGridData: tempData });
-    if (tempData.length < 5)
-      this.setState({ featuredShowNum: tempData.length })
+    console.log(tempData.length);
 
-    if (tempData.length == 0)
-      clearInterval(this.renderInterval);
+    this.setState({ featuredGridData: tempData }, () => {
+      if (tempData.length < 5) {
+        this.setState({ featuredShowNum: tempData.length }, () => {
+          if (tempData.length != 0)
+            this.setRandomScroll();
+        })
+      }
+      else
+        this.setRandomScroll();
+    });
   }
+
+  setRandomScroll = () => {
+    if (this.state.featuredGridData.length > 0) {
+      if (this.state.featuredShowNum > 2)
+        this.featuredAdsIndex = 2;
+      else
+        this.featuredAdsIndex = -1;
+      clearInterval(this.state.renderInterval);
+      const renderInterval = setInterval(() => {
+        if (this.flFeaturedAdsRef != null) {
+          if (this.featuredAdsIndex == (this.state.featuredShowNum - 1))
+            this.featuredAdsIndex = -1;
+          this.featuredAdsIndex++;
+          this.flFeaturedAdsRef.scrollToIndex({ animated: true, index: this.featuredAdsIndex });
+        }
+      }, 2000);
+      this.setState({ renderInterval });
+    }
+  }
+
 
   renderFeaturedAds = () => {
     let { orderStore } = Store;
@@ -365,9 +364,9 @@ export default class SearchDetail extends Component<Props> {
         }
       }
     }
-
-    if (true) {
-      // if (orderStore.innerResponse.extra.is_show_featured === true) {
+    // console.log(orderStore.innerResponse.extra.is_show_featured)
+    // if (orderStore.innerResponse.data.is_show_featured) {
+    if (orderStore.innerResponse.extra.is_show_featured === true) {
       return (
         <View style={[styles.container, { paddingBottom: 25, paddingTop: 15 }]}>
 
