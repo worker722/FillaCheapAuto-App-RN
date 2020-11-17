@@ -20,15 +20,15 @@ import * as Progress from 'react-native-progress';
 import Appearences from '../../../../config/Appearences';
 import Api from '../../../../network/Api';
 import { withNavigation } from 'react-navigation';
-import { I18nManager } from 'react-native'
 import FeaturedGridStyle from '../../../home/FeaturedGridStyle';
 import PopularCarsStyle from '../../../home/PopularCarsStyle';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+
 class Inventory extends Component<Props> {
   defaultData = [];
   paginationDefault;
 
   constructor(props) {
-    let { orderStore } = Store;
     super(props);
 
     this.state = {
@@ -46,8 +46,10 @@ class Inventory extends Component<Props> {
       reCaller: false,
       swipeUp: false,
       reRender: false,
-      showChatModel: false,
+      visibleChatModal: false,
       similar_ad: null,
+      multiPhones: [],
+      visibleCallModal: false,
     }
   }
 
@@ -171,12 +173,9 @@ class Inventory extends Component<Props> {
   };
 
   showChatModal = async (item) => {
-    // let { orderStore } = Store;
-
-    // const params = { ad_id: item.ad_id };
-    // orderStore.adDetail = await Api.post('ad_post', params);
-    // item = Object.assign(item, { ad_images: item.images });
-    this.setState({ showChatModel: true, similar_ad: item });
+    this.setState({ visibleCallModal: false }, () => {
+      this.setState({ visibleChatModal: true, similar_ad: item });
+    })
   }
 
   sendChatMessage = async () => {
@@ -187,25 +186,39 @@ class Inventory extends Component<Props> {
     const response = await Api.post('message/popup', params);
     if (response.success === true) { }
     Toast.show(response.message);
-    this.setState({ showMessageProgress: false, showChatModel: false });
+    this.setState({ showMessageProgress: false, visibleChatModal: false });
   }
 
-  onCallClick = async (id) => {
-    const params = { ad_id: id };
+
+  showCallModal = async (item) => {
+    this.setState({ showSpinner: true, similar_ad: item });
+    const params = { ad_id: item.ad_id };
 
     const adDetail = await Api.post('ad_post', params);
-    const data = adDetail.data;
-    const contactInfo = data.static_text.contact_info;
-    let phoneNumber = '';
+    const contact_info = adDetail.data.static_text.contact_info;
+    this.setState({ showSpinner: false });
 
+    let multiPhones = [];
+    multiPhones.push(contact_info.phone.number);
+    multiPhones.push(contact_info.phone2.number);
+    multiPhones.push(contact_info.phone3.number);
+    multiPhones.push(contact_info.phone4.number);
+    multiPhones.push(contact_info.phone5.number);
+    this.setState({
+      multiPhones: multiPhones,
+      visibleCallModal: true,
+      visibleChatModal: false
+    })
+  }
+
+  onCallClick = (number) => {
+    let phoneNumber = 'telprompt:' + number;
     if (Platform.OS === 'android') {
-      phoneNumber = 'tel:' + contactInfo.phone.number;
-    }
-    else {
-      phoneNumber = 'telprompt:' + contactInfo.phone.number;
+      phoneNumber = 'tel:' + number;
     }
 
     Linking.openURL(phoneNumber);
+    this.setState({ visibleCallModal: false })
   }
 
   render() {
@@ -517,7 +530,7 @@ class Inventory extends Component<Props> {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={[styles.featureAdsBtn, { borderBottomWidth: 2, borderBottomColor: orderStore.appColor }]}
-                        onPress={() => this.onCallClick(item.ad_id)}>
+                        onPress={() => this.showCallModal(item)}>
                         <Image
                           source={require('../../../../../res/images/contact.png')}
                           style={[styles.bottomImgStyl]}
@@ -552,7 +565,7 @@ class Inventory extends Component<Props> {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={this.state.showChatModel}
+          visible={this.state.visibleChatModal}
           onRequestClose={() => {
           }}>
 
@@ -569,7 +582,7 @@ class Inventory extends Component<Props> {
                     {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
                     <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
                   </View>
-                  <TouchableOpacity onPress={() => this.onCallClick(this.state.similar_ad.ad_id)} style={{ width: 20, height: 30 }}>
+                  <TouchableOpacity onPress={() => this.showCallModal(this.state.similar_ad)} style={{ width: 20, height: 30 }}>
                     <Image
                       source={require('../../../../../res/images/contact.png')}
                       style={[FeaturedGridStyle.bottomImgStyl]}
@@ -612,7 +625,7 @@ class Inventory extends Component<Props> {
 
                         <TouchableOpacity
                           onPress={() => {
-                            this.setState({ showChatModel: false });
+                            this.setState({ visibleChatModal: false });
                           }}
                           style={[styles.messageMoalButton, { borderColor: Appearences.Colors.grey, borderWidth: 1 }]}>
                           <Text style={styles.buttonTextBlack}>Cancel</Text>
@@ -640,6 +653,54 @@ class Inventory extends Component<Props> {
           </View>
 
         </Modal>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.visibleCallModal}
+          onRequestClose={() => {
+          }}>
+
+          <View style={styles.modalContainer}>
+
+            <View style={styles.modalContentContainer}>
+              <TouchableOpacity style={{ position: "absolute", top: 0, left: 0, padding: 3 }} onPress={() => this.setState({ visibleCallModal: false, similar_ad: null })}>
+                <Icon name={"times-circle"} size={25} color={orderStore.color}></Icon>
+              </TouchableOpacity>
+              {this.state.similar_ad != null ?
+                <View style={{ height: 70, width: "100%", flexDirection: "row", marginBottom: 50 }}>
+                  <View style={{ width: 70, height: 70, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
+                    <Image source={{ uri: this.state.similar_ad.ad_images[0].thumb }} style={{ width: 70, height: 70 }}></Image>
+                  </View>
+                  <View style={{ flex: 1, flexDirection: "column" }}>
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: "#000" }}>{this.state.similar_ad.ad_title}</Text>
+                    {/* <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1 }}>{orderStore.adDetail.data.profile_detail.name}</Text> */}
+                    <Text numberOfLines={1} style={{ textAlign: "left", textAlignVertical: "center", flex: 1, color: orderStore.color }}>{this.state.similar_ad.ad_price.price}({this.state.similar_ad.ad_price.price_type})</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => this.showChatModal(this.state.similar_ad)} style={{ width: 20, height: 30 }}>
+                    <Image
+                      source={require('../../../../../res/images/message_grey.png')}
+                      style={[FeaturedGridStyle.bottomImgStyl]}
+                    />
+                  </TouchableOpacity>
+                </View>
+                : null}
+              {this.state.multiPhones.map((item, key) => (
+                <>
+                  {item != '' &&
+                    <TouchableOpacity
+                      onPress={() => this.onCallClick(item)}
+                      style={[styles.modalButtonRow, { backgroundColor: orderStore.color }]}>
+                      <Text style={styles.buttonTextWhite}>{item}</Text>
+                    </TouchableOpacity>
+                  }
+                </>
+              ))}
+            </View>
+          </View>
+
+        </Modal>
+
       </View>
     );
   }

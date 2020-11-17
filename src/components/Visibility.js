@@ -7,6 +7,7 @@ import {
 
 const Visibility = (props) => {
   const { children, hide, style } = props;
+  // console.log(props);
   if (hide) {
     return null;
   }

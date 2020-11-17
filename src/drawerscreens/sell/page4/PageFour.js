@@ -28,6 +28,7 @@ import { CheckBox } from 'react-native-elements';
 import { withNavigation } from 'react-navigation';
 import ConfirmDialogue from '../../../components/ConfirmDialogue';
 import ModalBox from 'react-native-modalbox';
+import Loader from '../../../components/Loader';
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
