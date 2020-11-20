@@ -12,7 +12,6 @@ import LocalDb from './src/storage/LocalDb';
 
 import { getIntertial } from './src/components/adMob/Intertial';
 import Banner from './src/components/adMob/Banner';
-//import type { RemoteMessage } from 'react-native-firebase';
 import { observer } from 'mobx-react';
 import {
   AdMobInterstitial,
